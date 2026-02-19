@@ -1,0 +1,83 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    env_file: [.env]
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h 127.0.0.1 -p 5432"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  db_init:
+    image: postgres:16-alpine
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: [.env]
+    environment:
+      PGHOST: postgres
+      PGPORT: 5432
+      PGUSER: ${POSTGRES_USER}
+      PGDATABASE: ${POSTGRES_DB}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./DB_Structure.sql:/init/DB_Structure.sql:ro
+    entrypoint: >
+      sh -c "psql -v ON_ERROR_STOP=1 -f /init/DB_Structure.sql"
+    restart: "no"
+
+  pgweb:
+    image: sosedoff/pgweb:latest
+    env_file: [.env]
+    environment:
+      PGWEB_DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${PUBLIC_PORT_PGWEB}:8081"
+    restart: unless-stopped
+
+  frontend:
+    env_file: [.env]
+    build:
+      context: ./WEB/FRONTEND
+      dockerfile: Dockerfile
+    ports:
+      - "${PUBLIC_PORT_FE}:80"
+    volumes:
+      - ./WEB/FRONTEND/public:/usr/share/nginx/html:ro
+      - ./WEB/FRONTEND/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  backend:
+    env_file: [.env]
+    build:
+      context: ./WEB/BACKEND
+      dockerfile: Dockerfile
+    expose:
+      - "8000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8000/health >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  pgdata:
