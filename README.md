@@ -60,7 +60,35 @@ git switch `YourBranch`
 Tiesiogiai į `main` branch nedaryti jokių `commit`, atnaujinimus pirmiausia kelti į savo branch
 
 
+## Patikrinti ar yra atnaujinimų:
+
+Rekomenduojama atlikti:
+    prieš pradedant darbą,
+    ir baigus darbą, prieš atliekant `commit` į savo branch.
+
+Tai padeda išvengti merge konfliktų ir užtikrina, kad dirbate su naujausia projekto versija.
+
+```bash
+git fetch origin
+git log HEAD..origin/main --oneline
+```
+
+Jeigu netuščia tuomet atnaujinimų yra ir reikia atsinaujinti
+
+
+## Atsinaujinti iš `main`:
+
+```bash
+git switch main
+git pull origin main
+git switch `YourBranch`
+git merge main
+```
+
+
 ## Pridėti atnaujinimą prie savo branch:
+
+Galima vykdyti betkada
 
 ```bash 
 git add .
@@ -70,16 +98,15 @@ git push
 
 
 ## Savo branch sujungti su main:
+
+Vykdyti tik tuomet kai turima naujausia `main` versija ir jūsų atnaujinimas pilnai veikiantis.
+
 ```bash
 git switch main
 git merge `YourBranch`
 git push origin main
 git switch `YourBranch`
 ```
-
-
-git fetch origin
-
 
 
 
