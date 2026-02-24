@@ -42,6 +42,7 @@ git config --global user.email "you@example.com"
 git config --global user.name "Your Name"
 ```
 
+geriausia, jog sutarptų su tuo ką naudojate per GitHub
 
 ## Patikrinti aktyvų branch:
 
@@ -71,6 +72,8 @@ git add .
 git commit -m "Vardas: kas atnaujinta"
 git push
 ```
+
+
 
 
 
