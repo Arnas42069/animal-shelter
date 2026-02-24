@@ -1,6 +1,6 @@
 # Prisijungimas
 
-## 1️⃣ `SSH` rakto sukūrimas (darbo kompiuteryje)
+## `SSH` rakto sukūrimas (darbo kompiuteryje)
 
 WINDOWS CMD terminale paleisti komandas:
 
@@ -16,12 +16,12 @@ Visus laukus palikti tuščius
 Nukopijuotą pilną raktą atsiųsti
 
 
-## 2️⃣ Prisijungimas prie serverio per `Terminalą`.
+## Prisijungimas prie serverio per `Terminalą`.
 
 Patogiausia per `POWERSHEWLL` bet galima ir per `CMD`
 
 
-## 3️⃣ Prisijungimas prie serverio per `VSCode`.
+## Prisijungimas prie serverio per `VSCode`.
 
 
 
@@ -44,16 +44,11 @@ git config --global user.name "Your Name"
 
 geriausia, jog sutarptų su tuo ką naudojate per GitHub
 
-## Patikrinti sąrašą ir aktyvų branch:
+
+## Patikrinti aktyvų ir pakeisti branch:
 
 ```bash
 git branch
-```
-
-
-## Pakeisti branch:
-
-```bash
 git switch `YourBranch`
 ```
 
@@ -109,12 +104,23 @@ git switch `YourBranch`
 ```
 
 
+# DOCKER valdymas
+
+## Paleisti
+
+```bash
+docker compose up -d
+```
+
+## Išjungti
+
+```bash
+docker compose down
+```
 
 
+## Sunaikinti konteirius ir duomenų bazę (Clean Slate)
 
-
-
-
-
-
-
+```bash
+docker compose down -v
+```
