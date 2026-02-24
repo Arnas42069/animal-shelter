@@ -44,7 +44,7 @@ git config --global user.name "Your Name"
 
 geriausia, jog sutarptų su tuo ką naudojate per GitHub
 
-## Patikrinti aktyvų branch:
+## Patikrinti sąrašą ir aktyvų branch:
 
 ```bash
 git branch
@@ -54,24 +54,31 @@ git branch
 ## Pakeisti branch:
 
 ```bash
-git switch main 
-```
-
-```bash
 git switch `YourBranch`
 ```
 
-Tik pilnai veikianti sistemos update kelti į `main` branch ir būtinai turint naujausią `main` versiją.
-Nuolat darbo kelti į savo branch nėra būtina, tačiau tai gera praktika, nes taip lengviau atstatyti jei bus netyčia sugadinti `main` failai arba vykdant `pull` komandą ant viršaus perrašyti jūsų koreguoti failai.
+Tiesiogiai į `main` branch nedaryti jokių `commit`, atnaujinimus pirmiausia kelti į savo branch
 
 
-## Pridėti atnaujinimą `push`:
+## Pridėti atnaujinimą prie savo branch:
 
 ```bash 
 git add .
 git commit -m "Vardas: kas atnaujinta"
 git push
 ```
+
+
+## Savo branch sujungti su main:
+```bash
+git switch main
+git merge `YourBranch`
+git push origin main
+git switch `YourBranch`
+```
+
+
+git fetch origin
 
 
 
