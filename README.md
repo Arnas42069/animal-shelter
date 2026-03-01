@@ -16,14 +16,44 @@ Visus laukus palikti tuščius
 Nukopijuotą pilną raktą atsiųsti
 
 
-## Prisijungimas prie serverio per `Terminalą`.
+## Prisijungimas prie serverio per `Terminalą`:
 
-Patogiausia per `POWERSHEWLL` bet galima ir per `CMD`
+Patogiausia per `POWERSHEWLL` bet galima ir per `CMD`, `PUTTY`, `TABBY`
+
+```bash
+ssh 78.58.62.196 -p 9922
+```
 
 
-## Prisijungimas prie serverio per `VSCode`.
+## Prisijungimas prie serverio per `VSCode`:
 
+Įdiegti `Remote - SSH` biblioteką
 
+Tuomet per VSCode spausti:
+
+```bash
+Ctrl + Shift + P
+Remote-SSH: Connect to Host
+```
+
+ir įrašyti:
+
+```bash
+ssh user@78.58.62.196 -p 9922
+```
+
+išsaugoti į
+
+```bash
+USERPROFILE\.ssh\config
+```
+
+## Prisijungimas prie pagrindinio projekto web puslapio:
+
+```bash
+WebPage : 78.58.62.196:10000
+Database: 78.58.62.196:10001
+```
 
 
 # GITHUB valdymas
@@ -35,7 +65,7 @@ cd Shelter
 ```
 
 
-## Pirmą kartą reiks atlikti:
+## Pirmą kartą reikės atlikti:
 
 ```bash
 git config --global user.email "you@example.com" 
@@ -106,20 +136,20 @@ git switch `YourBranch`
 
 # DOCKER valdymas
 
-## Paleisti
+## Paleisti:
 
 ```bash
 docker compose up -d
 ```
 
-## Išjungti
+## Išjungti:
 
 ```bash
 docker compose down
 ```
 
 
-## Sunaikinti konteirius ir duomenų bazę (Clean Slate)
+## Sunaikinti konteirius ir duomenų bazę (Clean Slate):
 
 ```bash
 docker compose down -v
