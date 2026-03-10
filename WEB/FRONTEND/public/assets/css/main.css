@@ -2,6 +2,21 @@ body{
     background-color:#F5EFE6;
 }
 
+.login-register-buttons {
+    justify-content: flex-end;
+    display: flex;
+    gap: 10px;
+    padding-bottom: 30px;
+}
+
+.btn {
+  padding: 10px 20px;
+  background: #444444;
+border: 2px solid #444444;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+}
 /* Hero sekcija */
 .main-dog {
     width: 97,9%;
@@ -31,6 +46,7 @@ body{
 /* Mygtukų konteineris */
 .hero-buttons {
     display: flex;
+    justify-content: center;
     gap: 15px; /* tarpas tarp „Prieglaudos“ ir „Gyvūnai“ */
 }
 
@@ -54,16 +70,24 @@ body{
     border: 2px solid #444444;
     border-radius: 21px;
     color: #EAE0D5;
+
     font-family: "Source Sans 3", sans-serif;
     font-weight: 600;
     font-size: 16px;
+
     text-align: center;
+    text-decoration: none;      /* removes underline */
+
+    display: flex;              /* centers text */
+    align-items: center;        /* vertical center */
+    justify-content: center;    /* horizontal center */
+
     cursor: pointer;
 }
 
 /* Bendra stiliaus dalis */
 section {
-    padding: 50px 20px;
+    padding: 20px 20px;
     text-align: center;
     font-family: "Source Sans 3", sans-serif;
 }
@@ -80,6 +104,7 @@ section h2 {
     justify-content: center;
     gap: 20px;
     position: relative;
+    padding-top: 20px;
 }
 
 .cards {
@@ -115,6 +140,7 @@ section h2 {
 background:#d8d2c8;
 padding:40px 0;
 text-align:center;
+padding-top: 20px;
 }
 
 .title{
@@ -161,42 +187,4 @@ padding:20px;
 cursor:pointer;
 }
 
-/* Footer pagrindas */
-footer {
-    background: #444;
-    color: #EAE0D5;
-    padding: 40px 20px;
-    display: flex;
-    flex-direction: column; /* viršus + apačia */
-    align-items: center;
-}
 
-
-/* Viršutinė dalis – blokai šalia vienas kito 
-.footer-top {
-    display: flex;
-    justify-content: space-around; 
-    width: 100%;
-    max-width: 800px; 
-    flex-wrap: wrap;  
-    gap: 40px;
-    margin-bottom: 20px;
-}
-
-.footer-box {
-    width: 250px;
-    text-align: center;
-}
-
-.icon {
-    font-size: 40px;
-    margin-bottom: 10px;
-}
-
-
-.bottom-text {
-    text-align: center;
-    font-size: 16px;
-    margin-top: auto;
-}
-*/
