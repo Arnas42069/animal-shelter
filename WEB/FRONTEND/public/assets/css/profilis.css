@@ -1,0 +1,77 @@
+body{
+    background:#F5EFE6;
+    font-family: "Source Sans 3", sans-serif;
+}
+
+.profile-container{
+    max-width:1000px;
+    margin:auto;
+    padding:40px;
+}
+
+.profile-picture{
+    display:flex;
+    justify-content:center;
+    margin-bottom:40px;
+}
+
+.profile-picture img{
+    width:200px;
+    height:200px;
+    border-radius:50%;
+    border:12px solid #e6e6e6;
+    background:#b7c4cc;
+}
+
+.profile-content{
+    display:flex;
+    justify-content:space-between;
+}
+
+.profile-info{
+    font-size:22px;
+    font-weight:600;
+    color:#2f3d4a;
+    line-height:2.5;
+}
+
+.profile-text{
+    font-size:16px;
+    color:#555;
+    margin-top:0;
+}
+
+.btn {
+  width: 112px;
+    height: 42px;
+    padding: 0px 10px;
+    background: #444444;
+    border: 2px solid #444444;
+    border-radius: 21px;
+    color: #EAE0D5;
+
+    font-family: "Source Sans 3", sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+
+    text-align: center;
+    text-decoration: none;      /* removes underline */
+
+    display: flex;              /* centers text */
+    align-items: center;        /* vertical center */
+    justify-content: center;    /* horizontal center */
+
+    cursor: pointer;
+}
+textarea{
+    width:70%;
+    height:120px;
+    padding:15px;
+    margin:12px 0;
+    border-radius:10px;
+    border:1px solid black;
+    resize:none;
+}
+button{
+    cursor: pointer;
+}
