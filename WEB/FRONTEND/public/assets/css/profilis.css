@@ -2,6 +2,15 @@ body{
     background:#F5EFE6;
     font-family: "Source Sans 3", sans-serif;
 }
+.edit{
+  height: 20px;
+  color: #444444;
+  font-family: "Source Sans 3";
+  font-weight: bold;
+  font-size: 18px;
+  text-align: center;
+  padding-right: 170px;
+}
 
 .profile-container{
     max-width:1000px;
@@ -41,6 +50,12 @@ body{
     margin-top:0;
 }
 
+.top-buttons{
+    position:absolute;
+    top:20px;
+    right:30px;
+}
+
 .btn {
   width: 112px;
     height: 42px;
@@ -63,6 +78,7 @@ body{
 
     cursor: pointer;
 }
+
 textarea{
     width:70%;
     height:120px;
