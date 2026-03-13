@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS app_user (
     password_hash  TEXT NOT NULL,
 
     role           TEXT NOT NULL DEFAULT 'user'
-        CHECK (role IN ('admin', 'staff', 'user')),
+        CHECK (role IN ('admin', 'shelter', 'volunteer', 'user')),
 
     is_active      BOOLEAN NOT NULL DEFAULT TRUE,
 
