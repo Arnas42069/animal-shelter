@@ -3,9 +3,10 @@ from enum import Enum
 
 
 class UserRole(str, Enum):
+    admin     = "admin"
     volunteer = "volunteer"
-    shelter = "shelter"
-    user = "user"
+    shelter   = "shelter"
+    user      = "user"
 
 
 class RegisterRequest(BaseModel):

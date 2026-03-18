@@ -2,11 +2,11 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
-from database import get_db
-from models import AppUser
-from schemas import RegisterRequest, LoginRequest, TokenResponse
-from auth import hash_password, verify_password, create_token
-from validators import validate_password
+from src.database import get_db
+from src.models import AppUser
+from src.schemas import RegisterRequest, LoginRequest, TokenResponse
+from src.auth import hash_password, verify_password, create_token, get_current_user
+from src.validators import validate_password
 
 
 app = FastAPI()
@@ -26,7 +26,7 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
     ).first()
 
     if existing:
-        raise HTTPException(400, "Email or username already exists")
+        raise HTTPException(status_code=400, detail="Email or username already exists")
 
     validate_password(data.password)
 
@@ -48,22 +48,30 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
 
     user = db.query(AppUser).filter(AppUser.email == data.email).first()
 
-    if not user:
-        raise HTTPException(401, "Invalid credentials")
+    fake_hash = "$2b$12$abcdefghijklmnopqrstuv" 
 
-    if not verify_password(data.password, user.password_hash):
-        raise HTTPException(401, "Invalid credentials")
+    hashed = user.password_hash if user else fake_hash
 
-    if not user.is_active:
-        raise HTTPException(403, "Account inactive")
+    if not verify_password(data.password, hashed):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    if not user or not user.is_active:
+        raise HTTPException(status_code=403, detail="Account inactive")
 
     token = create_token(user.id)
 
     return {
-        "access_token": token
+        "access_token": token,
+        "token_type": "bearer"
     }
 
 
-@app.post("/auth/logout")
-def logout():
-    return {"message": "Logged out"}
+@app.get("/auth/me")
+def me(user: AppUser = Depends(get_current_user)):
+    return {
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "role": user.role,
+        "is_active": user.is_active,
+    }
