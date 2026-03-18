@@ -29,8 +29,12 @@ services:
       PGPASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - ./DB_Structure.sql:/init/DB_Structure.sql:ro
+      - ./DB_Data.sql:/init/DB_Data.sql:ro
     entrypoint: >
-      sh -c "psql -v ON_ERROR_STOP=1 -f /init/DB_Structure.sql"
+      sh -c "
+        psql -v ON_ERROR_STOP=1 -f /init/DB_Structure.sql &&
+        psql -v ON_ERROR_STOP=1 -f /init/DB_Data.sql
+      "
     restart: "no"
 
   pgweb:
