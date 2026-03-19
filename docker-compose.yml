@@ -29,8 +29,12 @@ services:
       PGPASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - ./DB_Structure.sql:/init/DB_Structure.sql:ro
+      - ./DB_Data.sql:/init/DB_Data.sql:ro
     entrypoint: >
-      sh -c "psql -v ON_ERROR_STOP=1 -f /init/DB_Structure.sql"
+      sh -c "
+        psql -v ON_ERROR_STOP=1 -f /init/DB_Structure.sql &&
+        psql -v ON_ERROR_STOP=1 -f /init/DB_Data.sql
+      "
     restart: "no"
 
   pgweb:
@@ -72,7 +76,12 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
     restart: unless-stopped
 
 volumes:

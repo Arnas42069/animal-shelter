@@ -139,7 +139,7 @@ git switch `YourBranch`
 ## Paleisti:
 
 ```bash
-docker compose up -d
+docker compose up -d --build
 ```
 
 ## Išjungti:

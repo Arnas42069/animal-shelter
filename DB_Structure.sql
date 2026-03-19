@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS app_user (
     password_hash  TEXT NOT NULL,
 
     role           TEXT NOT NULL DEFAULT 'user'
-        CHECK (role IN ('admin', 'staff', 'user')),
+        CHECK (role IN ('admin', 'shelter', 'volunteer', 'user')),
 
     is_active      BOOLEAN NOT NULL DEFAULT TRUE,
 
@@ -35,7 +35,7 @@ CREATE INDEX IF NOT EXISTS app_user_active_idx ON app_user(is_active);
 CREATE TABLE IF NOT EXISTS shelter (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
-    name        TEXT NOT NULL,
+    name        TEXT NOT NULL UNIQUE,
     description TEXT,
 
     email       TEXT,
@@ -69,10 +69,8 @@ CREATE TABLE IF NOT EXISTS animal (
     shelter_id BIGINT NOT NULL
         REFERENCES shelter(id) ON DELETE RESTRICT,
 
-    created_by BIGINT NOT NULL
-        REFERENCES app_user(id) ON DELETE RESTRICT,
-
     name        TEXT,
+    code        TEXT UNIQUE,
     species     TEXT NOT NULL CHECK (species IN ('dog','cat','other')),
     breed       TEXT,
 
