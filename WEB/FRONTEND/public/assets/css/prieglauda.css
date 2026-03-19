@@ -1,14 +1,32 @@
+/*laikinu mygtuku stilius, naikinti kai bus navbar*/
+.top-buttons{
+    position:absolute;
+    top:20px;
+    right:30px;
+}
 
+/*------------------------*/
+/* Bendri puslapio stiliai*/
+/*------------------------*/
+
+/* Viso puslapio stilius*/
 body{
     font-family: Arial, sans-serif;
-    background:#F5EFE6;
+    background:#afaba4;
     margin:0;
 }
 
-/* BUTTON */
+/* sudeti visi puslapio elementai*/
+.container-gaps {
+    max-width: 1300px;   
+    margin: 0 auto;      
+    padding: 0 30px;     
+    background-color:#F5EFE6;
+}
 
+/* mygtuko stilius*/
 .btn {
-  width: 112px;
+    width: 112px;
     height: 42px;
     padding: 0px 10px;
     background: #444444;
@@ -21,99 +39,86 @@ body{
     font-size: 16px;
 
     text-align: center;
-    text-decoration: none;      /* removes underline */
+    text-decoration: none;      
 
-    display: flex;              /* centers text */
-    align-items: center;        /* vertical center */
-    justify-content: center;    /* horizontal center */
+    display: flex;              
+    align-items: center;        
+    justify-content: center;    
 
     cursor: pointer;
 }
+/*---------------------------*/
 
-.top-buttons{
-    position:absolute;
-    top:20px;
-    right:30px;
-}
 
-/* HERO */
-
-.hero img{
+/* pradines nuotraukos parametrai*/
+.shelter-image img{
     width:100%;
     height:500px;
     object-fit:cover;
     padding-top: 90px;
 }
 
-/* HEADER */
-
-.header{
+/* Prieglaudos pavadinimo pozicija */
+.shelter-name{
     display:flex;
     justify-content:space-between;
     align-items:center;
     padding:20px;
 }
 
-.header h1{
+/* Prieglaudos pavadinimo stilius*/
+.shelter-name h1{
     margin:0;
 }
 
-.location{
+/* Prieglaudos adreso stilius*/
+.shelter-address{
     color:#555;
     margin-top:5px;
 }
 
+/*------------------------------*/
+/*  Sekcijos elementu stiliai   */
+/*------------------------------*/
 
-
-/* SECTIONS */
-
+/* Sekcijos stilius*/
 .section{
     border-top:1px solid #aaa;
     padding:20px;
 }
 
+/* h3 elemento stilius*/
 .section h3{
     margin-bottom:10px;
 }
-
+ /* p elemento stilius*/
 .section p{
     color:#333;
 }
 
-/* ANIMALS */
+/*------------------------------*/
+/*    Gyvunu skyriaus stiliai   */
+/*------------------------------*/
 
-.carousel {
-    display: flex;
+/* Gyvunu sekcijos stilius */
+.animals{
+    background:#F5EFE6;;
+    padding:40px 0;
+    text-align:center;
+    padding-top: 0px;
+}
+
+/* Koteliu isdestymas*/
+.cards-animal{
+    display:flex;
     align-items: center;
     justify-content: center;
-    gap: 20px;
-    position: relative;
-    padding-top: 20px;
+    gap:30px;
+    padding-bottom: 30px;
 }
 
-.animals{
-    border-top:1px solid #aaa;
-    padding:20px;
-    text-align:center;
-}
-
-.title{
-margin-bottom:30px;
-}
-
-.row{
-display:flex;
-align-items:center;
-justify-content:center;
-margin-bottom:40px;
-}
-
-.cards{
-display:flex;
-gap:30px;
-}
-
-.card{
+/* Koreteles stilius*/
+.card-animal{
 background:white;
 padding:15px;
 border-radius:10px;
@@ -121,22 +126,10 @@ width:180px;
 box-shadow:0 0 5px rgba(0,0,0,0.2);
 }
 
-.card img{
-width:100%;
-border-radius:5px;
-}
-
-.card p{
-margin-top:10px;
-font-weight:bold;
-}
-
-.card.active{
-border:3px solid #2b7cff;
-}
-
-.arrow{
-font-size:40px;
-padding:20px;
-cursor:pointer;
+/* Nuotraukos korteleje stilius*/
+.card-animal img {
+  width: 100%;
+  height: 200px;        
+  object-fit: cover;    
+  border-radius: 5px;
 }

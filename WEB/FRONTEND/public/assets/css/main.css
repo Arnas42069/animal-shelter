@@ -1,10 +1,22 @@
-/*laikinu mygtuku stilius, naikinti kai bus navbar*/
+/*laikinu mygtuku isdestymas, naikinti kai bus navbar*/
 .login-register-buttons {
     justify-content: flex-end;
     display: flex;
     gap: 10px;
     padding-bottom: 30px;
+    padding-top: 30px;
 }
+
+/*laikinu mygtuku stilius*/
+.btn {
+    padding: 10px 20px;
+    background: #444444;
+    border: 2px solid #444444;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
 
 /*------------------------*/
 /* Bendri puslapio stiliai*/
@@ -13,6 +25,7 @@
 /* Viso puslapio stilius*/
 body{
     background-color:#afaba4;
+    margin:0;
 }
 
 /* Bendras sekciju stilius */
@@ -28,32 +41,22 @@ section h2 {
     margin-bottom: 30px;
 }
 
+/*sudeti visi puslapio elementai*/
+.container-gaps {
+    max-width: 1300px;   
+    margin: 0 auto;      
+    padding: 0 30px;     
+    background-color:#F5EFE6;
+}
+
 /*------------------------------*/
 /*  Suniuko nuotraukos stiliai  */
 /*------------------------------*/
 
-/*sudeti visi elementai main puslapio*/
-.container {
-    max-width: 1300px;   /* controls content width */
-    margin: 0 auto;      /* centers it */
-    padding: 0 30px;     /* space on left & right */
-    background-color:#F5EFE6;
-}
-
-/*mygtuku stilius naudojant <a>(linkas)*/
-.btn {
-    padding: 10px 20px;
-    background: #444444;
-    border: 2px solid #444444;
-    color: white;
-    text-decoration: none;
-    border-radius: 6px;
-}
-
 /* Suniuko foto sekcijos stilius */
 .main-dog {
     width: 1300px;
-    height: 600px; /* viso ekrano aukštis */
+    height: 600px; 
     background-image: url("/assets/img/dog.png");
     background-repeat: no-repeat;
     background-position: center;
@@ -65,7 +68,7 @@ section h2 {
 }
 
 /* Suniuko foto kaip konteineris(laukas kuriame kazkas yra)*/
-.main-dog .hero-content {
+.main-dog .main-dog-content {
     position: absolute;
     top: 50%;
     left: 50px;
@@ -76,14 +79,14 @@ section h2 {
 }
 
 /* Mygtukų konteineris(suniuko foto) */
-.hero-buttons {
+.main-dog-buttons {
     display: flex;
     justify-content: center;
-    gap: 15px; /* tarpas tarp „Prieglaudos“ ir „Gyvūnai“ */
+    gap: 15px; 
 }
 
 /* Tekstas */
-.rask-savo-geriausia-drauga {
+.main-dog-text {
     width: 417px;
     color: #EAE0D5;
     font-family: "DM Serif Display", serif;
@@ -93,8 +96,8 @@ section h2 {
 }
 
 /* Mygtukai (gyvunai ir prieglaudos ant suniuko foto)*/
-.prieglaudos-mygtukas,
-.gyvunai-mygtukas {
+.shelter-button,
+.animal-button {
     width: 112px;
     height: 42px;
     padding: 0px 10px;
@@ -120,6 +123,14 @@ section h2 {
 /*------------------------------*/
 /* Prielgaudos skyriaus stiliai */
 /*------------------------------*/
+
+/* Gyvunu sekcijos stilius */
+.shelters{
+    background:#F5EFE6;;
+    padding:40px 0;
+    text-align:center;
+    padding-top: 0px;
+}
 
 /* Karuseles stilius*/
 .carousel {
@@ -173,7 +184,7 @@ section h2 {
 }
 
 /* Koteliu isdestymas*/
-.cards{
+.cards-animal{
     display:flex;
     align-items: center;
     justify-content: center;
@@ -182,7 +193,7 @@ section h2 {
 }
 
 /* Koreteles stilius*/
-.card{
+.card-animal{
 background:white;
 padding:15px;
 border-radius:10px;
@@ -190,14 +201,19 @@ width:180px;
 box-shadow:0 0 5px rgba(0,0,0,0.2);
 }
 
-/* Nuotraokos korteleje stilius*/
-.card img {
+/* Nuotraukos korteleje stilius*/
+.card-animal img {
   width: 100%;
   height: 200px;        
   object-fit: cover;    
   border-radius: 5px;
 }
 
+/*---------------------*/
+/* Puslapiavimo stiliai*/
+/*---------------------*/
+
+/* Elemento pozicija*/
 .pagination {
   margin-top: 40px;
   display: flex;
@@ -205,6 +221,7 @@ box-shadow:0 0 5px rgba(0,0,0,0.2);
   gap: 10px;
 }
 
+/* nuorodu stilius*/
 .pagination a {
   padding: 8px 14px;
   text-decoration: none;
@@ -213,11 +230,13 @@ box-shadow:0 0 5px rgba(0,0,0,0.2);
   border: 1px solid #ddd;
 }
 
+/* uzvedus pelyte stilius*/
 .pagination a:hover {
   background: #4a4a4a;
   color: white;
 }
 
+/* esamo katalogo puslapio pajuodinimas*/
 .pagination .active {
   background: #4a4a4a;
   color: white;
