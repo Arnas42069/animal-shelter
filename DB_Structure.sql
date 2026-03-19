@@ -10,6 +10,9 @@ BEGIN;
 CREATE TABLE IF NOT EXISTS app_user (
     id             BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
+    name           TEXT NOT NULL,
+    surname        TEXT NOT NULL,
+
     username       TEXT NOT NULL UNIQUE,
     email          TEXT UNIQUE,
 

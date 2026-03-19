@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
@@ -10,6 +11,7 @@ from src.validators import validate_password
 
 
 app = FastAPI()
+
 
 @app.get("/health")
 def health():
@@ -31,10 +33,11 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
     validate_password(data.password)
 
     user = AppUser(
+        name=data.name,
+        surname=data.surname,
         username=data.username,
         email=data.email,
         password_hash=hash_password(data.password),
-        role=data.role
     )
 
     db.add(user)

@@ -10,10 +10,11 @@ class UserRole(str, Enum):
 
 
 class RegisterRequest(BaseModel):
+    name: str = Field(min_length=2, max_length=50)
+    surname: str = Field(min_length=2, max_length=50)
     username: str = Field(min_length=3, max_length=50)
     email: EmailStr
     password: str
-    role: UserRole
 
 
 class LoginRequest(BaseModel):

@@ -1,31 +1,40 @@
 <!DOCTYPE html>
 <html lang="lt">
 <head>
-<meta charset="UTF-8">
-<title>Registracija</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="/assets/css/login-reg.css">
+  <meta charset="UTF-8">
+  <title>Registracija</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/assets/css/login-reg.css">
 </head>
-
 <body>
 
-<div class="top-buttons">
+  <div class="top-buttons">
     <a class="btn" href="index.html">Atgal</a>
-</div>
+  </div>
 
-<div class="container">
+  <div class="container">
+    <h2>REGISTRACIJA</h2>
 
-<h2>REGISTRACIJA</h2>
+    <form id="registerForm">
+      <input type="text" id="name" name="name" placeholder="vardas" required>
+      <input type="text" id="surname" name="surname" placeholder="pavardė" required>
+      <input type="text" id="username" name="username" placeholder="slapyvardis" required>
+      <input type="email" id="email" name="email" placeholder="el.paštas" required>
+      <input type="password" id="password" name="password" placeholder="slaptažodis" required>
 
-<form>
-    <input type="text" placeholder="vardas">
-    <input type="text" placeholder="pavarde">
-    <input type="email" placeholder="el.pastas">
-    <input type="password" placeholder="slaptazodis">  
-</form>
+      <button 
+        type="submit" 
+        class="btn" 
+        style="display: block; margin: 10px auto;"
+      >
+        Registruotis
+      </button>
+    </form>
 
-<a class="btn" href="/pages/prisijungimas.html">Registracija</a>
-</div>
+    <p id="message"></p>
+  </div>
+
+  <script src="../assets/js/registracija.js"></script>
 
 </body>
 </html>
