@@ -1,7 +1,4 @@
-body{
-    background-color:#F5EFE6;
-}
-
+/*laikinu mygtuku stilius, naikinti kai bus navbar*/
 .login-register-buttons {
     justify-content: flex-end;
     display: flex;
@@ -9,19 +6,55 @@ body{
     padding-bottom: 30px;
 }
 
-.btn {
-  padding: 10px 20px;
-  background: #444444;
-border: 2px solid #444444;
-  color: white;
-  text-decoration: none;
-  border-radius: 6px;
+/*------------------------*/
+/* Bendri puslapio stiliai*/
+/*------------------------*/
+
+/* Viso puslapio stilius*/
+body{
+    background-color:#afaba4;
 }
-/* Hero sekcija */
+
+/* Bendras sekciju stilius */
+section {
+    padding: 20px 20px;
+    text-align: center;
+    font-family: "Source Sans 3", sans-serif;
+}
+
+/* Bendras sekciju teksto stilius*/
+section h2 {
+    font-size: 32px;
+    margin-bottom: 30px;
+}
+
+/*------------------------------*/
+/*  Suniuko nuotraukos stiliai  */
+/*------------------------------*/
+
+/*sudeti visi elementai main puslapio*/
+.container {
+    max-width: 1300px;   /* controls content width */
+    margin: 0 auto;      /* centers it */
+    padding: 0 30px;     /* space on left & right */
+    background-color:#F5EFE6;
+}
+
+/*mygtuku stilius naudojant <a>(linkas)*/
+.btn {
+    padding: 10px 20px;
+    background: #444444;
+    border: 2px solid #444444;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+/* Suniuko foto sekcijos stilius */
 .main-dog {
-    width: 97,9%;
-    height: 100vh; /* viso ekrano aukštis */
-    background-image: url("/assets/dog.png");
+    width: 1300px;
+    height: 600px; /* viso ekrano aukštis */
+    background-image: url("/assets/img/dog.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -29,10 +62,9 @@ border: 2px solid #444444;
     display: flex;
     align-items: center;
     position: relative;
-    padding-left: 50px;
 }
 
-/* Hero turinio konteineris (paliekame tavo padding-top:60% hero) */
+/* Suniuko foto kaip konteineris(laukas kuriame kazkas yra)*/
 .main-dog .hero-content {
     position: absolute;
     top: 50%;
@@ -40,10 +72,10 @@ border: 2px solid #444444;
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    gap: 20px; /* atstumas tarp h1 ir mygtukų eilės */
+    gap: 20px; 
 }
 
-/* Mygtukų konteineris */
+/* Mygtukų konteineris(suniuko foto) */
 .hero-buttons {
     display: flex;
     justify-content: center;
@@ -51,16 +83,16 @@ border: 2px solid #444444;
 }
 
 /* Tekstas */
-.rask-savo-geriausi-draug- {
+.rask-savo-geriausia-drauga {
     width: 417px;
-    color: #EAE0D5; /* šviesus tekstas, ne juodas */
+    color: #EAE0D5;
     font-family: "DM Serif Display", serif;
     font-weight: bold;
     font-size: 34px;
     text-align: left;
 }
 
-/* Mygtukai */
+/* Mygtukai (gyvunai ir prieglaudos ant suniuko foto)*/
 .prieglaudos-mygtukas,
 .gyvunai-mygtukas {
     width: 112px;
@@ -76,28 +108,20 @@ border: 2px solid #444444;
     font-size: 16px;
 
     text-align: center;
-    text-decoration: none;      /* removes underline */
+    text-decoration: none;      
 
-    display: flex;              /* centers text */
-    align-items: center;        /* vertical center */
-    justify-content: center;    /* horizontal center */
+    display: flex;              
+    align-items: center;        
+    justify-content: center;    
 
     cursor: pointer;
 }
 
-/* Bendra stiliaus dalis */
-section {
-    padding: 20px 20px;
-    text-align: center;
-    font-family: "Source Sans 3", sans-serif;
-}
+/*------------------------------*/
+/* Prielgaudos skyriaus stiliai */
+/*------------------------------*/
 
-section h2 {
-    font-size: 32px;
-    margin-bottom: 30px;
-}
-
-/* PRIEGLAUDOS carousel */
+/* Karuseles stilius*/
 .carousel {
     display: flex;
     align-items: center;
@@ -106,59 +130,58 @@ section h2 {
     position: relative;
     padding-top: 20px;
 }
-
-.cards {
+/* Prieglaudu korteliu isdestymas*/
+.cards-shelter {
     display: flex;
     gap: 20px;
     overflow-x: auto;
     scroll-behavior: smooth;
 }
 
-.card {
+/* Prieglaudu vienos korteles stilius*/
+.card-shelter {
     min-width: 200px;
     border: 1px solid #ccc;
     border-radius: 12px;
     padding: 10px;
     background: #fff;
 }
-
-.card img {
+/* Prieglaudos logo stilius*/
+.card-shelter img {
     width: 100%;
-    height: auto;
+    height: 200px;
     border-radius: 8px;
 }
-
-.arrow {
+/* Rodykliu stilius*/
+.arrow-shelter {
     font-size: 36px;
     cursor: pointer;
     user-select: none;
     padding: 10px;
 }
 
-/* GYVŪNAI */
+/*------------------------------*/
+/*    Gyvunu skyriaus stiliai   */
+/*------------------------------*/
+
+/* Gyvunu sekcijos stilius */
 .animals{
-background:#d8d2c8;
-padding:40px 0;
-text-align:center;
-padding-top: 20px;
+    background:#F5EFE6;;
+    padding:40px 0;
+    text-align:center;
+    padding-top: 0px;
 }
 
-.title{
-margin-bottom:30px;
-}
-
-.row{
-display:flex;
-align-items:center;
-justify-content:center;
-margin-bottom:40px;
-}
-
+/* Koteliu isdestymas*/
 .cards{
-display:flex;
-gap:30px;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    gap:30px;
+    padding-bottom: 30px;
 }
 
+/* Koreteles stilius*/
 .card{
 background:white;
 padding:15px;
@@ -167,24 +190,36 @@ width:180px;
 box-shadow:0 0 5px rgba(0,0,0,0.2);
 }
 
-.card img{
-width:100%;
-border-radius:5px;
+/* Nuotraokos korteleje stilius*/
+.card img {
+  width: 100%;
+  height: 200px;        
+  object-fit: cover;    
+  border-radius: 5px;
 }
 
-.card p{
-margin-top:10px;
-font-weight:bold;
+.pagination {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 }
 
-.card.active{
-border:3px solid #2b7cff;
+.pagination a {
+  padding: 8px 14px;
+  text-decoration: none;
+  color: #4a4a4a;
+  border-radius: 6px;
+  border: 1px solid #ddd;
 }
 
-.arrow{
-font-size:40px;
-padding:20px;
-cursor:pointer;
+.pagination a:hover {
+  background: #4a4a4a;
+  color: white;
 }
 
-
+.pagination .active {
+  background: #4a4a4a;
+  color: white;
+  border: 1px solid #4a4a4a;
+}

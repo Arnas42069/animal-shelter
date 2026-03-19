@@ -8,91 +8,117 @@
 </head>
 
 <body>
+
+<!--atskiras laukas, kad tarpai butu is sonu-->
+<div class="container">
+
+<!--mygtukai kol navbar nera-->
 <div class="login-register-buttons">
-  <a class="btn" href="/pages/profilis.html">profilis</a> <!--laikinas kol nera prijunktas backend-->
-  <a class="btn" href="/pages/registracija.html">Registracija</a>
+  <a class="btn" href="/pages/profilis.html">profilis</a> 
   <a class="btn" href="/pages/prisijungimas.html">Prisijungimas</a>
 </div>
 
-
+<!--Pradine nuotrauka-->
 <div class="main-dog">
     <div class="hero-content">
-        <h1 class="rask-savo-geriausi-draug-">Rask savo geriausią draugą</h1>
+        <h1 class="rask-savo-geriausia-drauga">Rask savo geriausią draugą</h1>
         <div class="hero-buttons">
            <a href="#prieglaudos" class="prieglaudos-mygtukas">Prieglaudos</a>
-            <a href="#gyvunai" class="gyvunai-mygtukas">Gyvūnai</a>        </div>
+           <a href="#gyvunai" class="gyvunai-mygtukas">Gyvūnai</a>        
+          </div>
     </div>
 </div>
-<!-- PRIEGLAUDOS -->
+
+<!-- PRIEGLAUDOS sekcija -->
 <section class="shelters">
   <h2 id="prieglaudos">Prieglaudos</h2>
   <div class="carousel">
-    <div class="arrow prev">❮</div>
-    <div class="cards">
-      <div class="card">
+    <div class="arrow-shelter prev">❮</div>
+    <div class="cards-shelter">
+      <div class="card-shelter">
         <h3>„Mažas draugas“</h3>
-        <a href="/pages/prieglauda.html"><img src="/assets/logo.png" alt="logo"></a>
+        <a href="/pages/prieglauda.html"><img src="/assets/img/logo.png" alt="logo"></a>
       </div>
-      <div class="card">
+      <div class="card-shelter">
         <h3>„Mažas draugas“</h3>
-        <a href="/pages/prieglauda.html"><img src="/assets/logo.png" alt="logo"></a>
+        <a href="/pages/prieglauda.html"><img src="/assets/img/logo.png" alt="logo"></a>
       </div>
-      <div class="card">
+      <div class="card-shelter">
         <h3>„Mažas draugas“</h3>
-        <a href="/pages/prieglauda.html"><img src="/assets/logo.png" alt="logo"></a>
+        <a href="/pages/prieglauda.html"><img src="/assets/img/logo.png" alt="logo"></a>
       </div>
-      <div class="card">
+      <div class="card-shelter">
         <h3>„Mažas draugas“</h3>
-        <a href="/pages/prieglauda.html"><img src="/assets/logo.png" alt="logo"></a>
+        <a href="/pages/prieglauda.html"><img src="/assets/img/logo.png" alt="logo"></a>
       </div>
     </div>
-    <div class="arrow next">❯</div>
+    <div class="arrow-shelter next">❯</div>
   </div>
   <hr>
 </section>
 
-<!-- GYVŪNAI -->
-<section class="shelters">
+<!-- GYVŪNAI sekcija-->
+<section class="animals">
   <h2 id="gyvunai">Gyvūnai</h2>
-  <div class="carousel">
-    <div class="arrow prev">❮</div>
-    <div class="cards">
-      <div class="card">
-        <h3>„Murkis“</h3>
-        <img src="/assets/cat1.png" alt="logo">
-      </div>
-      <div class="card">
-        <h3>„Taksis“</h3>
-        <img src="/assets/cat2.png" alt="logo">
-      </div>
-      <div class="card">
-        <h3>„Keksas“</h3>
-        <img src="/assets/cat3.png" alt="logo">
-      </div>
+  <div class="cards">
+    <div class="card">
+      <h3>„Murkis“</h3>
+      <img src="/assets/img/cat1.png" alt="animal">
     </div>
-    <div class="arrow next">❯</div>
+    <div class="card">
+      <h3>„Taksis“</h3>
+      <img src="/assets/img/cat2.png" alt="animal">
+    </div>
+    <div class="card">
+      <h3>„Keksas“</h3>
+      <img src="/assets/img/cat3.png" alt="animal">
+    </div>
   </div>
 
-  <div class="carousel">
-    <div class="arrow prev">❮</div>
-    <div class="cards">
-      <div class="card">
-        <h3>„Murkis“</h3>
-        <img src="/assets/cat1.png" alt="logo">
-      </div>
-      <div class="card">
-        <h3>„Taksis“</h3>
-        <img src="/assets/cat2.png" alt="logo">
-      </div>
-      <div class="card">
-        <h3>„Keksas“</h3>
-        <img src="/assets/cat3.png" alt="logo">
-      </div>
+  <div class="cards">
+    <div class="card">
+      <h3>„Murkis“</h3>
+      <img src="/assets/img/cat1.png" alt="animal">
     </div>
-    <div class="arrow next">❯</div>
+    <div class="card">
+      <h3>„Taksis“</h3>
+      <img src="/assets/img/cat2.png" alt="animal">
+    </div>
+    <div class="card">
+      <h3>„Keksas“</h3>
+      <img src="/assets/img/cat3.png" alt="animal">
+    </div>
   </div>
+
+  <div class="cards">
+    <div class="card">
+      <h3>„Murkis“</h3>
+      <img src="/assets/img/cat1.png" alt="animal">
+    </div>
+    <div class="card">
+      <h3>„Taksis“</h3>
+      <img src="/assets/img/cat2.png" alt="animal">
+    </div>
+    <div class="card">
+      <h3>„Keksas“</h3>
+      <img src="/assets/img/cat3.png" alt="animal">
+    </div>
+  </div>
+
+<!-- ejimas per gyvunu kataloga reikia backend kad veiktu-->
+<!-- simbolis # keiciamas i kuri katalogo pusapi einama-->
+  <div class="pagination">
+    <a href="#">«</a>
+    <a href="#" class="active">1</a>
+    <a href="#">2</a>
+    <a href="#">3</a>
+    <a href="#">4</a>
+    <a href="#">...</a>
+    <a href="#">»</a>
+</div>
+
 </section>
 
-
+</div><!--container pabaiga-->
 </body>
 </html>
