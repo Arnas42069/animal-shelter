@@ -47,6 +47,12 @@ body{
 
     cursor: pointer;
 }
+
+/* edit mygtuko pozicija*/
+.edit-btn {
+    margin-right: 600px;
+    margin-bottom: 10px;
+}
 /*---------------------------*/
 
 
@@ -132,4 +138,61 @@ box-shadow:0 0 5px rgba(0,0,0,0.2);
   height: 200px;        
   object-fit: cover;    
   border-radius: 5px;
+}
+
+/*------------------------------*/
+/*    Redagavimo stiliai        */
+/*------------------------------*/
+
+/* Pavadinimo stilius */
+.input-title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* mygtuko pozicija*/
+.add-animal-wrapper {
+    display: flex;
+    justify-content: center; /* center horizontally */
+    margin-top: 20px;
+    padding-bottom: 40px;
+}
+
+/* ra6ymo lauku stiliai */
+.edit-form input,
+.edit-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+/* adresso lauko stilius */
+.input-address {
+    font-size: 14px;
+    color: #555;
+}
+
+/* atstumu palaikymui tarp teksto lauku */
+.shelter-image input {
+    margin-top: 10px;
+}
+
+/* gyvuno korteles pozicija */
+.edit-animal input[type="text"] {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+/* mygtukao istrinti stilius */
+.btn-delete {
+    margin-top: 10px;
+    background: #aa4444;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    padding: 6px;
+    cursor: pointer;
 }
