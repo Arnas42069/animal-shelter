@@ -9,16 +9,12 @@ class AppUser(Base):
 
     id = Column(BigInteger, Identity(always=True), primary_key=True)
 
-    name = Column(Text, nullable=False)
-    surname = Column(Text, nullable=False)
-
     username = Column(Text, unique=True, nullable=False)
     email = Column(Text, unique=True, nullable=True)
 
     password_hash = Column(Text, nullable=False)
 
     role = Column(Text, nullable=False, default="user", server_default=text("'user'"))
-
     is_active = Column(Boolean, nullable=False, default=True, server_default=text("true"))
 
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=func.now())

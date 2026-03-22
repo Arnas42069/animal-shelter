@@ -1,5 +1,4 @@
 from fastapi import FastAPI, Depends, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
@@ -23,7 +22,8 @@ app = FastAPI()
 def health():
     return {"ok": True}
 
-# Galimai nereikes jeigu nebreakins nieko
+
+# Legacy registracija - gali likti, jei nenori breakinti seno endpoint
 @app.post("/auth/register")
 def register(data: RegisterRequest, db: Session = Depends(get_db)):
 
@@ -40,8 +40,6 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
     validate_password(data.password)
 
     user = AppUser(
-        name=data.name,
-        surname=data.surname,
         username=data.username,
         email=data.email,
         password_hash=hash_password(data.password),
@@ -53,11 +51,10 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
     return {"message": "User registered successfully"}
 
 
-#Iskirta i dvi roles
+# Volunteer registracija
 @app.post("/auth/register/volunteer")
 def register_volunteer(data: VolunteerRegisterRequest, db: Session = Depends(get_db)):
-    
-    # Tikrinam email
+
     existing_email = db.query(AppUser).filter(
         AppUser.email == data.email
     ).first()
@@ -65,8 +62,6 @@ def register_volunteer(data: VolunteerRegisterRequest, db: Session = Depends(get
     if existing_email:
         raise HTTPException(status_code=400, detail="Email already exists")
 
-
-    # Tikrinam username
     existing_username = db.query(AppUser).filter(
         AppUser.username == data.username
     ).first()
@@ -77,9 +72,7 @@ def register_volunteer(data: VolunteerRegisterRequest, db: Session = Depends(get
     validate_password(data.password)
 
     user = AppUser(
-        name=data.name,
-        surname=data.surname,
-        username=data.username,  
+        username=data.username,
         email=data.email,
         password_hash=hash_password(data.password),
         role="volunteer"
@@ -90,11 +83,11 @@ def register_volunteer(data: VolunteerRegisterRequest, db: Session = Depends(get
 
     return {"message": "Volunteer registered successfully"}
 
+
+# Shelter registracija
 @app.post("/auth/register/shelter")
 def register_shelter(data: ShelterRegisterRequest, db: Session = Depends(get_db)):
 
-    
-    # Tikrinam email
     existing_email = db.query(AppUser).filter(
         AppUser.email == data.email
     ).first()
@@ -104,8 +97,9 @@ def register_shelter(data: ShelterRegisterRequest, db: Session = Depends(get_db)
 
     validate_password(data.password)
 
+    # AppUser lentelėje laikomi tik prisijungimo duomenys
     user = AppUser(
-        name=data.name,
+        username=data.email,
         email=data.email,
         password_hash=hash_password(data.password),
         role="shelter"
@@ -114,9 +108,9 @@ def register_shelter(data: ShelterRegisterRequest, db: Session = Depends(get_db)
     db.add(user)
     db.flush()
 
+    # Shelter lentelėje laikomi prieglaudos duomenys
     shelter = Shelter(
         name=data.name,
-        postal_code=data.postal_code,
         address=data.address,
         city=data.city,
         phone=data.phone,
@@ -128,10 +122,7 @@ def register_shelter(data: ShelterRegisterRequest, db: Session = Depends(get_db)
     db.add(shelter)
     db.commit()
 
-    
-
-    return {"message": "Shelter registered successfully, waiting for verification"}
-
+    return {"message": "Shelter registered successfully"}
 
 
 @app.post("/auth/login", response_model=TokenResponse)
@@ -139,8 +130,7 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
 
     user = db.query(AppUser).filter(AppUser.email == data.email).first()
 
-    fake_hash = "$2b$12$abcdefghijklmnopqrstuv" 
-
+    fake_hash = "$2b$12$abcdefghijklmnopqrstuv"
     hashed = user.password_hash if user else fake_hash
 
     if not verify_password(data.password, hashed):
@@ -160,8 +150,6 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
                 status_code=403,
                 detail="Prieglauda dar nebuvo patvirtinta administratoriaus"
             )
-
-
 
     token = create_token(user.id)
 
