@@ -19,7 +19,13 @@ h2{
     border:1px solid black;
     text-align:center;
 }
-
+/* Centruoja prisijungimo konteineri paprastame puslapyje */
+.auth-page{
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 input{
     width:70%;
     padding:15px;
@@ -29,12 +35,12 @@ input{
 }
 
 button{
-    margin-top:30px;
     padding:12px 25px;
     border:none;
     border-radius:20px;
     background:#4a4a4a;
     color:white;
+    cursor:pointer;
 }
 
 .btn {
@@ -109,6 +115,7 @@ button{
     right: 18px;
     background: transparent;
     border: none;
+    width: auto;
     font-size: 28px;
     line-height: 1;
     color: #444444;

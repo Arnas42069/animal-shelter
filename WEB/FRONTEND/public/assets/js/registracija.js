@@ -1,3 +1,7 @@
+const registerModal = document.getElementById("registerModal");
+const openRegisterModalBtn = document.getElementById("openRegisterModal");
+const closeRegisterModalBtn = document.getElementById("closeRegisterModal");
+
 const volunteerForm = document.getElementById("volunteerForm");
 const shelterForm = document.getElementById("shelterForm");
 
@@ -6,24 +10,59 @@ const shelterBtn = document.getElementById("shelterBtn");
 
 const messageEl = document.getElementById("message");
 
+/* Atidaro registracijos popup */
+function openRegisterModal() {
+  registerModal.classList.add("active");
+  messageEl.textContent = "";
+  messageEl.style.color = "";
+}
 
-//  FORM SWITCH
-volunteerBtn.addEventListener("click", () => {
+/* Uzdaro registracijos popup */
+function closeRegisterModal() {
+  registerModal.classList.remove("active");
+  messageEl.textContent = "";
+  messageEl.style.color = "";
+}
+
+/* Parodo savanorio registracijos forma */
+function showVolunteerForm() {
   volunteerForm.style.display = "block";
   shelterForm.style.display = "none";
-});
+  messageEl.textContent = "";
+  messageEl.style.color = "";
+}
 
-shelterBtn.addEventListener("click", () => {
+/* Parodo prieglaudos registracijos forma */
+function showShelterForm() {
   volunteerForm.style.display = "none";
   shelterForm.style.display = "block";
+  messageEl.textContent = "";
+  messageEl.style.color = "";
+}
+
+/* Popup valdymas */
+openRegisterModalBtn.addEventListener("click", openRegisterModal);
+closeRegisterModalBtn.addEventListener("click", closeRegisterModal);
+
+registerModal.addEventListener("click", (e) => {
+  if (e.target === registerModal) {
+    closeRegisterModal();
+  }
 });
 
+/* Formu perjungimas */
+volunteerBtn.addEventListener("click", showVolunteerForm);
+shelterBtn.addEventListener("click", showShelterForm);
 
-//  VOLUNTEER REGISTER
+/* Pagal nutylejima rodom savanorio forma */
+showVolunteerForm();
+
+/* VOLUNTEER REGISTER */
 volunteerForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   messageEl.textContent = "";
+  messageEl.style.color = "";
 
   const data = {
     name: document.getElementById("v_name").value.trim(),
@@ -53,19 +92,19 @@ volunteerForm.addEventListener("submit", async (e) => {
       messageEl.textContent = result?.detail || "Klaida.";
       messageEl.style.color = "red";
     }
-
   } catch (err) {
     messageEl.textContent = "Serverio klaida.";
     messageEl.style.color = "red";
+    console.error(err);
   }
 });
 
-
-//  SHELTER REGISTER
+/* SHELTER REGISTER */
 shelterForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   messageEl.textContent = "";
+  messageEl.style.color = "";
 
   const data = {
     name: document.getElementById("s_name").value.trim(),
@@ -96,9 +135,9 @@ shelterForm.addEventListener("submit", async (e) => {
       messageEl.textContent = result?.detail || "Klaida.";
       messageEl.style.color = "red";
     }
-
   } catch (err) {
     messageEl.textContent = "Serverio klaida.";
     messageEl.style.color = "red";
+    console.error(err);
   }
 });

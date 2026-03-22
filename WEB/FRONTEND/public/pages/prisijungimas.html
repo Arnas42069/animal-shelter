@@ -9,23 +9,50 @@
 
   <body>
     <div class="top-buttons">
-      <a class="btn" href="index.html">Atgal</a>
+      <a class="btn" href="/index.html">Atgal</a>
     </div>
 
-    <div class="container">
-      <h2>PRISIJUNGIMAS</h2>
+    <div class="auth-page">
+      <div class="container">
+        <h2>PRISIJUNGIMAS</h2>
 
-      <form>
-        <input type="email" placeholder="el.pastas" />
-        <input type="password" placeholder="slaptazodis" />
-      </form>
+        <form id="loginForm">
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="el. paštas"
+            required
+          />
 
-      <p class="forgot">
-        <a href="">Pamiršote slaptažodį?</a>
-      </p>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="slaptažodis"
+            required
+          />
 
-      <a class="btn" href="index.html">Prisijungti</a>
-      <a class="btn" href="/pages/registracija.html">Registracija</a>
+          <button
+            type="submit"
+            class="btn"
+            style="display: block; margin: 10px auto;"
+          >
+            Prisijungti
+          </button>
+        </form>
+
+        <p class="forgot">
+          <a href="">Pamiršote slaptažodį?</a>
+        </p>
+
+        <p id="message"></p>
+
+        <a class="btn" href="/pages/registracija.html">Registracija</a>
+      </div>
     </div>
+
+    <script src="/assets/js/auth.js"></script>
+    <script src="/assets/js/prisijungimas.js"></script>
   </body>
 </html>
