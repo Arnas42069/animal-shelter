@@ -8,33 +8,59 @@
 </head>
 <body>
 
+  <!-- Virsutinis mygtuku blokas -->
   <div class="top-buttons">
-    <a class="btn" href="index.html">Atgal</a>
+    <a class="btn" href="/index.html">Atgal</a>
+    <button type="button" class="btn" id="openRegisterModal">Registruotis</button>
   </div>
 
-  <div class="container">
-    <h2>REGISTRACIJA</h2>
+  <!-- Popup fonas -->
+  <div id="registerModal" class="modal-overlay">
+    <div class="modal-box">
 
-    <form id="registerForm">
-      <input type="text" id="name" name="name" placeholder="vardas" required>
-      <input type="text" id="surname" name="surname" placeholder="pavardė" required>
-      <input type="text" id="username" name="username" placeholder="slapyvardis" required>
-      <input type="email" id="email" name="email" placeholder="el.paštas" required>
-      <input type="password" id="password" name="password" placeholder="slaptažodis" required>
+      <!-- Uzdarymo mygtukas -->
+      <button type="button" class="modal-close" id="closeRegisterModal">&times;</button>
 
-      <button 
-        type="submit" 
-        class="btn" 
-        style="display: block; margin: 10px auto;"
-      >
-        Registruotis
-      </button>
-    </form>
+      <h2>REGISTRACIJA</h2>
 
-    <p id="message"></p>
+      <!-- Registracijos tipo pasirinkimas -->
+      <div class="register-switch">
+        <button type="button" class="btn" id="volunteerBtn">Savanoris</button>
+        <button type="button" class="btn" id="shelterBtn">Prieglauda</button>
+      </div>
+
+      <!-- Savanorio registracijos forma -->
+      <form id="volunteerForm">
+        <input type="text" id="v_name" name="v_name" placeholder="vardas" required>
+        <input type="text" id="v_surname" name="v_surname" placeholder="pavardė" required>
+        <input type="text" id="v_username" name="v_username" placeholder="slapyvardis" required>
+        <input type="email" id="v_email" name="v_email" placeholder="el. paštas" required>
+        <input type="password" id="v_password" name="v_password" placeholder="slaptažodis" required>
+
+        <button type="submit" class="btn" style="display: block; margin: 10px auto;">
+          Registruotis
+        </button>
+      </form>
+
+      <!-- Prieglaudos registracijos forma -->
+      <form id="shelterForm" style="display: none;">
+        <input type="text" id="s_name" name="s_name" placeholder="prieglaudos pavadinimas" required>
+        <input type="text" id="s_phone" name="s_phone" placeholder="telefonas" required>
+        <input type="text" id="s_address" name="s_address" placeholder="adresas" required>
+        <input type="text" id="s_city" name="s_city" placeholder="miestas" required>
+        <input type="email" id="s_email" name="s_email" placeholder="el. paštas" required>
+        <input type="password" id="s_password" name="s_password" placeholder="slaptažodis" required>
+
+        <button type="submit" class="btn" style="display: block; margin: 10px auto;">
+          Registruotis
+        </button>
+      </form>
+
+      <!-- Zinute apie klaida arba sekme -->
+      <p id="message"></p>
+    </div>
   </div>
 
-  <script src="../assets/js/registracija.js"></script>
-
+  <script src="/assets/js/registracija.js"></script>
 </body>
 </html>

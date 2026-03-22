@@ -2,11 +2,6 @@ body{
     margin:0;
     font-family:Arial;
     background-color:#F5EFE6;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
 }
 h2{
   
@@ -76,4 +71,65 @@ button{
 
 .forgot a:hover{
     text-decoration:underline;
+}
+
+
+/* Tamsintas fonas uz popup */
+.modal-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Kai popup aktyvus */
+.modal-overlay.active{
+    display: flex;
+}
+
+/* Popup langas */
+.modal-box{
+    position: relative;
+    width: 600px;
+    max-width: calc(100% - 40px);
+    padding: 50px;
+    background: #d1c9bd;
+    border: 1px solid black;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* Uzdarymo X mygtukas */
+.modal-close{
+    position: absolute;
+    top: 15px;
+    right: 18px;
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    line-height: 1;
+    color: #444444;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+}
+
+/* Toggle mygtukai tarp registracijos tipu */
+.register-switch{
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+/* Zinute po forma */
+#message{
+    margin-top: 15px;
+    min-height: 20px;
+    text-align: center;
+    font-size: 14px;
 }

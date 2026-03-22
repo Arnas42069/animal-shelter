@@ -8,7 +8,7 @@ class UserRole(str, Enum):
     shelter   = "shelter"
     user      = "user"
 
-
+# Galima bus trinti jeigu nebreakins
 class RegisterRequest(BaseModel):
     name: str = Field(min_length=2, max_length=50)
     surname: str = Field(min_length=2, max_length=50)
@@ -16,6 +16,25 @@ class RegisterRequest(BaseModel):
     email: EmailStr
     password: str
 
+# Isskyriau registracija pagal roles - Akvile
+# Volunteer registracija
+class VolunteerRegisterRequest(BaseModel):
+    name: str = Field(min_length=2, max_length=50)
+    surname: str = Field(min_length=2, max_length=50)
+    username: str = Field(min_length=3, max_length=50)
+    email: EmailStr
+    password: str
+
+
+# Shelter registracija
+class ShelterRegisterRequest(BaseModel):
+    name: str = Field(min_length=2, max_length=100)  # oficialus pavadinimas
+    email: EmailStr
+    password: str
+    phone: str = Field(min_length=5, max_length=20)
+    address: str = Field(min_length=3, max_length=200)
+    city: str = Field(min_length=2, max_length=100)
+    
 
 class LoginRequest(BaseModel):
     email: EmailStr
