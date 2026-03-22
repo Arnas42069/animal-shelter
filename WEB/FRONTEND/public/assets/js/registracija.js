@@ -65,8 +65,6 @@ volunteerForm.addEventListener("submit", async (e) => {
   messageEl.style.color = "";
 
   const data = {
-    name: document.getElementById("v_name").value.trim(),
-    surname: document.getElementById("v_surname").value.trim(),
     username: document.getElementById("v_username").value.trim(),
     email: document.getElementById("v_email").value.trim(),
     password: document.getElementById("v_password").value
