@@ -26,6 +26,9 @@
 body{
     background-color:#afaba4;
     margin:0;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
 }
 
 /* Bendras sekciju stilius */
@@ -44,7 +47,7 @@ section h2 {
 /*sudeti visi puslapio elementai*/
 .container-gaps {
     max-width: 1300px;   
-    margin: 0 auto;      
+    margin: 0 auto 60px auto;      
     padding: 0 30px;     
     background-color:#F5EFE6;
 }
@@ -241,4 +244,16 @@ box-shadow:0 0 5px rgba(0,0,0,0.2);
   background: #4a4a4a;
   color: white;
   border: 1px solid #4a4a4a;
+}
+
+/* Footer visada nustumia i apacia trumpuose puslapiuose */
+#site-footer {
+  margin-top: auto;
+}
+
+/* Trumpu puslapiu laikinas turinys */
+.page-placeholder {
+  padding: 40px;
+  font-family: Arial, sans-serif;
+  margin-bottom: 60px;
 }

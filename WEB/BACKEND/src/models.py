@@ -9,6 +9,9 @@ class AppUser(Base):
 
     id = Column(BigInteger, Identity(always=True), primary_key=True)
 
+    name = Column(Text, nullable=False)
+    surname = Column(Text, nullable=False)
+
     username = Column(Text, unique=True, nullable=False)
     email = Column(Text, unique=True, nullable=True)
 

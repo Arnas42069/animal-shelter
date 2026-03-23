@@ -9,21 +9,22 @@ class UserRole(str, Enum):
     user = "user"
 
 
-# Legacy registracija - gali likti, jei nenori breakinti seno endpoint
 class RegisterRequest(BaseModel):
+    name: str = Field(min_length=2, max_length=50)
+    surname: str = Field(min_length=2, max_length=50)
     username: str = Field(min_length=3, max_length=50)
     email: EmailStr
     password: str
 
 
-# Volunteer registracija
 class VolunteerRegisterRequest(BaseModel):
+    name: str = Field(min_length=2, max_length=50)
+    surname: str = Field(min_length=2, max_length=50)
     username: str = Field(min_length=3, max_length=50)
     email: EmailStr
     password: str
 
 
-# Shelter registracija
 class ShelterRegisterRequest(BaseModel):
     name: str = Field(min_length=2, max_length=100)
     email: EmailStr

@@ -1,8 +1,9 @@
 const AUTH_TOKEN_KEY = "access_token";
 
-/* Issaugo prisijungimo token naršyklėje */
+/* Issaugo prisijungimo token naršykleje */
 function authStoreToken(token) {
   localStorage.setItem(AUTH_TOKEN_KEY, token);
+  window.dispatchEvent(new CustomEvent("auth-changed"));
 }
 
 /* Grazina issaugota token */
@@ -13,6 +14,7 @@ function authGetToken() {
 /* Pasalina token atsijungimo metu */
 function authClearToken() {
   localStorage.removeItem(AUTH_TOKEN_KEY);
+  window.dispatchEvent(new CustomEvent("auth-changed"));
 }
 
 /* Patikrina ar vartotojas prisijunges */

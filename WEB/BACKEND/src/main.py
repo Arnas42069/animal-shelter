@@ -23,7 +23,6 @@ def health():
     return {"ok": True}
 
 
-# Legacy registracija - gali likti, jei nenori breakinti seno endpoint
 @app.post("/auth/register")
 def register(data: RegisterRequest, db: Session = Depends(get_db)):
 
@@ -40,6 +39,8 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
     validate_password(data.password)
 
     user = AppUser(
+        name=data.name,
+        surname=data.surname,
         username=data.username,
         email=data.email,
         password_hash=hash_password(data.password),
@@ -51,7 +52,6 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
     return {"message": "User registered successfully"}
 
 
-# Volunteer registracija
 @app.post("/auth/register/volunteer")
 def register_volunteer(data: VolunteerRegisterRequest, db: Session = Depends(get_db)):
 
@@ -72,6 +72,8 @@ def register_volunteer(data: VolunteerRegisterRequest, db: Session = Depends(get
     validate_password(data.password)
 
     user = AppUser(
+        name=data.name,
+        surname=data.surname,
         username=data.username,
         email=data.email,
         password_hash=hash_password(data.password),
@@ -84,7 +86,6 @@ def register_volunteer(data: VolunteerRegisterRequest, db: Session = Depends(get
     return {"message": "Volunteer registered successfully"}
 
 
-# Shelter registracija
 @app.post("/auth/register/shelter")
 def register_shelter(data: ShelterRegisterRequest, db: Session = Depends(get_db)):
 
@@ -97,8 +98,9 @@ def register_shelter(data: ShelterRegisterRequest, db: Session = Depends(get_db)
 
     validate_password(data.password)
 
-    # AppUser lentelėje laikomi tik prisijungimo duomenys
     user = AppUser(
+        name=data.name,
+        surname=data.name,
         username=data.email,
         email=data.email,
         password_hash=hash_password(data.password),
@@ -108,7 +110,6 @@ def register_shelter(data: ShelterRegisterRequest, db: Session = Depends(get_db)
     db.add(user)
     db.flush()
 
-    # Shelter lentelėje laikomi prieglaudos duomenys
     shelter = Shelter(
         name=data.name,
         address=data.address,
@@ -130,13 +131,13 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
 
     user = db.query(AppUser).filter(AppUser.email == data.email).first()
 
-    fake_hash = "$2b$12$abcdefghijklmnopqrstuv"
-    hashed = user.password_hash if user else fake_hash
-
-    if not verify_password(data.password, hashed):
+    if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    if not user or not user.is_active:
+    if not verify_password(data.password, user.password_hash):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    if not user.is_active:
         raise HTTPException(status_code=403, detail="Account inactive")
 
     if user.role == "shelter":
