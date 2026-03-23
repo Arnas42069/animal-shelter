@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Redaguoti prieglaudą</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/assets/css/prieglauda.css" />
+</head>
+
+<body>
+  <!-- atskiras laukas, kad tarpai butu is sonu -->
+  <div class="container-gaps">
+
+    <!-- Sedejimas i forma -->
+    <form class="edit-form">
+
+      <!-- Nuotrauka -->
+      <div class="shelter-image">
+        <img src="/assets/img/prieglauda.png" alt="shelter" />
+      </div>
+
+      <!-- Pavadinimas -->
+      <div class="shelter-name">
+        <div>
+          <input type="text" value="Prieglaudos pavadinimas" class="input-title" />
+          <input type="text" value="Klaipėda, nežinau g." class="input-address" />
+        </div>
+
+        <a href="/pages/prieglauda.html" class="btn">Išsaugoti</a>
+      </div>
+
+      <!-- Aprašymas -->
+      <section class="section">
+        <h3>Aprašymas</h3>
+        <textarea rows="6">
+Lorem ipsum tekstas...
+        </textarea>
+      </section>
+
+      <!-- Kontaktai -->
+      <section class="section">
+        <h3>Kontaktai</h3>
+
+        <input type="text" value="Klaipėda, nežinau g." />
+        <input type="text" value="+37060000000" />
+        <input type="email" value="prieglauda@yahoo.com" />
+      </section>
+
+    </form>
+<section class="animals">
+  <h2>Gyvūnai</h2>
+    <!-- Add new animal -->
+    <div class="add-animal-wrapper">
+        <button type="button" class="btn">+ Pridėti gyvūną</button>
+    </div>
+    <div class="cards-animal">
+
+    <div class="card-animal edit-animal">
+      <input type="text" value="Murkis" />
+      <img src="/assets/img/cat1.png" alt="animal" />
+      <input type="file" />
+      <button type="button" class="btn-delete">Ištrinti</button>
+    </div>
+
+    <div class="card-animal edit-animal">
+      <input type="text" value="Taksis" />
+      <img src="/assets/img/cat2.png" alt="animal" />
+      <input type="file" />
+      <button type="button" class="btn-delete">Ištrinti</button>
+    </div>
+
+    <div class="card-animal edit-animal">
+      <input type="text" value="Keksas" />
+      <img src="/assets/img/cat3.png" alt="animal" />
+      <input type="file" />
+      <button type="button" class="btn-delete">Ištrinti</button>
+    </div>
+
+  </div>
+</section>
+
+</div>
+</body>
+</html>

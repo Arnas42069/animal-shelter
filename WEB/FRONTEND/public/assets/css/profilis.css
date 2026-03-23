@@ -1,61 +1,23 @@
+
+
+/*------------------------*/
+/* Bendri puslapio stiliai*/
+/*------------------------*/
+
+/* Bendras puslapio stilius*/
 body{
     background:#F5EFE6;
     font-family: "Source Sans 3", sans-serif;
 }
-.edit{
-  height: 20px;
-  color: #444444;
-  font-family: "Source Sans 3";
-  font-weight: bold;
-  font-size: 18px;
-  text-align: center;
-  padding-right: 170px;
-}
 
-.profile-container{
-    max-width:1000px;
-    margin:auto;
-    padding:40px;
-}
-
-.profile-picture{
-    display:flex;
-    justify-content:center;
-    margin-bottom:40px;
-}
-
-.profile-picture img{
-    width:200px;
-    height:200px;
-    border-radius:50%;
-    border:12px solid #e6e6e6;
-    background:#b7c4cc;
-}
-
-.profile-content{
-    display:flex;
-    justify-content:space-between;
-}
-
-.profile-info{
-    font-size:22px;
-    font-weight:600;
-    color:#2f3d4a;
-    line-height:2.5;
-}
-
-.profile-text{
-    font-size:16px;
-    color:#555;
-    margin-top:0;
-}
-
+/* Mygtuko atgal pozicija*/
 .top-buttons{
     position:absolute;
     top:20px;
     right:30px;
 }
 
+/* mygtuko stilius*/
 .btn {
   width: 112px;
     height: 42px;
@@ -70,16 +32,90 @@ body{
     font-size: 16px;
 
     text-align: center;
-    text-decoration: none;      /* removes underline */
+    text-decoration: none;      
 
-    display: flex;              /* centers text */
-    align-items: center;        /* vertical center */
-    justify-content: center;    /* horizontal center */
+    display: flex;              
+    align-items: center;        
+    justify-content: center;    
 
     cursor: pointer;
 }
 
-textarea{
+/*----------------------------------------*/
+/* Profilio informacijos pateikimo stiliai*/
+/*----------------------------------------*/
+
+/* Profilio informacijos lauko stilius*/
+.profile-container{
+    max-width:1000px;
+    margin:auto;
+    padding:140px;
+    padding-left: 400px;
+}
+
+/* Profilio nuotraukos pozicija*/
+.profile-picture{
+    display:flex;
+    justify-content:center;
+    margin-bottom:40px;
+}
+
+/* Profilio nuotraukos stilius*/
+.profile-picture img{
+    width:200px;
+    height:200px;
+    border-radius:50%;
+    border:12px solid #e6e6e6;
+    background:#b7c4cc;
+}
+
+/* Profilio teksto laukų pozicija*/
+.profile-content{
+    display:flex;
+    justify-content:space-between;
+}
+
+/* Profilio teksto stilius*/
+.profile-info{
+    font-size:22px;
+    font-weight:600;
+    color:#2f3d4a;
+    line-height:2.5;
+}
+
+/* Profilio aprašymo stilius*/
+.profile-text{
+    font-size:16px;
+    color:#555;
+    margin-top:0;
+}
+
+/*----------------------------*/
+/* Profilio redagavimo stiliai*/
+/*----------------------------*/
+
+/* Redagavimo puslapio titulinio teksto stilius*/
+.edit-title{
+  height: 20px;
+  color: #444444;
+  font-family: "Source Sans 3";
+  font-weight: bold;
+  font-size: 18px;
+  text-align: center;
+  padding-right: 250px;
+}
+
+/* teksto lauku pozicija*/
+.edit-input{
+    width:70%;
+    padding:15px;
+    margin:12px 0;
+    border-radius:10px;
+    border:1px solid black;
+}
+
+/* teksto aprasymo pozicija*/
+.edit-textarea{
     width:70%;
     height:120px;
     padding:15px;
@@ -88,6 +124,8 @@ textarea{
     border:1px solid black;
     resize:none;
 }
-button{
+
+/* mygtuko save interaktyvumas*/
+.button{
     cursor: pointer;
 }
