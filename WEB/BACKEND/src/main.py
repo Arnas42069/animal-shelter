@@ -25,7 +25,6 @@ def health():
 
 @app.post("/auth/register")
 def register(data: RegisterRequest, db: Session = Depends(get_db)):
-
     existing = db.query(AppUser).filter(
         or_(
             AppUser.email == data.email,
@@ -44,6 +43,7 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
         username=data.username,
         email=data.email,
         password_hash=hash_password(data.password),
+        role="volunteer"
     )
 
     db.add(user)
@@ -54,7 +54,6 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
 
 @app.post("/auth/register/volunteer")
 def register_volunteer(data: VolunteerRegisterRequest, db: Session = Depends(get_db)):
-
     existing_email = db.query(AppUser).filter(
         AppUser.email == data.email
     ).first()
@@ -87,48 +86,57 @@ def register_volunteer(data: VolunteerRegisterRequest, db: Session = Depends(get
 
 
 @app.post("/auth/register/shelter")
-def register_shelter(data: ShelterRegisterRequest, db: Session = Depends(get_db)):
+def register_shelter(
+    data: ShelterRegisterRequest,
+    db: Session = Depends(get_db),
+    current_user: AppUser = Depends(get_current_user)
+):
+    if current_user.role != "volunteer":
+        raise HTTPException(
+            status_code=403,
+            detail="Tik volunteer vartotojas gali registruoti prieglaudą"
+        )
 
-    existing_email = db.query(AppUser).filter(
-        AppUser.email == data.email
+    existing_shelter = db.query(Shelter).filter(
+        Shelter.created_by == current_user.id
     ).first()
 
-    if existing_email:
-        raise HTTPException(status_code=400, detail="Email already exists")
-
-    validate_password(data.password)
-
-    user = AppUser(
-        name=data.name,
-        surname=data.name,
-        username=data.email,
-        email=data.email,
-        password_hash=hash_password(data.password),
-        role="shelter"
-    )
-
-    db.add(user)
-    db.flush()
+    if existing_shelter:
+        raise HTTPException(
+            status_code=400,
+            detail="Šis vartotojas jau turi užregistruotą prieglaudą"
+        )
 
     shelter = Shelter(
         name=data.name,
+        description=data.description,
+        email=current_user.email,
+        phone=data.phone,
+        website=data.website,
         address=data.address,
         city=data.city,
-        phone=data.phone,
-        email=data.email,
+        postal_code=data.postal_code,
+        country=data.country or "Lithuania",
         is_verified=True,
-        created_by=user.id
+        is_active=True,
+        created_by=current_user.id
     )
 
     db.add(shelter)
-    db.commit()
 
-    return {"message": "Shelter registered successfully"}
+    current_user.role = "shelter"
+
+    db.commit()
+    db.refresh(current_user)
+
+    return {
+        "message": "Shelter registered successfully",
+        "role": current_user.role
+    }
 
 
 @app.post("/auth/login", response_model=TokenResponse)
 def login(data: LoginRequest, db: Session = Depends(get_db)):
-
     user = db.query(AppUser).filter(AppUser.email == data.email).first()
 
     if not user:
@@ -140,18 +148,6 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Account inactive")
 
-    if user.role == "shelter":
-        shelter = db.query(Shelter).filter(Shelter.created_by == user.id).first()
-
-        if not shelter:
-            raise HTTPException(status_code=403, detail="Prieglaudos duomenys nerasti")
-
-        if not shelter.is_verified:
-            raise HTTPException(
-                status_code=403,
-                detail="Prieglauda dar nebuvo patvirtinta administratoriaus"
-            )
-
     token = create_token(user.id)
 
     return {
@@ -161,11 +157,19 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
 
 
 @app.get("/auth/me")
-def me(user: AppUser = Depends(get_current_user)):
+def me(
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    shelter = db.query(Shelter).filter(Shelter.created_by == user.id).first()
+
     return {
         "id": user.id,
         "username": user.username,
         "email": user.email,
         "role": user.role,
         "is_active": user.is_active,
+        "has_shelter": shelter is not None,
+        "is_verified": shelter.is_verified if shelter else False,
+        "shelter_id": shelter.id if shelter else None
     }

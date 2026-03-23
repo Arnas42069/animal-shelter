@@ -1,11 +1,10 @@
-/* Sugeneruoja login ir registracijos modalus */
 function renderAuthModals() {
   const root = document.getElementById("auth-modals-root");
 
   if (!root) {
     return;
   }
-//Popuppu HTML kodas
+
   root.innerHTML = `
     <div id="loginModal" class="auth-modal-overlay">
       <div class="auth-modal-box">
@@ -33,28 +32,12 @@ function renderAuthModals() {
         <button type="button" class="auth-modal-close" data-close-modal="registerModal">&times;</button>
         <h2>REGISTRACIJA</h2>
 
-        <div class="auth-type-switch">
-          <button type="button" class="auth-btn" id="volunteerBtn">Savanoris</button>
-          <button type="button" class="auth-btn" id="shelterBtn">Prieglauda</button>
-        </div>
-
         <form id="volunteerForm">
           <input type="text" id="v_name" placeholder="vardas" required />
           <input type="text" id="v_surname" placeholder="pavardė" required />
           <input type="text" id="v_username" placeholder="slapyvardis" required />
           <input type="email" id="v_email" placeholder="el. paštas" required />
           <input type="password" id="v_password" placeholder="slaptažodis" required />
-
-          <button type="submit" class="auth-btn auth-submit-btn">Registruotis</button>
-        </form>
-
-        <form id="shelterForm" style="display: none;">
-          <input type="text" id="s_name" placeholder="prieglaudos pavadinimas" required />
-          <input type="text" id="s_phone" placeholder="telefonas" required />
-          <input type="text" id="s_address" placeholder="adresas" required />
-          <input type="text" id="s_city" placeholder="miestas" required />
-          <input type="email" id="s_email" placeholder="el. paštas" required />
-          <input type="password" id="s_password" placeholder="slaptažodis" required />
 
           <button type="submit" class="auth-btn auth-submit-btn">Registruotis</button>
         </form>
@@ -67,12 +50,29 @@ function renderAuthModals() {
         </div>
       </div>
     </div>
+
+    <div id="shelterRegistrationModal" class="auth-modal-overlay">
+      <div class="auth-modal-box">
+        <button type="button" class="auth-modal-close" data-close-modal="shelterRegistrationModal">&times;</button>
+        <h2>PRIEGLAUDOS REGISTRACIJA</h2>
+
+        <form id="shelterForm">
+          <input type="text" id="s_name" placeholder="prieglaudos pavadinimas" required />
+          <input type="text" id="s_phone" placeholder="telefonas" required />
+          <input type="text" id="s_address" placeholder="adresas" required />
+          <input type="text" id="s_city" placeholder="miestas" required />
+
+          <button type="submit" class="auth-btn auth-submit-btn">Registruoti prieglaudą</button>
+        </form>
+
+        <p id="shelterRegisterMessage" class="auth-message"></p>
+      </div>
+    </div>
   `;
 
   bindAuthModalEvents();
 }
 
-/* Atidaro pasirinkta modala */
 function openAuthModal(modalId) {
   const modal = document.getElementById(modalId);
 
@@ -83,7 +83,6 @@ function openAuthModal(modalId) {
   modal.classList.add("active");
 }
 
-/* Uzdaro pasirinkta modala */
 function closeAuthModal(modalId) {
   const modal = document.getElementById(modalId);
 
@@ -94,28 +93,12 @@ function closeAuthModal(modalId) {
   modal.classList.remove("active");
 }
 
-/* Uzdaro visus auth modalus */
 function closeAllAuthModals() {
   document.querySelectorAll(".auth-modal-overlay").forEach((modal) => {
     modal.classList.remove("active");
   });
 }
 
-/* Parodo savanorio registracijos forma */
-function showVolunteerForm() {
-  document.getElementById("volunteerForm").style.display = "block";
-  document.getElementById("shelterForm").style.display = "none";
-  document.getElementById("registerMessage").textContent = "";
-}
-
-/* Parodo prieglaudos registracijos forma */
-function showShelterForm() {
-  document.getElementById("volunteerForm").style.display = "none";
-  document.getElementById("shelterForm").style.display = "block";
-  document.getElementById("registerMessage").textContent = "";
-}
-
-/* Surisa modalu mygtukus ir submit logika */
 function bindAuthModalEvents() {
   document.querySelectorAll("[data-close-modal]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -131,30 +114,35 @@ function bindAuthModalEvents() {
     });
   });
 
-  document.getElementById("switchToRegister").addEventListener("click", () => {
-    closeAuthModal("loginModal");
-    openAuthModal("registerModal");
-  });
+  const switchToRegister = document.getElementById("switchToRegister");
+  const switchToLogin = document.getElementById("switchToLogin");
 
-  document.getElementById("switchToLogin").addEventListener("click", () => {
-    closeAuthModal("registerModal");
-    openAuthModal("loginModal");
-  });
+  if (switchToRegister) {
+    switchToRegister.addEventListener("click", () => {
+      closeAuthModal("loginModal");
+      openAuthModal("registerModal");
+    });
+  }
 
-  document.getElementById("volunteerBtn").addEventListener("click", showVolunteerForm);
-  document.getElementById("shelterBtn").addEventListener("click", showShelterForm);
-
-  showVolunteerForm();
+  if (switchToLogin) {
+    switchToLogin.addEventListener("click", () => {
+      closeAuthModal("registerModal");
+      openAuthModal("loginModal");
+    });
+  }
 
   bindLoginSubmit();
   bindVolunteerRegisterSubmit();
   bindShelterRegisterSubmit();
 }
 
-/* Login formos submit */
 function bindLoginSubmit() {
   const loginForm = document.getElementById("loginForm");
   const messageEl = document.getElementById("loginMessage");
+
+  if (!loginForm || !messageEl) {
+    return;
+  }
 
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -202,10 +190,13 @@ function bindLoginSubmit() {
   });
 }
 
-/* Volunteer registracijos submit */
 function bindVolunteerRegisterSubmit() {
   const volunteerForm = document.getElementById("volunteerForm");
   const messageEl = document.getElementById("registerMessage");
+
+  if (!volunteerForm || !messageEl) {
+    return;
+  }
 
   volunteerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -258,10 +249,13 @@ function bindVolunteerRegisterSubmit() {
   });
 }
 
-/* Shelter registracijos submit */
 function bindShelterRegisterSubmit() {
   const shelterForm = document.getElementById("shelterForm");
-  const messageEl = document.getElementById("registerMessage");
+  const messageEl = document.getElementById("shelterRegisterMessage");
+
+  if (!shelterForm || !messageEl) {
+    return;
+  }
 
   shelterForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -269,20 +263,27 @@ function bindShelterRegisterSubmit() {
     messageEl.textContent = "";
     messageEl.style.color = "";
 
+    const token = authGetToken();
+
+    if (!token) {
+      messageEl.textContent = "Pirmiausia turite prisijungti.";
+      messageEl.style.color = "red";
+      return;
+    }
+
     const data = {
       name: document.getElementById("s_name").value.trim(),
       phone: document.getElementById("s_phone").value.trim(),
       address: document.getElementById("s_address").value.trim(),
-      city: document.getElementById("s_city").value.trim(),
-      email: document.getElementById("s_email").value.trim(),
-      password: document.getElementById("s_password").value
+      city: document.getElementById("s_city").value.trim()
     };
 
     try {
       const response = await fetch("/api/auth/register/shelter", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify(data)
       });
@@ -293,19 +294,20 @@ function bindShelterRegisterSubmit() {
         if (Array.isArray(result?.detail)) {
           messageEl.textContent = result.detail.map((err) => err.msg).join(", ");
         } else {
-          messageEl.textContent = result?.detail || `Registracija nepavyko (${response.status}).`;
+          messageEl.textContent = result?.detail || `Prieglaudos registracija nepavyko (${response.status}).`;
         }
 
         messageEl.style.color = "red";
         return;
       }
 
-      messageEl.textContent = "Prieglauda užregistruota. Dabar galite prisijungti.";
+      messageEl.textContent = "Prieglauda sėkmingai užregistruota.";
       messageEl.style.color = "green";
 
       setTimeout(() => {
-        closeAuthModal("registerModal");
-        openAuthModal("loginModal");
+        closeAuthModal("shelterRegistrationModal");
+        window.dispatchEvent(new CustomEvent("auth-changed"));
+        window.location.reload();
       }, 700);
     } catch (error) {
       messageEl.textContent = "Nepavyko prisijungti prie serverio.";
@@ -315,7 +317,6 @@ function bindShelterRegisterSubmit() {
   });
 }
 
-/* Paleidzia modalu generavima po puslapio uzkrovimo */
 document.addEventListener("DOMContentLoaded", () => {
   renderAuthModals();
 });

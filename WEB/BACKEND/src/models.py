@@ -48,10 +48,10 @@ class Shelter(Base):
     postal_code = Column(Text, nullable=True)
     country = Column(Text, nullable=True, default="Lithuania", server_default=text("'Lithuania'"))
 
-    is_verified = Column(Boolean, nullable=False, default=True, server_default=text("true"))
+    is_verified = Column(Boolean, nullable=False, default=False, server_default=text("false"))
     is_active = Column(Boolean, nullable=False, default=True, server_default=text("true"))
 
-    created_by = Column(BigInteger, ForeignKey("app_user.id"), nullable=True)
+    created_by = Column(BigInteger, ForeignKey("app_user.id"), nullable=True, unique=True)
 
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=func.now())
     updated_at = Column(

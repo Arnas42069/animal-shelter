@@ -27,11 +27,14 @@ class VolunteerRegisterRequest(BaseModel):
 
 class ShelterRegisterRequest(BaseModel):
     name: str = Field(min_length=2, max_length=100)
-    email: EmailStr
-    password: str
     phone: str = Field(min_length=5, max_length=20)
     address: str = Field(min_length=3, max_length=200)
     city: str = Field(min_length=2, max_length=100)
+
+    description: str | None = None
+    website: str | None = None
+    postal_code: str | None = None
+    country: str | None = "Lithuania"
 
 
 class LoginRequest(BaseModel):

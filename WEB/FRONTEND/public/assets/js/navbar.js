@@ -61,7 +61,7 @@ function buildNavbarMarkup(user) {
         <div class="nav-center"></div>
 
         <div class="nav-right">
-          ${buildProfileDropdown(user.role)}
+          ${buildProfileDropdown(user)}
           <a href="/pages/megstami-gyvunai.html" class="nav-svg-btn nav-heart-btn" title="Mylimi gyvūnai">
             <img src="/assets/svg/heart.svg" alt="Širdutė" class="nav-svg-icon" />
           </a>
@@ -82,7 +82,7 @@ function buildNavbarMarkup(user) {
       ${centerLinks}
 
       <div class="nav-right">
-        ${buildProfileDropdown(user.role)}
+        ${buildProfileDropdown(user)}
         <a href="/pages/megstami-gyvunai.html" class="nav-svg-btn nav-heart-btn" title="Mylimi gyvūnai">
           <img src="/assets/svg/heart.svg" alt="Širdutė" class="nav-svg-icon" />
         </a>
@@ -91,20 +91,34 @@ function buildNavbarMarkup(user) {
   `;
 }
 
-function buildProfileDropdown(role) {
+function buildProfileDropdown(user) {
+  const profilePage = user.role === "shelter"
+    ? "/pages/prieglauda.html"
+    : "/pages/profilis.html";
+
+  const editProfilePage = user.role === "shelter"
+    ? "/pages/prieglauda-edit.html"
+    : "/pages/profilis-edit.html";
+
   let items = `
-    <a href="/pages/profilis.html" class="dropdown-item">Profilis</a>
-    <a href="/pages/edit-profilis.html" class="dropdown-item">Redaguoti profilį</a>
+    <a href="${profilePage}" class="dropdown-item">Profilis</a>
+    <a href="${editProfilePage}" class="dropdown-item">Redaguoti profilį</a>
   `;
 
-  if (role === "shelter") {
+  if (user.role === "volunteer" && !user.has_shelter) {
+    items += `
+      <button type="button" class="dropdown-item" id="openShelterRegistrationBtn">Prieglaudos registracija</button>
+    `;
+  }
+
+  if (user.role === "shelter") {
     items += `
       <a href="/pages/savanoriai.html" class="dropdown-item">Savanoriai</a>
       <a href="/pages/naujienos.html" class="dropdown-item">Naujienos</a>
     `;
   }
 
-  if (role === "admin") {
+  if (user.role === "admin") {
     items += `
       <a href="/pages/vartotojai.html" class="dropdown-item">Vartotojai</a>
     `;
@@ -146,6 +160,7 @@ function bindNavbarEvents(user) {
   const profileTrigger = document.getElementById("profileTrigger");
   const profileMenu = document.getElementById("profileMenu");
   const logoutBtn = document.getElementById("logoutBtn");
+  const openShelterRegistrationBtn = document.getElementById("openShelterRegistrationBtn");
 
   if (profileTrigger && profileMenu) {
     profileTrigger.addEventListener("click", (e) => {
@@ -159,6 +174,14 @@ function bindNavbarEvents(user) {
         profileMenu.classList.remove("active");
         profileTrigger.setAttribute("aria-expanded", "false");
       }
+    });
+  }
+
+  if (openShelterRegistrationBtn) {
+    openShelterRegistrationBtn.addEventListener("click", () => {
+      profileMenu.classList.remove("active");
+      profileTrigger.setAttribute("aria-expanded", "false");
+      openAuthModal("shelterRegistrationModal");
     });
   }
 
