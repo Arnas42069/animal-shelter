@@ -61,7 +61,7 @@ body{
     width:100%;
     height:500px;
     object-fit:cover;
-    padding-top: 90px;
+    padding-top: 40px;
 }
 
 /* Prieglaudos pavadinimo pozicija */
@@ -195,4 +195,25 @@ box-shadow:0 0 5px rgba(0,0,0,0.2);
     border-radius: 8px;
     padding: 6px;
     cursor: pointer;
+}
+
+/*------------------------------*/
+/*   Gyvuno redagavimo stiliai  */
+/*------------------------------*/
+
+/* gyvuno nuotraukos parametrai*/
+.animal-image img {
+    display: block;
+    margin: 0 auto;
+    height: 500px;
+    object-fit: cover;
+    padding-top: 30px;
+}
+
+/* gyvuno vardo pozicija */
+.animal-name{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px;
 }

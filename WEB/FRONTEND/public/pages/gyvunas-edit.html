@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="lt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit gyvunas</title>
+    <link rel="stylesheet" href="/assets/css/prieglauda.css" />
+    <link rel="stylesheet" href="/assets/css/navbar.css" />
+    <link rel="stylesheet" href="/assets/css/auth-modals.css" />
+    <link rel="stylesheet" href="/assets/css/footer.css" />
+  </head>
+  <body>
+    <header id="site-navbar"></header>
+    <div id="auth-modals-root"></div>
+
+    <div class="container-gaps">
+        <form class="edit-form">
+
+      <!-- Nuotrauka -->
+      <div class="animal-image">
+        <img src="/assets/img/cat1.png" alt="animal" />
+        <input type="file"/>
+      </div>
+
+      <!-- Pavadinimas -->
+      <div class="animal-name">
+        <div>
+          <input type="text" value="Murkis" class="input-title" />
+          <input type="text" value="Klaipėda, nežinau g." class="input-address" />
+        </div>
+
+        <a href="/pages/prieglauda.html" class="btn">Išsaugoti</a>
+      </div>
+
+      <!-- Aprašymas -->
+      <section class="section">
+        <h3>Aprašymas</h3>
+        <textarea rows="6">
+Lorem ipsum tekstas...
+        </textarea>
+      </section>
+
+    </div>
+
+    <footer id="site-footer"></footer>
+
+    <script src="/assets/js/auth.js"></script>
+    <script src="/assets/js/navbar.js"></script>
+    <script src="/assets/js/footer.js"></script> 
+    <script src="/assets/js/auth-modals.js"></script>
+    
+  </body>
+</html>

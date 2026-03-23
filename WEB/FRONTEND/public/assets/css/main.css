@@ -47,7 +47,7 @@ section h2 {
 /*sudeti visi puslapio elementai*/
 .container-gaps {
     max-width: 1300px;   
-    margin: 0 auto 60px auto;      
+    margin: 0 auto;      
     padding: 0 30px;     
     background-color:#F5EFE6;
 }
