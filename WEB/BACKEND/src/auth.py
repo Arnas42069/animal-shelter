@@ -94,3 +94,14 @@ def get_current_user(
         )
 
     return user
+
+
+def get_current_shelter(
+    user: AppUser = Depends(get_current_user),
+) -> AppUser:
+    if user.role != "shelter":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only shelter users can access this resource",
+        )
+    return user

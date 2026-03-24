@@ -9,9 +9,13 @@ from src.schemas import (
     VolunteerRegisterRequest,
     ShelterRegisterRequest,
     LoginRequest,
-    TokenResponse
+    TokenResponse,
+    ProfileResponse,
+    ProfileUpdateRequest,
+    ShelterProfileResponse,
+    ShelterProfileUpdateRequest
 )
-from src.auth import hash_password, verify_password, create_token, get_current_user
+from src.auth import hash_password, verify_password, create_token, get_current_user, get_current_shelter
 from src.validators import validate_password
 
 
@@ -173,3 +177,162 @@ def me(
         "is_verified": shelter.is_verified if shelter else False,
         "shelter_id": shelter.id if shelter else None
     }
+
+
+####helperiai
+def ensure_unique_email(db: Session, email: str, current_user_id: int):
+    existing_email = db.query(AppUser).filter(
+        AppUser.email == email,
+        AppUser.id != current_user_id
+    ).first()
+
+    if existing_email:
+        raise HTTPException(status_code=400, detail="Email already exists")
+
+
+def ensure_unique_username(db: Session, username: str, current_user_id: int):
+    existing_username = db.query(AppUser).filter(
+        AppUser.username == username,
+        AppUser.id != current_user_id
+    ).first()
+
+    if existing_username:
+        raise HTTPException(status_code=400, detail="Username already exists")
+
+
+def build_shelter_profile_response(user: AppUser, shelter: Shelter):
+    return {
+        "shelter_id": shelter.id,
+        "account_id": user.id,
+        "account_name": user.name,
+        "account_surname": user.surname,
+        "username": user.username,
+        "email": user.email,
+        "role": user.role,
+        "account_is_active": user.is_active,
+        "shelter_name": shelter.name,
+        "description": shelter.description,
+        "phone": shelter.phone,
+        "website": shelter.website,
+        "address": shelter.address,
+        "city": shelter.city,
+        "postal_code": shelter.postal_code,
+        "country": shelter.country,
+        "shelter_is_verified": shelter.is_verified,
+        "shelter_is_active": shelter.is_active,
+    }
+####
+
+
+@app.get("/profile", response_model=ProfileResponse)
+def get_profile(
+    current_user: AppUser = Depends(get_current_user),
+):
+    return current_user
+
+
+@app.put("/profile", response_model=ProfileResponse)
+def update_profile(
+    data: ProfileUpdateRequest,
+    db: Session = Depends(get_db),
+    current_user: AppUser = Depends(get_current_user),
+):
+    if data.email is not None:
+        ensure_unique_email(db, data.email, current_user.id)
+
+    if data.username is not None:
+        ensure_unique_username(db, data.username, current_user.id)
+
+    if data.name is not None:
+        current_user.name = data.name
+
+    if data.surname is not None:
+        current_user.surname = data.surname
+
+    if data.username is not None:
+        current_user.username = data.username
+
+    if data.email is not None:
+        current_user.email = data.email
+
+    db.commit()
+    db.refresh(current_user)
+
+    return current_user
+
+
+@app.get("/shelter/profile", response_model=ShelterProfileResponse)
+def get_shelter_profile(
+    current_user: AppUser = Depends(get_current_shelter),
+    db: Session = Depends(get_db),
+):
+    shelter = db.query(Shelter).filter(
+        Shelter.created_by == current_user.id
+    ).first()
+
+    if not shelter:
+        raise HTTPException(status_code=404, detail="Shelter profile not found")
+
+    return build_shelter_profile_response(current_user, shelter)
+
+
+@app.put("/shelter/profile", response_model=ShelterProfileResponse)
+def update_shelter_profile(
+    data: ShelterProfileUpdateRequest,
+    db: Session = Depends(get_db),
+    current_user: AppUser = Depends(get_current_shelter),
+):
+    shelter = db.query(Shelter).filter(
+        Shelter.created_by == current_user.id
+    ).first()
+
+    if not shelter:
+        raise HTTPException(status_code=404, detail="Shelter profile not found")
+
+    if data.email is not None:
+        ensure_unique_email(db, data.email, current_user.id)
+
+    if data.username is not None:
+        ensure_unique_username(db, data.username, current_user.id)
+
+    if data.account_name is not None:
+        current_user.name = data.account_name
+
+    if data.account_surname is not None:
+        current_user.surname = data.account_surname
+
+    if data.username is not None:
+        current_user.username = data.username
+
+    if data.email is not None:
+        current_user.email = data.email
+
+    if data.shelter_name is not None:
+        shelter.name = data.shelter_name
+
+    if data.description is not None:
+        shelter.description = data.description
+
+    if data.phone is not None:
+        shelter.phone = data.phone
+
+    if data.website is not None:
+        shelter.website = data.website
+
+    if data.address is not None:
+        shelter.address = data.address
+
+    if data.city is not None:
+        shelter.city = data.city
+
+    if data.postal_code is not None:
+        shelter.postal_code = data.postal_code
+
+    if data.country is not None:
+        shelter.country = data.country
+
+    db.commit()
+    db.refresh(current_user)
+    db.refresh(shelter)
+
+    return build_shelter_profile_response(current_user, shelter)
