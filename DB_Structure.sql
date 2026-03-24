@@ -18,8 +18,8 @@ CREATE TABLE IF NOT EXISTS app_user (
 
     password_hash  TEXT NOT NULL,
 
-    role           TEXT NOT NULL DEFAULT 'user'
-        CHECK (role IN ('admin', 'shelter', 'volunteer', 'user')),
+    role           TEXT NOT NULL DEFAULT 'volunteer'
+        CHECK (role IN ('admin', 'shelter', 'volunteer')),
 
     is_active      BOOLEAN NOT NULL DEFAULT TRUE,
 
