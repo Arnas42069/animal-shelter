@@ -1,4 +1,6 @@
-from sqlalchemy import Column, BigInteger, Text, Boolean, TIMESTAMP, func, Identity, text, ForeignKey
+from typing import Optional
+
+from sqlalchemy import Column, BigInteger, Text, Boolean, TIMESTAMP, func, Identity, text, ForeignKey, Date
 from sqlalchemy.orm import relationship
 
 from src.database import Base
@@ -53,7 +55,11 @@ class Shelter(Base):
 
     created_by = Column(BigInteger, ForeignKey("app_user.id"), nullable=True, unique=True)
 
-    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=func.now())
+    created_at = Column(
+        TIMESTAMP(timezone=True), 
+        nullable=False, 
+        server_default=func.now()
+    )
     updated_at = Column(
         TIMESTAMP(timezone=True),
         nullable=False,
@@ -62,3 +68,44 @@ class Shelter(Base):
     )
 
     user = relationship("AppUser")
+
+
+class Animal(Base):
+    __tablename__ = "animal"
+
+    id = Column(BigInteger, primary_key=True, index=True)
+
+    shelter_id = Column(
+        BigInteger,
+        ForeignKey("shelter.id", ondelete="RESTRICT"),
+        nullable=False
+    )
+
+    name = Column(Text, nullable=True)
+    code = Column(Text, unique=True, nullable=True)
+
+    species = Column(Text, nullable=False)  # dog, cat, other
+    breed = Column(Text, nullable=True)
+
+    sex = Column(Text, nullable=False, default="unknown")  # male, female, unknown
+    birth_date = Column(Date, nullable=True)
+    color = Column(Text, nullable=True)
+
+    description = Column(Text, nullable=True)
+
+    status = Column(Text, nullable=False, default="available")
+
+    created_at = Column(
+        TIMESTAMP(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
+
+    updated_at = Column(
+        TIMESTAMP(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False
+    )
+
+    shelter = relationship("Shelter", backref="animals")

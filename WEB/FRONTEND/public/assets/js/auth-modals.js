@@ -213,7 +213,7 @@ function bindVolunteerRegisterSubmit() {
     };
 
     try {
-      const response = await fetch("/api/auth/register/volunteer", {
+      const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -279,7 +279,7 @@ function bindShelterRegisterSubmit() {
     };
 
     try {
-      const response = await fetch("/api/auth/register/shelter", {
+      const response = await fetch("/api/shelter", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

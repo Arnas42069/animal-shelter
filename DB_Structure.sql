@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS shelter (
     name        TEXT NOT NULL UNIQUE,
     description TEXT,
 
-    email       TEXT,
+    email       TEXT UNIQUE,
     phone       TEXT,
     website     TEXT,
 
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS shelter (
     country     TEXT DEFAULT 'Lithuania',
 
     is_verified BOOLEAN NOT NULL DEFAULT FALSE,
-    is_active   BOOLEAN NOT NULL DEFAULT TRUE,
+    is_active   BOOLEAN NOT NULL DEFAULT FALSE,
 
     created_by  BIGINT REFERENCES app_user(id),
 

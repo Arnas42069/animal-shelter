@@ -1,12 +1,15 @@
 from pydantic import BaseModel, EmailStr, Field
 from enum import Enum
+from typing import Optional
+from datetime import date
 
-
+# -------------------------------------------------
+# -------------------APP_USER----------------------
+# -------------------------------------------------
 class UserRole(str, Enum):
     admin = "admin"
     volunteer = "volunteer"
     shelter = "shelter"
-    user = "user"
 
 
 class RegisterRequest(BaseModel):
@@ -15,26 +18,6 @@ class RegisterRequest(BaseModel):
     username: str = Field(min_length=3, max_length=50)
     email: EmailStr
     password: str
-
-
-class VolunteerRegisterRequest(BaseModel):
-    name: str = Field(min_length=2, max_length=50)
-    surname: str = Field(min_length=2, max_length=50)
-    username: str = Field(min_length=3, max_length=50)
-    email: EmailStr
-    password: str
-
-
-class ShelterRegisterRequest(BaseModel):
-    name: str = Field(min_length=2, max_length=100)
-    phone: str = Field(min_length=5, max_length=20)
-    address: str = Field(min_length=3, max_length=200)
-    city: str = Field(min_length=2, max_length=100)
-
-    description: str | None = None
-    website: str | None = None
-    postal_code: str | None = None
-    country: str | None = "Lithuania"
 
 
 class LoginRequest(BaseModel):
@@ -47,12 +30,15 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
 
 
-class ProfileResponse(BaseModel):
+class UserResponse(BaseModel):
     id: int
+
     name: str
     surname: str
+
     username: str
-    email: EmailStr
+    email: Optional[str] = None
+
     role: str
     is_active: bool
 
@@ -60,38 +46,109 @@ class ProfileResponse(BaseModel):
         from_attributes = True
 
 
-class ProfileUpdateRequest(BaseModel):
-    name: str | None = Field(default=None, min_length=2, max_length=50)
-    surname: str | None = Field(default=None, min_length=2, max_length=50)
-    username: str | None = Field(default=None, min_length=3, max_length=50)
-    email: EmailStr | None = None
+class UserUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    surname: Optional[str] = None
+    username: Optional[str] = None
+    email: Optional[str] = None
+    password: Optional[str] = None
 
 
-class ShelterProfileResponse(BaseModel):
-    shelter_id: int
+# -------------------------------------------------
+# -------------------SHELTER-----------------------
+# -------------------------------------------------
+class ShelterRegisterRequest(BaseModel):
+    name: str = Field(min_length=2, max_length=100)
+    phone: str = Field(min_length=5, max_length=20)
+    address: str = Field(min_length=3, max_length=200)
+    city: str = Field(min_length=2, max_length=100)
 
-    account_id: int
-    account_name: str
-    account_surname: str
-    username: str
-    email: EmailStr
-    role: str
-    account_is_active: bool
-
-    shelter_name: str
     description: str | None = None
-    phone: str | None = None
     website: str | None = None
-    address: str | None = None
-    city: str | None = None
     postal_code: str | None = None
-    country: str | None = None
-
-    shelter_is_verified: bool
-    shelter_is_active: bool
+    country: str | None = "Lithuania"
 
 
-class ShelterProfileUpdateRequest(BaseModel):
+class ShelterResponse(BaseModel):
+    id: int
+    name: str
+    description: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    website: Optional[str] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    postal_code: Optional[str] = None
+    country: Optional[str] = None
+    is_verified: bool
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
+
+class ShelterUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    website: Optional[str] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    postal_code: Optional[str] = None
+    country: Optional[str] = None
+
+
+# -------------------------------------------------
+# -------------------ANIMAL------------------------
+# -------------------------------------------------
+class AnimalCreateRequest(BaseModel):
+    name: Optional[str] = None
+    code: Optional[str] = None
+
+    species: str = Field(..., pattern="^(dog|cat|other)$")
+    breed: Optional[str] = None
+
+    sex: Optional[str] = Field(default="unknown", pattern="^(male|female|unknown)$")
+    birth_date: Optional[date] = None
+    color: Optional[str] = None
+
+    description: Optional[str] = None
+
+    status: Optional[str] = Field(
+        default="available",
+        pattern="^(available|reserved|adopted|foster|medical_hold|lost)$"
+    )
+
+
+class AnimalResponse(BaseModel):
+    id: int
+    shelter_id: int
+    name: Optional[str]
+    code: Optional[str]
+    species: str
+    breed: Optional[str]
+    sex: str
+    birth_date: Optional[date]
+    color: Optional[str]
+    description: Optional[str]
+    status: str
+
+    class Config:
+        from_attributes = True
+
+
+class AnimalUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    code: Optional[str] = None
+    species: Optional[str] = None
+    breed: Optional[str] = None
+    sex: Optional[str] = None
+    birth_date: Optional[date] = None
+    color: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[str] = None
+
     account_name: str | None = Field(default=None, min_length=2, max_length=50)
     account_surname: str | None = Field(default=None, min_length=2, max_length=50)
     username: str | None = Field(default=None, min_length=3, max_length=50)
