@@ -4,42 +4,152 @@
     <meta charset="UTF-8" />
     <title>Profilis</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Profilio puslapio stiliai -->
     <link rel="stylesheet" href="/assets/css/profilis.css" />
+
+    <!-- Bendri puslapio komponentu stiliai -->
     <link rel="stylesheet" href="/assets/css/navbar.css" />
     <link rel="stylesheet" href="/assets/css/auth-modals.css" />
     <link rel="stylesheet" href="/assets/css/footer.css" />
   </head>
 
   <body>
+    <!-- Navbar vieta -->
     <header id="site-navbar"></header>
-    
-    <div class="profile-container">
-      <!--Nuotrauka profilio-->
-      <div class="profile-picture">
-        <img src="/assets/img/profile.png" alt="Profile picture" />
-      </div>
 
-      <!--informacijos sąrašas-->
-      <div class="profile-content">
-        <div class="profile-info">
-          <p><strong>VARDAS</strong></p>
-          <p><strong>PAVARDĖ</strong></p>
-          <p><strong>GIMIMO DATA</strong></p>
-          <p><strong>APRAŠYMAS</strong></p>
-
-          <p class="profile-text">
-            Trumpas vartotojo aprašymas apie save, pomėgius ar kitą informaciją.
-          </p>
+    <!--
+      Pagrindinis profilio puslapio blokas
+      container-gaps duoda sviesu centra
+      body fonas duoda pilkus sonus
+    -->
+    <main class="container-gaps profile-page" id="volunteerProfilePage">
+      <!-- Pagrindine profilio kortele -->
+      <section class="profile-card">
+        <!-- Profilio nuotrauka -->
+        <div class="profile-picture">
+          <img src="/assets/img/profile.png" alt="Profilio nuotrauka" />
         </div>
 
-        <!--save mygtukas-->
-        <a href="/pages/profilis-edit.html" class="btn">Edit</a>
-      </div>
-    </div>
+        <!-- Puslapio pavadinimas -->
+        <h1 class="profile-title">Mano profilis</h1>
+
+        <!--
+          Inline profilio forma
+          Tie patys laukai naudojami ir perziurai ir redagavimui
+        -->
+        <form id="profileInlineForm" class="profile-inline-form">
+          <div class="profile-info-list">
+            <!-- Vardo laukas -->
+            <div class="profile-row">
+              <span class="profile-label">Vardas</span>
+              <input
+                type="text"
+                id="editName"
+                class="profile-inline-input"
+                readonly
+              />
+            </div>
+
+            <!-- Pavardes laukas -->
+            <div class="profile-row">
+              <span class="profile-label">Pavardė</span>
+              <input
+                type="text"
+                id="editSurname"
+                class="profile-inline-input"
+                readonly
+              />
+            </div>
+
+            <!-- El pasto laukas -->
+            <div class="profile-row">
+              <span class="profile-label">El. paštas</span>
+              <input
+                type="email"
+                id="editEmail"
+                class="profile-inline-input"
+                readonly
+              />
+            </div>
+          </div>
+
+          <!-- Pagrindiniai veiksmai -->
+          <div class="profile-actions">
+            <!-- Ijungia arba isjungia redagavimo rezima -->
+            <button type="button" class="btn" id="toggleEditBtn">
+              Redaguoti
+            </button>
+
+            <!-- Rodomas tik tada kai ijungtas redagavimas -->
+            <button type="submit" class="btn" id="saveProfileBtn" hidden>
+              Išsaugoti
+            </button>
+
+            <!-- Parodo arba paslepia slapta sekcija -->
+            <button type="button" class="btn btn-secondary" id="togglePasswordBtn">
+              Keisti slaptažodį
+            </button>
+          </div>
+        </form>
+
+        <!-- Klaidu arba sekmes zinutes -->
+        <p id="profileMessage" class="profile-message"></p>
+
+        <!-- Slaptazodzio keitimo sekcija -->
+        <section class="profile-edit-section" id="passwordSection" hidden>
+          <h2 class="section-title">Slaptažodžio keitimas</h2>
+
+          <form id="passwordForm" class="profile-form">
+            <!-- Naujas slaptazodis -->
+            <input
+              type="password"
+              id="newPassword"
+              class="edit-input"
+              placeholder="Naujas slaptažodis"
+              required
+            />
+
+            <!-- Pakartotas naujas slaptazodis -->
+            <input
+              type="password"
+              id="repeatPassword"
+              class="edit-input"
+              placeholder="Pakartokite naują slaptažodį"
+              required
+            />
+
+            <!-- Rodyti arba slepti slaptazodi -->
+            <label class="checkbox-row">
+              <input type="checkbox" id="showPasswords" />
+              <span>Rodyti slaptažodį</span>
+            </label>
+
+            <div class="form-actions">
+              <button type="submit" class="btn">Pakeisti slaptažodį</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Paskyros istrynimo zona -->
+        <section class="danger-zone">
+          <h2 class="section-title danger-title">Paskyros šalinimas</h2>
+          <button type="button" class="btn btn-danger" id="deleteAccountBtn">
+            Ištrinti paskyrą
+          </button>
+        </section>
+      </section>
+    </main>
+
+    <!-- Footer vieta -->
     <footer id="site-footer"></footer>
 
+    <!-- Bendri scriptai -->
     <script src="/assets/js/auth.js"></script>
     <script src="/assets/js/navbar.js"></script>
-    <script src="/assets/js/footer.js"></script> 
+    <script src="/assets/js/footer.js"></script>
+
+    <!-- Profilio puslapio logika -->
+    <script src="/assets/js/profile.js"></script>
   </body>
 </html>

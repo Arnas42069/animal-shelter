@@ -4,67 +4,187 @@
     <meta charset="UTF-8" />
     <title>Prieglauda</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Prieglaudos puslapio stiliai -->
     <link rel="stylesheet" href="/assets/css/prieglauda.css" />
+
+    <!-- Bendri komponentai -->
     <link rel="stylesheet" href="/assets/css/navbar.css" />
     <link rel="stylesheet" href="/assets/css/auth-modals.css" />
     <link rel="stylesheet" href="/assets/css/footer.css" />
   </head>
 
   <body>
+    <!-- Navbar vieta -->
     <header id="site-navbar"></header>
-    <!-- atskiras laukas, kad tarpai butu is sonu -->
-    <div class="container-gaps">
-      <!-- mygtukai kol navbar nera -->
-      <div class="top-buttons">
-        <a class="btn" href="index.html#prieglaudos">Atgal</a>
-      </div>
 
-      <!-- Pradine nuotrauka prieglaudos profilyje -->
+    <!-- Sviesus vidinis puslapio blokas -->
+    <div class="container-gaps" id="shelterProfilePage">
+      <!-- Virsutine prieglaudos nuotrauka -->
       <div class="shelter-image">
-        <img src="/assets/img/prieglauda.png" alt="shelter" />
+        <img src="/assets/img/prieglauda.png" alt="Prieglaudos nuotrauka" />
       </div>
 
-      <!-- Prieglaudos pavadinimas -->
+      <!-- Virsutinis prieglaudos blokas -->
       <div class="shelter-name">
-        <div>
-          <h1>Prieglaudos pavadinimas</h1>
-          <p class="shelter-address">
-            <i class="fa-solid fa-location-dot"></i> Klaipėda, nežinau g.
-          </p>
+        <div class="shelter-title-block">
+          <!-- Perziuros rezimas -->
+          <div id="shelterHeaderView">
+            <h1 id="shelterNameView">Prieglaudos pavadinimas</h1>
+
+            <div class="location-row">
+              <img src="/assets/svg/pointer.svg" alt="Vieta" class="contact-icon" />
+              <p class="shelter-address" id="shelterAddressView">Klaipėda, nežinau g.</p>
+            </div>
+          </div>
+
+          <!-- Edit rezimas -->
+          <!-- Sitas blokas turi buti matomas tik redagavimo rezime -->
+          <div id="shelterHeaderEdit" class="inline-edit-block" hidden>
+            <label for="editShelterName" class="edit-label">Prieglaudos pavadinimas:</label>
+            <input
+              type="text"
+              id="editShelterName"
+              class="input-title"
+              placeholder="Prieglaudos pavadinimas"
+            />
+          </div>
         </div>
-        <a class="btn edit-btn" href="/pages/prieglauda-edit.html">Edit</a>
-        <button class="btn">Susisiekti</button>
       </div>
 
-      <!-- Prieglaudos aprasymo sekcija -->
+      <!-- Aprasymo sekcija -->
       <section class="section">
         <h3>Aprašymas</h3>
 
-        <p>
-          is simply dummy text of the printing and typesetting industry. Lorem
-          Ipsum has been the industry's standard dummy text ever since the 1500s,
-          when an unknown printer took a galley of type and scrambled it to make
-          a type specimen book. is simply dummy text of the printing and
-          typesetting industry. Lorem Ipsum has been the industry's standard
-          dummy text ever since the 1500s, when an unknown printer took a galley
-          of type and scrambled it to make a type specimen book. is simply dummy
-          text of the printing and typesetting industry. Lorem Ipsum has been
-          the industry's standard dummy text ever since the 1500s, when an
-          unknown printer took a galley of type and scrambled it to make a type
-          specimen book. is simply dummy text of the printing and typesetting
-          industry. Lorem Ipsum has been the industry's standard dummy text ever
-          since the 1500s, when an unknown printer took a galley of type and
-          scrambled it to make a type specimen book.
+        <!-- Perziuros rezimas -->
+        <p id="shelterDescriptionView">
+          Čia bus prieglaudos aprašymas.
         </p>
+
+        <!-- Edit rezimas -->
+        <div id="shelterDescriptionEditWrap" hidden>
+          <label for="editShelterDescription" class="edit-label">Prieglaudos aprašymas:</label>
+          <textarea
+            id="editShelterDescription"
+            class="edit-textarea"
+            rows="6"
+            placeholder="Įrašykite prieglaudos aprašymą"
+          ></textarea>
+        </div>
       </section>
 
-      <!-- Prieglaudos kontaktu sekcija -->
-      <section class="section">
-        <h3>Kontaktai</h3>
+      <!-- Kontaktu sekcija -->
+      <section class="section contacts-section">
+        <div class="section-header">
+          <h3>Kontaktai</h3>
 
-        <p><i class="address"></i> Klaipėda, nežinau g.</p>
-        <p><i class="phone"></i> +37060000000</p>
-        <p><i class="email"></i> prieglauda@yahoo.com</p>
+          <div class="section-header-actions">
+            <button class="btn" id="toggleShelterEditBtn" type="button">
+              Redaguoti informaciją
+            </button>
+
+            <button class="btn" id="saveShelterBtn" type="button" hidden>
+              Išsaugoti
+            </button>
+          </div>
+        </div>
+
+        <!-- Perziuros rezimas -->
+        <div id="shelterContactsView" class="contact-list">
+          <p>
+            <img src="/assets/svg/phone.svg" alt="Telefonas" class="contact-icon" />
+            <span id="shelterPhoneView">+37060000000</span>
+          </p>
+
+          <p>
+            <img src="/assets/svg/mail.svg" alt="El. paštas" class="contact-icon" />
+            <span id="shelterEmailView">prieglauda@yahoo.com</span>
+          </p>
+
+          <!-- Svetaine rodoma tik jei ji ivesta -->
+          <p id="shelterWebsiteRow" hidden>
+            <img src="/assets/svg/website.svg" alt="Svetainė" class="contact-icon" />
+            <a id="shelterWebsiteView" href="#" target="_blank" rel="noopener noreferrer"></a>
+          </p>
+        </div>
+
+        <!-- Edit rezimas -->
+        <div id="shelterContactsEdit" class="edit-form" hidden>
+          <label for="editShelterCity" class="edit-label">Miestas:</label>
+          <input
+            type="text"
+            id="editShelterCity"
+            placeholder="Miestas"
+          />
+
+          <label for="editShelterContactAddress" class="edit-label">Adresas:</label>
+          <input
+            type="text"
+            id="editShelterContactAddress"
+            placeholder="Adresas"
+          />
+
+          <label for="editShelterPhone" class="edit-label">Telefono numeris:</label>
+          <input
+            type="text"
+            id="editShelterPhone"
+            placeholder="Telefono numeris"
+          />
+
+          <label for="editShelterEmail" class="edit-label">El. paštas:</label>
+          <input
+            type="email"
+            id="editShelterEmail"
+            placeholder="El. paštas"
+          />
+
+          <label for="editShelterWebsite" class="edit-label">Svetainė:</label>
+          <input
+            type="text"
+            id="editShelterWebsite"
+            placeholder="Svetainė"
+          />
+
+          <label for="editShelterPostalCode" class="edit-label">Pašto kodas:</label>
+          <input
+            type="text"
+            id="editShelterPostalCode"
+            placeholder="Pašto kodas"
+          />
+
+          <label for="editShelterCountry" class="edit-label">Šalis:</label>
+          <input
+            type="text"
+            id="editShelterCountry"
+            placeholder="Šalis"
+          />
+        </div>
+
+        <!-- Zinute po shelter veiksmais -->
+        <p id="shelterMessage" class="shelter-message"></p>
+      </section>
+
+      <!-- Statistika -->
+      <section class="section stats-section">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <img src="/assets/svg/paw-outline.svg" alt="Pėdutės" class="paw-hover-icon" />
+            <p>Turime:</p>
+            <strong>17</strong>
+          </div>
+
+          <div class="stat-card">
+            <img src="/assets/svg/paw2.svg" alt="Pėdutės" class="paw-hover-icon" />
+            <p>Rado namus:</p>
+            <strong>53</strong>
+          </div>
+
+          <div class="stat-card">
+            <img src="/assets/svg/paw-outline.svg" alt="Pėdutės" class="paw-hover-icon" />
+            <p>Savanoriai:</p>
+            <strong>12</strong>
+          </div>
+        </div>
       </section>
 
       <!-- Gyvunu sekcija -->
@@ -74,27 +194,32 @@
         <div class="cards-animal">
           <div class="card-animal">
             <h3>„Murkis“</h3>
-            <img src="/assets/img/cat1.png" alt="animal" />
+            <img src="/assets/img/cat1.png" alt="Gyvūnas" />
           </div>
 
           <div class="card-animal">
             <h3>„Taksis“</h3>
-            <img src="/assets/img/cat2.png" alt="animal" />
+            <img src="/assets/img/cat2.png" alt="Gyvūnas" />
           </div>
 
           <div class="card-animal">
             <h3>„Keksas“</h3>
-            <img src="/assets/img/cat3.png" alt="animal" />
+            <img src="/assets/img/cat3.png" alt="Gyvūnas" />
           </div>
         </div>
       </section>
     </div>
 
+    <!-- Footer -->
     <footer id="site-footer"></footer>
 
+    <!-- Bendri scriptai -->
     <script src="/assets/js/auth.js"></script>
     <script src="/assets/js/navbar.js"></script>
-    <script src="/assets/js/footer.js"></script> 
+    <script src="/assets/js/footer.js"></script>
     <script src="/assets/js/auth-modals.js"></script>
+
+    <!-- Prieglaudos puslapio logika -->
+    <script src="/assets/js/prieglauda.js"></script>
   </body>
 </html>

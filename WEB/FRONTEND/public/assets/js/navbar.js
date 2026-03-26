@@ -92,30 +92,31 @@ function buildNavbarMarkup(user) {
 }
 
 function buildProfileDropdown(user) {
-  const profilePage = user.role === "shelter"
-    ? "/pages/prieglauda.html"
-    : "/pages/profilis.html";
+  const volunteerProfilePage = "/pages/profilis.html";
+  const shelterProfilePage = "/pages/prieglauda.html";
 
-  const editProfilePage = user.role === "shelter"
-    ? "/pages/prieglauda-edit.html"
-    : "/pages/profilis-edit.html";
-
-  let items = `
-    <a href="${profilePage}" class="dropdown-item">Profilis</a>
-    <a href="${editProfilePage}" class="dropdown-item">Redaguoti profilį</a>
-  `;
-
-  if (user.role === "volunteer" && !user.has_shelter) {
-    items += `
-      <button type="button" class="dropdown-item" id="openShelterRegistrationBtn">Prieglaudos registracija</button>
-    `;
-  }
+  let items = "";
 
   if (user.role === "shelter") {
     items += `
+      <a href="${shelterProfilePage}" class="dropdown-item">Prieglaudos profilis</a>
+      <a href="${volunteerProfilePage}" class="dropdown-item">Vartotojo profilis</a>
       <a href="/pages/savanoriai.html" class="dropdown-item">Savanoriai</a>
       <a href="/pages/naujienos.html" class="dropdown-item">Naujienos</a>
     `;
+  }
+
+  if (user.role === "volunteer") {
+    items += `
+      <a href="${volunteerProfilePage}" class="dropdown-item">Profilis</a>
+      <a href="${volunteerProfilePage}?edit=1" class="dropdown-item">Redaguoti profilį</a>
+    `;
+
+    if (!user.has_shelter) {
+      items += `
+        <button type="button" class="dropdown-item" id="openShelterRegistrationBtn">Prieglaudos registracija</button>
+      `;
+    }
   }
 
   if (user.role === "admin") {
@@ -166,7 +167,10 @@ function bindNavbarEvents(user) {
     profileTrigger.addEventListener("click", (e) => {
       e.stopPropagation();
       profileMenu.classList.toggle("active");
-      profileTrigger.setAttribute("aria-expanded", profileMenu.classList.contains("active") ? "true" : "false");
+      profileTrigger.setAttribute(
+        "aria-expanded",
+        profileMenu.classList.contains("active") ? "true" : "false"
+      );
     });
 
     document.addEventListener("click", (e) => {
@@ -177,7 +181,8 @@ function bindNavbarEvents(user) {
     });
   }
 
-  if (openShelterRegistrationBtn) {
+  // Sis mygtukas egzistuoja tik volunteer rolei
+  if (openShelterRegistrationBtn && profileMenu && profileTrigger) {
     openShelterRegistrationBtn.addEventListener("click", () => {
       profileMenu.classList.remove("active");
       profileTrigger.setAttribute("aria-expanded", "false");
