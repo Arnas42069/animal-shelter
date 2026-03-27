@@ -58,6 +58,15 @@ body{
     display:none !important;
 }
 
+#animalViewMode[hidden],
+#animalForm[hidden],
+#animalEditBtn[hidden],
+#animalSaveBtn[hidden],
+#animalCancelBtn[hidden],
+#animalDeleteBtn[hidden]{
+    display:none !important;
+}
+
 /*---------------------------*/
 /* Pagrindiniai shelter blokai*/
 /*---------------------------*/
@@ -360,4 +369,202 @@ body{
     height:220px;
     object-fit:cover;
     border-radius:5px;
+}
+
+/*------------------------------*/
+/* Gyvunu toolbar ir filtrai    */
+/*------------------------------*/
+
+/* Gyvunu antrastes eilute */
+.animals-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    flex-wrap:wrap;
+    width:min(1100px, calc(100% - 40px));
+    margin:0 auto 20px auto;
+}
+
+/* Filtru ir rikiavimo juosta */
+.animals-toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+    width:min(1100px, calc(100% - 40px));
+    margin:0 auto 20px auto;
+}
+
+/* Filtru grupes */
+.animals-filters,
+.animals-sort{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+/* Select stiliai */
+.animals-toolbar select,
+.edit-form select{
+    min-width:160px;
+    padding:12px;
+    border:1px solid #aaa;
+    border-radius:8px;
+    font-size:14px;
+    box-sizing:border-box;
+    font-family:"Source Sans 3", sans-serif;
+    background:white;
+}
+
+/*------------------------------*/
+/* Gyvunu korteliu papildymai   */
+/*------------------------------*/
+
+/* Gyvuno kortele padarom klik'inama */
+.card-animal{
+    cursor:pointer;
+    transition:transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover efektas */
+.card-animal:hover{
+    transform:translateY(-4px);
+    box-shadow:0 8px 18px rgba(0,0,0,0.18);
+}
+
+/* Meta info korteles apacioje */
+.card-animal-meta{
+    margin-top:12px;
+    text-align:left;
+    font-size:14px;
+    color:#444;
+    line-height:1.5;
+}
+
+/*------------------------------*/
+/*      Gyvuno popup stiliai    */
+/*------------------------------*/
+
+/* Kai popup hidden - jo nerodom */
+.animal-modal-backdrop[hidden]{
+    display:none !important;
+}
+
+/* Popup tamsus fonas */
+.animal-modal-backdrop{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.45);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:2000;
+    padding:20px;
+}
+
+/* Pats popup blokas */
+.animal-modal{
+    position:relative;
+    width:min(1000px, 100%);
+    max-height:90vh;
+    overflow:auto;
+    background:#F5EFE6;
+    border-radius:16px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.25);
+}
+
+/* Uzdarymo mygtukas */
+.animal-modal-close{
+    position:absolute;
+    top:14px;
+    right:14px;
+    width:42px;
+    height:42px;
+    border:none;
+    border-radius:50%;
+    background:#444444;
+    color:#EAE0D5;
+    font-size:24px;
+    cursor:pointer;
+    z-index:3;
+}
+
+/* Virsutines nuotraukos blokas */
+.animal-modal-image-wrap{
+    width:100%;
+    height:320px;
+    overflow:hidden;
+}
+
+/* Gyvuno nuotrauka popup virsuje */
+.animal-modal-image{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+
+/* Popup antrastes blokas */
+.animal-modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:20px;
+    padding:20px;
+    border-bottom:1px solid #aaa;
+}
+
+/* Pavadinimo blokas */
+.animal-modal-title-wrap h2{
+    margin:0 0 8px 0;
+}
+
+/* Papildoma eilute po pavadinimu */
+.animal-modal-subtitle{
+    margin:0;
+    color:#555;
+}
+
+/* Popup veiksmu mygtuku blokas */
+.animal-modal-actions{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+/* Popup body */
+.animal-modal-body{
+    padding:20px;
+}
+
+/* Pagrindine informacija dviem stulpeliais */
+.animal-main-info{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:12px 30px;
+    margin-bottom:24px;
+    text-align:left;
+}
+
+/* Viena info eilute */
+.animal-main-info p{
+    margin:0;
+}
+
+/* Aprasymo blokas */
+.animal-description-block{
+    text-align:left;
+}
+
+.animal-description-block h3{
+    margin-bottom:12px;
+}
+
+/* Gyvuno nuotraukos failo input */
+#animalImageInput{
+    margin-top:6px;
+    margin-bottom:6px;
+    font-family:"Source Sans 3", sans-serif;
 }

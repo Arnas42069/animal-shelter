@@ -109,3 +109,43 @@ class Animal(Base):
     )
 
     shelter = relationship("Shelter", backref="animals")
+
+    # Susietos gyvuno nuotraukos
+    images = relationship(
+        "AnimalImage",
+        back_populates="animal",
+        cascade="all, delete-orphan"
+    )
+
+
+class AnimalImage(Base):
+    __tablename__ = "animal_image"
+
+    # Viena nuotrauka priklauso vienam gyvunui
+    animal_id = Column(
+        BigInteger,
+        ForeignKey("animal.id", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False
+    )
+
+    # Nuotraukos kelias arba url
+    url = Column(Text, primary_key=True, nullable=False)
+
+    # Ar si nuotrauka yra pagrindine
+    is_primary = Column(
+        Boolean,
+        nullable=False,
+        default=False,
+        server_default=text("false")
+    )
+
+    # Sukurimo data
+    created_at = Column(
+        TIMESTAMP(timezone=True),
+        nullable=False,
+        server_default=func.now()
+    )
+
+    # Relationship i gyvuna
+    animal = relationship("Animal", back_populates="images")

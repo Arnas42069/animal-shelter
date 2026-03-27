@@ -187,27 +187,212 @@
         </div>
       </section>
 
-      <!-- Gyvunu sekcija -->
+            <!-- Gyvunu sekcija -->
       <section class="animals">
-        <h2 id="gyvunai">Gyvūnai</h2>
+        <div class="animals-header">
+          <h2 id="gyvunai">Gyvūnai</h2>
 
-        <div class="cards-animal">
-          <div class="card-animal">
-            <h3>„Murkis“</h3>
-            <img src="/assets/img/cat1.png" alt="Gyvūnas" />
+          <!-- Mygtukas naujo gyvuno sukurimui -->
+          <button class="btn" id="openCreateAnimalBtn" type="button">
+            Pridėti gyvūną
+          </button>
+        </div>
+
+        <!-- Filtrai ir rikiavimas -->
+        <div class="animals-toolbar">
+          <div class="animals-filters">
+            <!-- Filtras pagal rusi -->
+            <select id="filterSpecies">
+              <option value="">Visos rūšys</option>
+              <option value="dog">Šuo</option>
+              <option value="cat">Katė</option>
+              <option value="other">Kitas</option>
+            </select>
+
+            <!-- Filtras pagal veisle -->
+            <select id="filterBreed">
+              <option value="">Visos veislės</option>
+            </select>
+
+            <!-- Filtras pagal lyti -->
+            <select id="filterSex">
+              <option value="">Visos lytys</option>
+              <option value="male">Patinas</option>
+              <option value="female">Patelė</option>
+              <option value="unknown">Nežinoma</option>
+            </select>
+
+            <!-- Filtras pagal statusa -->
+            <select id="filterStatus">
+              <option value="">Visi statusai</option>
+              <option value="available">Available</option>
+              <option value="reserved">Reserved</option>
+              <option value="adopted">Adopted</option>
+              <option value="foster">Foster</option>
+              <option value="medical_hold">Medical hold</option>
+              <option value="lost">Lost</option>
+            </select>
           </div>
 
-          <div class="card-animal">
-            <h3>„Taksis“</h3>
-            <img src="/assets/img/cat2.png" alt="Gyvūnas" />
-          </div>
-
-          <div class="card-animal">
-            <h3>„Keksas“</h3>
-            <img src="/assets/img/cat3.png" alt="Gyvūnas" />
+          <div class="animals-sort">
+            <!-- Rikiavimas -->
+            <select id="sortAnimals">
+              <option value="created_at_desc">Naujausi pirmiau</option>
+              <option value="name_asc">Vardas A–Ž</option>
+              <option value="name_desc">Vardas Ž–A</option>
+              <option value="breed_asc">Veislė A–Ž</option>
+              <option value="breed_desc">Veislė Ž–A</option>
+              <option value="birth_date_asc">Gimimo data ↑</option>
+              <option value="birth_date_desc">Gimimo data ↓</option>
+            </select>
           </div>
         </div>
+
+        <!-- Zinute gyvunu veiksmams -->
+        <p id="animalsMessage" class="shelter-message"></p>
+
+        <!-- Dinaminis gyvunu grid -->
+        <div class="cards-animal" id="animalsGrid"></div>
+        <div id="animalsPagination" class="animals-pagination"></div>
       </section>
+
+      <!-- Gyvuno popup fonas -->
+      <div class="animal-modal-backdrop" id="animalModalBackdrop" hidden>
+        <!-- Popup langas -->
+        <div class="animal-modal">
+          <!-- Uzdarymo mygtukas -->
+          <button
+            class="animal-modal-close"
+            id="closeAnimalModalBtn"
+            type="button"
+          >
+            ×
+          </button>
+
+          <!-- Virsutine gyvuno nuotrauka -->
+          <div class="animal-modal-image-wrap">
+            <img
+              id="animalModalImage"
+              src="/assets/img/cat1.png"
+              alt="Gyvūnas"
+              class="animal-modal-image"
+            />
+          </div>
+
+          <!-- Popup antraste -->
+          <div class="animal-modal-header">
+            <div class="animal-modal-title-wrap">
+              <h2 id="animalModalTitle">Gyvūnas</h2>
+              <p id="animalModalSubtitle" class="animal-modal-subtitle">-</p>
+            </div>
+
+            <!-- Popup veiksmai -->
+            <div class="animal-modal-actions">
+              <button class="btn" id="animalEditBtn" type="button">
+                Redaguoti
+              </button>
+
+              <button class="btn" id="animalDeleteBtn" type="button">
+                Ištrinti
+              </button>
+
+              <button class="btn" id="animalSaveBtn" type="button" hidden>
+                Išsaugoti
+              </button>
+
+              <button class="btn" id="animalCancelBtn" type="button" hidden>
+                Atšaukti
+              </button>
+            </div>
+          </div>
+
+          <!-- Popup turinys -->
+          <div class="animal-modal-body">
+            <!-- Perziuros rezimas -->
+            <div id="animalViewMode">
+              <div class="animal-main-info">
+                <p><strong>Rūšis:</strong> <span id="animalViewSpecies">-</span></p>
+                <p><strong>Veislė:</strong> <span id="animalViewBreed">-</span></p>
+                <p><strong>Lytis:</strong> <span id="animalViewSex">-</span></p>
+                <p><strong>Statusas:</strong> <span id="animalViewStatus">-</span></p>
+                <p><strong>Gimimo data:</strong> <span id="animalViewBirthDate">-</span></p>
+                <p><strong>Spalva:</strong> <span id="animalViewColor">-</span></p>
+                <p><strong>Kodas:</strong> <span id="animalViewCode">-</span></p>
+              </div>
+
+              <div class="animal-description-block">
+                <h3>Aprašymas</h3>
+                <p id="animalViewDescription">-</p>
+              </div>
+            </div>
+
+            <!-- Redagavimo ir kurimo forma -->
+            <form id="animalForm" class="edit-form" hidden>
+              <!-- Gyvuno vardas -->
+              <label class="edit-label" for="animalNameInput">Vardas:</label>
+              <input type="text" id="animalNameInput" />
+
+              <!-- Unikalus kodas -->
+              <label class="edit-label" for="animalCodeInput">Kodas:</label>
+              <input type="text" id="animalCodeInput" />
+
+              <!-- Rusis -->
+              <label class="edit-label" for="animalSpeciesInput">Rūšis:</label>
+              <select id="animalSpeciesInput">
+                <option value="dog">Šuo</option>
+                <option value="cat">Katė</option>
+                <option value="other">Kitas</option>
+              </select>
+
+              <!-- Veisle -->
+              <label class="edit-label" for="animalBreedInput">Veislė:</label>
+              <input type="text" id="animalBreedInput" />
+
+              <!-- Lytis -->
+              <label class="edit-label" for="animalSexInput">Lytis:</label>
+              <select id="animalSexInput">
+                <option value="male">Patinas</option>
+                <option value="female">Patelė</option>
+                <option value="unknown">Nežinoma</option>
+              </select>
+
+              <!-- Statusas -->
+              <label class="edit-label" for="animalStatusInput">Statusas:</label>
+              <select id="animalStatusInput">
+                <option value="available">Available</option>
+                <option value="reserved">Reserved</option>
+                <option value="adopted">Adopted</option>
+                <option value="foster">Foster</option>
+                <option value="medical_hold">Medical hold</option>
+                <option value="lost">Lost</option>
+              </select>
+
+              <!-- Gimimo data -->
+              <label class="edit-label" for="animalBirthDateInput">Gimimo data:</label>
+              <input type="date" id="animalBirthDateInput" />
+
+              <!-- Spalva -->
+              <label class="edit-label" for="animalColorInput">Spalva:</label>
+              <input type="text" id="animalColorInput" />
+
+              <!-- Gyvuno nuotrauka -->
+              <label class="edit-label" for="animalImageInput">Nuotrauka:</label>
+              <input type="file" id="animalImageInput" accept="image/*" />
+
+              <!-- Aprasymas -->
+              <label class="edit-label" for="animalDescriptionInput">Aprašymas:</label>
+              <textarea
+                id="animalDescriptionInput"
+                class="edit-textarea"
+                rows="5"
+              ></textarea>
+            </form>
+
+            <!-- Zinute popup veiksmams -->
+            <p id="animalModalMessage" class="shelter-message"></p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Footer -->

@@ -1,15 +1,20 @@
 from typing import Optional
 from datetime import date
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
+import shutil
+import uuid
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy import or_, asc, desc
 
 from src.database import get_db
 from src.models import (
     AppUser, 
     Shelter,
     Animal,
+    AnimalImage,
 )
 from src.schemas import (
     RegisterRequest,
@@ -37,6 +42,23 @@ from src.validators import validate_password
 
 
 app = FastAPI()
+
+# --------------------------------------------
+# ----------------UPLOADS----------------------
+# --------------------------------------------
+
+# Laikinas uploads katalogas konteineryje
+# Naudojam /tmp, nes ten turim rasymo teises
+UPLOADS_DIR = Path("/tmp/uploads")
+
+# Gyvunu nuotrauku katalogas
+ANIMAL_UPLOADS_DIR = UPLOADS_DIR / "animals"
+
+# Sukuriam katalogus jei ju dar nera
+ANIMAL_UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+
+# Static failu atidavimas per /uploads
+app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
 
 @app.get("/health")
@@ -551,6 +573,32 @@ def delete_my_shelter(
 
     return {"message": "Prieglauda ištrinta sėkmingai"}
 
+# --------------------------------------------
+# -------------ANIMAL IMAGE HELPERS-----------
+# --------------------------------------------
+
+def attach_primary_image_url(animal: Animal, db: Session):
+    """
+    Prideda gyvunui pagrindines nuotraukos url,
+    kad frontend galetu ja gauti tiesiai is response.
+    """
+    image = db.query(AnimalImage).filter(
+        AnimalImage.animal_id == animal.id,
+        AnimalImage.is_primary == True
+    ).order_by(AnimalImage.created_at.desc()).first()
+
+    animal.primary_image_url = image.url if image else None
+    return animal
+
+
+def attach_primary_image_urls(animals: list[Animal], db: Session):
+    """
+    Prideda pagrindines nuotraukos url visam gyvunu sarasui.
+    """
+    for animal in animals:
+        attach_primary_image_url(animal, db)
+
+    return animals
 
 # -------------------------------------------------
 # -------------------ANIMAL------------------------
@@ -603,7 +651,109 @@ def create_animal(
     db.commit()
     db.refresh(animal)
 
+    attach_primary_image_url(animal, db)
+
     return animal
+
+# CREATE / UPDATE GYVUNO NUOTRAUKA
+@app.post("/animal/{animal_id}/image")
+def upload_my_animal_image(
+    animal_id: int,
+    image: UploadFile = File(...),
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Ikelia arba pakeicia pagrindine gyvuno nuotrauka.
+
+    Prieiga:
+    - Tik autentifikuoti shelter vartotojai
+    - Tik savo prieglaudos gyvunams
+
+    Elgsena:
+    - Jei sena pagrindine nuotrauka yra, ji pasalinama
+    - Irasomas naujas irasas i animal_image
+    - Grazinamas naujos nuotraukos url
+    """
+
+    # Randam prisijungusio vartotojo prieglauda
+    shelter = db.query(Shelter).filter(Shelter.created_by == user.id).first()
+
+    if not shelter:
+        raise HTTPException(status_code=404, detail="Prieglauda nerasta")
+
+    # Randam gyvuna ir tikrinam ar jis priklauso tai prieglaudai
+    animal = db.query(Animal).filter(
+        Animal.id == animal_id,
+        Animal.shelter_id == shelter.id
+    ).first()
+
+    if not animal:
+        raise HTTPException(
+            status_code=404,
+            detail="Gyvūnas nerastas arba nepriklauso jūsų prieglaudai"
+        )
+
+    # Leidziami failu formatai
+    allowed_extensions = {".jpg", ".jpeg", ".png", ".webp"}
+
+    # Tikrinam failo pletini
+    file_extension = Path(image.filename or "").suffix.lower()
+
+    if file_extension not in allowed_extensions:
+        raise HTTPException(
+            status_code=400,
+            detail="Leidžiami tik JPG, JPEG, PNG ir WEBP failai"
+        )
+
+    # Tikrinam ar tai paveiksliukas
+    if not image.content_type or not image.content_type.startswith("image/"):
+        raise HTTPException(
+            status_code=400,
+            detail="Įkeltas failas nėra paveikslėlis"
+        )
+
+    # Pasalinam sena pagrindine nuotrauka jei ji yra
+    old_images = db.query(AnimalImage).filter(
+        AnimalImage.animal_id == animal.id,
+        AnimalImage.is_primary == True
+    ).all()
+
+    for old_image in old_images:
+        # Is /uploads/animals/xxx.jpg padarom kelia iki failo diske
+        relative_path = old_image.url.replace("/uploads/", "")
+        old_file_path = UPLOADS_DIR / relative_path
+
+        if old_file_path.exists():
+            old_file_path.unlink()
+
+        db.delete(old_image)
+
+    # Sukuriam nauja unikalu failo pavadinima
+    unique_filename = f"{animal.id}_{uuid.uuid4().hex}{file_extension}"
+    saved_file_path = ANIMAL_UPLOADS_DIR / unique_filename
+
+    # Issaugom faila diske
+    with saved_file_path.open("wb") as buffer:
+        shutil.copyfileobj(image.file, buffer)
+
+    # Public url, kuri gales naudoti frontend
+    public_url = f"/uploads/animals/{unique_filename}"
+
+    # Sukuriam irasa DB
+    animal_image = AnimalImage(
+        animal_id=animal.id,
+        url=public_url,
+        is_primary=True
+    )
+
+    db.add(animal_image)
+    db.commit()
+
+    return {
+        "message": "Gyvūno nuotrauka sėkmingai įkelta",
+        "url": public_url
+    }
 
 
 # READ
@@ -612,8 +762,14 @@ def get_animals(
     shelter_id: Optional[int] = None,
     status: Optional[str] = None,
     species: Optional[str] = None,
+    breed: Optional[str] = None,
+    sex: Optional[str] = None,
     birth_date_from: Optional[date] = None,
     birth_date_to: Optional[date] = None,
+    sort_by: Optional[str] = None,
+    sort_order: Optional[str] = "asc",
+    page: int = 1,
+    page_size: int = 12,
     db: Session = Depends(get_db)
 ):
     """
@@ -623,14 +779,32 @@ def get_animals(
     - shelter_id: grąžina tik konkrečios prieglaudos gyvūnus
     - status: pvz. available, adopted ir pan.
     - species: pvz. dog, cat
-    - birth_date_from: gyvūnai gimę nuo šios datos (jaunesni)
-    - birth_date_to: gyvūnai gimę iki šios datos (vyresni)
+    - breed: gyvūno veislė
+    - sex: male, female, unknown
+    - birth_date_from: gyvūnai gimę nuo šios datos
+    - birth_date_to: gyvūnai gimę iki šios datos
 
-    Pavyzdžiai:
-    - /animal?shelter_id=1
-    - /animal?species=dog&status=available
-    - /animal?birth_date_from=2022-01-01
+    Rikiavimas:
+    - sort_by=name
+    - sort_by=breed
+    - sort_by=birth_date
+    - sort_order=asc arba desc
+
+    Puslapiavimas:
+    - page
+    - page_size
     """
+
+    # Apsauga nuo netinkamų puslapiavimo reikšmių
+    if page < 1:
+        page = 1
+
+    if page_size < 1:
+        page_size = 12
+
+    if page_size > 100:
+        page_size = 100
+
     query = db.query(Animal)
 
     if shelter_id:
@@ -642,14 +816,167 @@ def get_animals(
     if species:
         query = query.filter(Animal.species == species)
 
+    # Filtravimas pagal veisle
+    if breed:
+        query = query.filter(Animal.breed == breed)
+
+    # Filtravimas pagal lyti
+    if sex:
+        query = query.filter(Animal.sex == sex)
+
     if birth_date_from:
         query = query.filter(Animal.birth_date >= birth_date_from)
 
     if birth_date_to:
         query = query.filter(Animal.birth_date <= birth_date_to)
 
-    return query.all()
+    # Rikiavimo logika
+    if sort_by == "name":
+        if sort_order == "desc":
+            query = query.order_by(Animal.name.desc())
+        else:
+            query = query.order_by(Animal.name.asc())
 
+    elif sort_by == "breed":
+        if sort_order == "desc":
+            query = query.order_by(Animal.breed.desc())
+        else:
+            query = query.order_by(Animal.breed.asc())
+
+    elif sort_by == "birth_date":
+        if sort_order == "desc":
+            query = query.order_by(Animal.birth_date.desc())
+        else:
+            query = query.order_by(Animal.birth_date.asc())
+
+    else:
+        # Jei nieko nenurodyta, rodom naujausius pirmiau
+        query = query.order_by(Animal.created_at.desc())
+
+    # Puslapiavimo skaičiavimas
+    offset = (page - 1) * page_size
+
+    animals = query.offset(offset).limit(page_size).all()
+
+    # Pridedam pagrindines nuotraukos url kiekvienam gyvunui
+    attach_primary_image_urls(animals, db)
+
+    return animals
+
+
+# READ MANO PRIEGLAUDOS GYVUNUS
+@app.get("/animal/me", response_model=list[AnimalResponse])
+def get_my_animals(
+    # Filtras pagal rusį
+    species: Optional[str] = None,
+
+    # Filtras pagal veislę
+    breed: Optional[str] = None,
+
+    # Filtras pagal lytį
+    sex: Optional[str] = None,
+
+    # Filtras pagal statusą
+    status: Optional[str] = None,
+
+    # Rikiavimo laukas
+    # Galimos reikšmės: name, breed, birth_date
+    sort_by: Optional[str] = None,
+
+    # Rikiavimo kryptis
+    # Galimos reikšmės: asc, desc
+    sort_order: Optional[str] = "desc",
+
+    # Puslapiavimas
+    page: int = 1,
+    page_size: int = 6,
+
+    # Prisijungęs vartotojas
+    user: AppUser = Depends(get_current_user),
+
+    # Duomenų bazės sesija
+    db: Session = Depends(get_db)
+):
+    """
+    Gauti prisijungusios prieglaudos gyvūnų sąrašą.
+
+    Filtravimas:
+    - species
+    - breed
+    - sex
+    - status
+
+    Rikiavimas:
+    - sort_by=name
+    - sort_by=breed
+    - sort_by=birth_date
+    - sort_order=asc arba desc
+
+    Puslapiavimas:
+    - page
+    - page_size
+    """
+
+    # Apsauga nuo netinkamų page reikšmių
+    if page < 1:
+        page = 1
+
+    # Apsauga nuo per didelio page_size
+    if page_size < 1:
+        page_size = 6
+
+    if page_size > 50:
+        page_size = 50
+
+    # Randam prisijungusio vartotojo prieglaudą
+    shelter = db.query(Shelter).filter(Shelter.created_by == user.id).first()
+
+    if not shelter:
+        raise HTTPException(status_code=404, detail="Prieglauda nerasta")
+
+    # Imame tik tos prieglaudos gyvūnus
+    query = db.query(Animal).filter(Animal.shelter_id == shelter.id)
+
+    # Filtras pagal statusą
+    if status:
+        query = query.filter(Animal.status == status)
+
+    # Filtras pagal rūšį
+    if species:
+        query = query.filter(Animal.species == species)
+
+    # Filtras pagal veislę
+    if breed:
+        query = query.filter(Animal.breed == breed)
+
+    # Filtras pagal lytį
+    if sex:
+        query = query.filter(Animal.sex == sex)
+
+    # Nustatom rikiavimo kryptį
+    order_fn = desc if sort_order == "desc" else asc
+
+    # Rikiuojam pagal pasirinktą lauką
+    if sort_by == "name":
+        query = query.order_by(order_fn(Animal.name))
+    elif sort_by == "breed":
+        query = query.order_by(order_fn(Animal.breed))
+    elif sort_by == "birth_date":
+        query = query.order_by(order_fn(Animal.birth_date))
+    else:
+        # Jei nieko nenurodyta, rodom naujausius pirmiau
+        query = query.order_by(desc(Animal.created_at))
+
+    # Puslapiavimo skaičiavimas
+    offset = (page - 1) * page_size
+
+    # Grąžinam tik vieno puslapio gyvūnus
+    animals = query.offset(offset).limit(page_size).all()
+
+    # Pridedam pagrindines nuotraukos url kiekvienam gyvunui
+    attach_primary_image_urls(animals, db)
+
+    return animals
 
 @app.get("/animal/by-code/{code}", response_model=AnimalResponse)
 def get_animal_by_code(
@@ -675,6 +1002,9 @@ def get_animal_by_code(
 
     if not animal:
         raise HTTPException(status_code=404, detail="Gyvūnas nerastas")
+
+    # Pridedam pagrindines nuotraukos url
+    attach_primary_image_url(animal, db)
 
     return animal
 
@@ -746,6 +1076,9 @@ def update_my_animal(
 
     db.commit()
     db.refresh(animal)
+
+    # Pridedam pagrindines nuotraukos url
+    attach_primary_image_url(animal, db)
 
     return animal
 

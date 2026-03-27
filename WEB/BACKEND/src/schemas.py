@@ -134,31 +134,25 @@ class AnimalResponse(BaseModel):
     description: Optional[str]
     status: str
 
+    # Pagrindines nuotraukos url
+    primary_image_url: Optional[str] = None
+
     class Config:
         from_attributes = True
 
 
+# Gyvuno atnaujinimo uzklausa
 class AnimalUpdateRequest(BaseModel):
     name: Optional[str] = None
     code: Optional[str] = None
-    species: Optional[str] = None
+    species: Optional[str] = Field(default=None, pattern="^(dog|cat|other)$")
     breed: Optional[str] = None
-    sex: Optional[str] = None
+    sex: Optional[str] = Field(default=None, pattern="^(male|female|unknown)$")
     birth_date: Optional[date] = None
     color: Optional[str] = None
     description: Optional[str] = None
-    status: Optional[str] = None
 
-    account_name: str | None = Field(default=None, min_length=2, max_length=50)
-    account_surname: str | None = Field(default=None, min_length=2, max_length=50)
-    username: str | None = Field(default=None, min_length=3, max_length=50)
-    email: EmailStr | None = None
-
-    shelter_name: str | None = Field(default=None, min_length=2, max_length=100)
-    description: str | None = None
-    phone: str | None = Field(default=None, min_length=5, max_length=20)
-    website: str | None = None
-    address: str | None = Field(default=None, min_length=3, max_length=200)
-    city: str | None = Field(default=None, min_length=2, max_length=100)
-    postal_code: str | None = None
-    country: str | None = Field(default=None, min_length=2, max_length=100)
+    status: Optional[str] = Field(
+        default=None,
+        pattern="^(available|reserved|adopted|foster|medical_hold|lost)$"
+    )
