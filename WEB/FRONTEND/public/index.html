@@ -32,39 +32,13 @@
         <h2 id="prieglaudos">Prieglaudos</h2>
 
         <div class="carousel">
-          <div class="arrow-shelter">❮</div>
+          <button class="arrow-shelter" id="shelterPrevBtn" type="button">❮</button>
 
-          <div class="cards-shelter">
-            <div class="card-shelter">
-              <h3>„Mažas draugas“</h3>
-              <a href="/pages/prieglauda.html">
-                <img src="/assets/img/logo.png" alt="logo" />
-              </a>
-            </div>
-
-            <div class="card-shelter">
-              <h3>„Mažas draugas“</h3>
-              <a href="/pages/prieglauda.html">
-                <img src="/assets/img/logo.png" alt="logo" />
-              </a>
-            </div>
-
-            <div class="card-shelter">
-              <h3>„Mažas draugas“</h3>
-              <a href="/pages/prieglauda.html">
-                <img src="/assets/img/logo.png" alt="logo" />
-              </a>
-            </div>
-
-            <div class="card-shelter">
-              <h3>„Mažas draugas“</h3>
-              <a href="/pages/prieglauda.html">
-                <img src="/assets/img/logo.png" alt="logo" />
-              </a>
-            </div>
+          <div class="cards-shelter" id="shelterCardsContainer">
+            <!-- Prieglaudos bus sugeneruotos per JS -->
           </div>
 
-          <div class="arrow-shelter">❯</div>
+          <button class="arrow-shelter" id="shelterNextBtn" type="button">❯</button>
         </div>
 
         <hr />
@@ -74,73 +48,83 @@
       <section class="animals">
         <h2 id="gyvunai">Gyvūnai</h2>
 
-        <div class="cards-animal">
-          <div class="card-animal">
-            <h3>„Murkis“</h3>
-            <img src="/assets/img/cat1.png" alt="animal" />
-          </div>
+        <div class="animals-toolbar">
+          <select id="animalShelterFilter">
+            <option value="">Visos prieglaudos</option>
+          </select>
 
-          <div class="card-animal">
-            <h3>„Taksis“</h3>
-            <img src="/assets/img/cat2.png" alt="animal" />
-          </div>
+          <select id="animalSpeciesFilter">
+            <option value="">Visos rūšys</option>
+            <option value="dog">Šuo</option>
+            <option value="cat">Katė</option>
+          </select>
 
-          <div class="card-animal">
-            <h3>„Keksas“</h3>
-            <img src="/assets/img/cat3.png" alt="animal" />
-          </div>
+          <select id="animalGenderFilter">
+            <option value="">Visos lytys</option>
+            <option value="male">Patinas</option>
+            <option value="female">Patelė</option>
+          </select>
+
+          <select id="animalStatusFilter">
+            <option value="">Visi statusai</option>
+            <option value="available">Available</option>
+            <option value="reserved">Reserved</option>
+            <option value="adopted">Adopted</option>
+            <option value="foster">Foster</option>
+            <option value="medical_hold">Medical hold</option>
+            <option value="lost">Lost</option>
+          </select>
+
+          <select id="animalSortOrder">
+            <option value="desc">Naujausi pirmiau</option>
+            <option value="asc">Seniausi pirmiau</option>
+          </select>
         </div>
 
-        <div class="cards-animal">
-          <div class="card-animal">
-            <h3>„Murkis“</h3>
-            <img src="/assets/img/cat1.png" alt="animal" />
-          </div>
-
-          <div class="card-animal">
-            <h3>„Taksis“</h3>
-            <img src="/assets/img/cat2.png" alt="animal" />
-          </div>
-
-          <div class="card-animal">
-            <h3>„Keksas“</h3>
-            <img src="/assets/img/cat3.png" alt="animal" />
-          </div>
+        <div class="cards-animal" id="animalCardsContainer">
+          <!-- Gyvūnų kortelės bus sugeneruotos per JS -->
         </div>
 
-        <div class="cards-animal">
-          <div class="card-animal">
-            <h3>„Murkis“</h3>
-            <img src="/assets/img/cat1.png" alt="animal" />
-          </div>
-
-          <div class="card-animal">
-            <h3>„Taksis“</h3>
-            <img src="/assets/img/cat2.png" alt="animal" />
-          </div>
-
-          <div class="card-animal">
-            <h3>„Keksas“</h3>
-            <img src="/assets/img/cat3.png" alt="animal" />
-          </div>
-        </div>
-
-        <!-- ejimas per gyvunu kataloga reikia backend kad veiktu -->
-        <!-- simbolis # keiciamas i kuri katalogo pusapi einama -->
-        <div class="pagination">
-          <a href="#">«</a>
-          <a href="#" class="active">1</a>
-          <a href="#">2</a>
-          <a href="#">3</a>
-          <a href="#">4</a>
-          <a href="#">...</a>
-          <a href="#">»</a>
+        <div class="pagination" id="animalsPagination">
+          <!-- Puslapiavimas bus sugeneruotas per JS -->
         </div>
       </section>
     </div>
     <footer id="site-footer"></footer>
 
+    <div class="animal-modal-backdrop" id="animalModalBackdrop" hidden>
+      <div class="animal-modal">
+        <button class="animal-modal-close" id="animalModalCloseBtn" type="button">×</button>
+
+        <img
+          id="animalModalImage"
+          class="animal-modal-image"
+          src="/assets/img/cat1.png"
+          alt="Gyvūnas"
+        />
+
+        <h2 id="animalModalName">Gyvūnas</h2>
+
+        <div class="animal-modal-grid">
+          <p><strong>Prieglauda:</strong> <span id="animalModalShelter">-</span></p>
+          <p><strong>Rūšis:</strong> <span id="animalModalSpecies">-</span></p>
+          <p><strong>Veislė:</strong> <span id="animalModalBreed">-</span></p>
+          <p><strong>Lytis:</strong> <span id="animalModalGender">-</span></p>
+          <p><strong>Statusas:</strong> <span id="animalModalStatus">-</span></p>
+          <p><strong>Spalva:</strong> <span id="animalModalColor">-</span></p>
+          <p><strong>Gimimo data:</strong> <span id="animalModalBirthDate">-</span></p>
+          <p><strong>Kodas:</strong> <span id="animalModalCode">-</span></p>
+        </div>
+
+        <div class="animal-modal-description">
+          <h3>Aprašymas</h3>
+          <p id="animalModalDescription">-</p>
+        </div>
+      </div>
+    </div>
+
     <script src="/assets/js/auth.js"></script>
+    <script src="/assets/js/main.js"></script>
     <script src="/assets/js/navbar.js"></script>
     <script src="/assets/js/footer.js"></script> 
     <script src="/assets/js/auth-modals.js"></script>
