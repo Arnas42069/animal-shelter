@@ -43,6 +43,7 @@ body{
     min-height:100vh;
     display:flex;
     flex-direction:column;
+    font-family: "Source Sans 3", sans-serif;
 }
 
 /* Bendras sekciju stilius */
@@ -732,4 +733,33 @@ section h2 {
 
 .right-paw {
     transform: rotate(18deg);
+}
+
+
+
+.loved-startEnd{
+    text-align: center;
+    padding-bottom: 2%;
+}
+
+.loved-startEnd h1{
+    font-size: 24px;
+    
+}
+
+.loved-startEnd h2{
+    font-size: 20px;
+}
+
+.loved-startEnd .btn{
+    font-size: 15px;
+    margin-top: 20px;
+}
+
+.loved-startEnd .btn:hover{
+    background: #585856;
+}
+
+.loved-animal-name{
+    font-size: 20px;
 }

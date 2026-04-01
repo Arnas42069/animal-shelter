@@ -3,8 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kuriama</title>
+    <title>Mėgstami gyvūnai</title>
     <link rel="stylesheet" href="/assets/css/main.css" />
+    <link rel="stylesheet" href="/assets/css/megstami-gyvunai.css" />
     <link rel="stylesheet" href="/assets/css/navbar.css" />
     <link rel="stylesheet" href="/assets/css/auth-modals.css" />
     <link rel="stylesheet" href="/assets/css/footer.css" />
@@ -12,11 +13,95 @@
   <body>
     <header id="site-navbar"></header>
     <div id="auth-modals-root"></div>
+    <div class="container-gaps">
+      <header class="loved-startEnd">
+        <h1 class="h1">❤️ Pamėgti gyvūnai</h1>
+        <h2 class="h2">Čia rodomi Jūsų pamėgti gyvūnai</h2>
+      </header>
 
-    <main style="padding:40px; font-family:Arial, sans-serif;">
-      <h1>Šis puslapis dar kuriamas</h1>
-    </main>
+      <main>
+      <!-- Jei yra gyvūnų -->
+      <section class="animals">
+        <div class="animals-toolbar">
+          <select id="animalShelterFilter">
+            <option value="">Visos prieglaudos</option>
+          </select>
 
+          <select id="animalSpeciesFilter">
+            <option value="">Visos rūšys</option>
+            <option value="dog">Šuo</option>
+            <option value="cat">Katė</option>
+          </select>
+
+          <select id="animalGenderFilter">
+            <option value="">Visos lytys</option>
+            <option value="male">Patinas</option>
+            <option value="female">Patelė</option>
+          </select>
+
+          <select id="animalStatusFilter">
+            <option value="">Visi statusai</option>
+            <option value="available">Available</option>
+            <option value="reserved">Reserved</option>
+            <option value="adopted">Adopted</option>
+            <option value="foster">Foster</option>
+            <option value="medical_hold">Medical hold</option>
+            <option value="lost">Lost</option>
+          </select>
+
+          <select id="animalSortOrder">
+            <option value="desc">Naujausi pirmiau</option>
+            <option value="asc">Seniausi pirmiau</option>
+          </select>
+        </div>
+
+        <div class="cards-animal">
+          <div class="card-animal">
+            <h2 class="loved-animal-name">Molly</h2>
+            <img src="/assets/img/dog5.jpg" alt="dog">
+            <p><strong>Rūšis:</strong> Šuo</p>
+            <p><strong>Veislė:</strong> Border Collie</p>
+            <p><strong>Prieglauda:</strong> -</p>
+            <p><strong>Statusas:</strong> Reserved</p>
+          </div>
+
+          <div class="card-animal">
+            <h2 class="loved-animal-name">Buddy</h2>
+            <img src="/assets/img/cat4.jpg" alt="cat">
+            <p><strong>Rūšis:</strong> Katė</p>
+            <p><strong>Veislė:</strong> Golden Retriever</p>
+            <p><strong>Prieglauda:</strong> -</p>
+            <p><strong>Statusas:</strong> Available</p>
+          </div>
+
+          <div class="card-animal">
+            <h2 class="loved-animal-name">Nala</h2>
+            <img src="/assets/img/dog2.jpg" alt="dog">
+            <p><strong>Rūšis:</strong> Šuo</p>
+            <p><strong>Veislė:</strong> Mixed</p>
+            <p><strong>Prieglauda:</strong> Happy Paws Shelter</p>
+            <p><strong>Statusas:</strong> Available</p>
+          </div>
+
+          <div class="card-animal">
+            <h2 class="loved-animal-name">Simba</h2>
+            <img src="/assets/img/cat5.jpg" alt="">
+            <p><strong>Rūšis:</strong> Katė</p>
+            <p><strong>Veislė:</strong> Mixed</p>
+            <p><strong>Prieglauda:</strong> Happy Paws Shelter</p>
+            <p><strong>Statusas:</strong> Available</p>
+          </div>
+        </div>
+      </section>
+      <header class="loved-startEnd">
+        <a class="btn" href="index.html#gyvunai">Peržiūrėti visus gyvūnus</a>
+      </header>
+    </div>
+  <!-- Tuščia būsena (rodyk vietoj grid jei nėra duomenų) -->
+  
+
+</main>
+    </div>
     <footer id="site-footer"></footer>
 
     <script src="/assets/js/auth.js"></script>
