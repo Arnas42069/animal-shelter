@@ -18,6 +18,8 @@
     <!-- Navbar vieta -->
     <header id="site-navbar"></header>
 
+    <div id="auth-modals-root"></div>
+
     <!-- Sviesus vidinis puslapio blokas -->
     <div class="container-gaps" id="shelterProfilePage">
       <!-- Virsutine prieglaudos nuotrauka -->
@@ -79,7 +81,7 @@
           <h3>Kontaktai</h3>
 
           <div class="section-header-actions">
-            <button class="btn" id="toggleShelterEditBtn" type="button">
+            <button class="btn" id="toggleShelterEditBtn" type="button" hidden>
               Redaguoti informaciją
             </button>
 
@@ -193,7 +195,7 @@
           <h2 id="gyvunai">Gyvūnai</h2>
 
           <!-- Mygtukas naujo gyvuno sukurimui -->
-          <button class="btn" id="openCreateAnimalBtn" type="button">
+          <button class="btn" id="openCreateAnimalBtn" type="button" hidden>
             Pridėti gyvūną
           </button>
         </div>

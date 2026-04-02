@@ -67,6 +67,10 @@ body{
     display:none !important;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 /*---------------------------*/
 /* Pagrindiniai shelter blokai*/
 /*---------------------------*/

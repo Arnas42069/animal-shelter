@@ -2,9 +2,14 @@
   // Dabartines prieglaudos duomenys
   let currentShelter = null;
 
+  // Prisijunges vartotojas
+  let authUser = null;
+
+  // Ar rodoma savo prieglauda
+  let canEditCurrentShelter = false;
+
   // Ar ijungtas prieglaudos redagavimo rezimas
   let isEditing = false;
-
   // Dabartinis gyvunu sarasas
   let animals = [];
 
@@ -64,6 +69,51 @@
     if (!url) return "";
     if (url.startsWith("http://") || url.startsWith("https://")) return url;
     return `https://${url}`;
+  }
+
+    // Paimam shelter id is url
+  function getRequestedShelterId() {
+    const rawId = new URLSearchParams(window.location.search).get("id");
+
+    if (!rawId) {
+      return null;
+    }
+
+    const id = Number(rawId);
+    return Number.isNaN(id) ? null : id;
+  }
+
+  // Grazina viena prieglauda pagal id is bendro saraso
+  async function getShelterById(id) {
+    const shelters = await apiRequest("/api/shelter", {
+      method: "GET"
+    });
+
+    return shelters.find((shelter) => Number(shelter.id) === Number(id)) || null;
+  }
+
+  // Pritaiko puslapio teises pagal tai ar rodoma sava prieglauda
+  function applyShelterPermissions() {
+    const editBtn = getEl("toggleShelterEditBtn");
+    const saveBtn = getEl("saveShelterBtn");
+    const createAnimalBtn = getEl("openCreateAnimalBtn");
+
+    const canEdit =
+      Boolean(authUser) &&
+      authUser.role === "shelter" &&
+      canEditCurrentShelter === true;
+
+    if (editBtn) {
+      editBtn.hidden = !canEdit;
+    }
+
+    if (saveBtn) {
+      saveBtn.hidden = true;
+    }
+
+    if (createAnimalBtn) {
+      createAnimalBtn.hidden = !canEdit;
+    }
   }
 
   // Uzpildo shelter perziuros laukus
@@ -136,22 +186,66 @@
   }
 
   // Uzkrauna prisijungusios prieglaudos duomenis
+  // Uzkrauna prieglaudos duomenis
   async function loadShelterProfile() {
     const msg = getEl("shelterMessage");
     setMessage(msg, "");
 
+    const requestedShelterId = getRequestedShelterId();
+
     try {
-      currentShelter = await apiRequest("/api/shelter/me", {
-        method: "GET"
-      });
+      // Shelter role
+      if (authUser?.role === "shelter") {
+        const myShelter = await apiRequest("/api/shelter/me", {
+          method: "GET"
+        });
+
+        const isOwnShelter =
+          !requestedShelterId || Number(myShelter.id) === Number(requestedShelterId);
+
+        if (isOwnShelter) {
+          currentShelter = myShelter;
+          canEditCurrentShelter = true;
+        } else {
+          const otherShelter = await getShelterById(requestedShelterId);
+
+          if (!otherShelter) {
+            throw new Error("Prieglauda nerasta");
+          }
+
+          currentShelter = otherShelter;
+          canEditCurrentShelter = false;
+        }
+      }
+
+      // Volunteer arba neprisijunges lankytojas
+      else {
+        if (!requestedShelterId) {
+          throw new Error("Prieglaudos id nerastas");
+        }
+
+        const shelter = await getShelterById(requestedShelterId);
+
+        if (!shelter) {
+          throw new Error("Prieglauda nerasta");
+        }
+
+        currentShelter = shelter;
+        canEditCurrentShelter = false;
+      }
 
       fillShelterView(currentShelter);
       fillShelterForm(currentShelter);
+      applyShelterPermissions();
     } catch (error) {
       console.error(error);
 
       if (error.status === 401 || error.status === 403) {
-        authLogout();
+        setMessage(
+          msg,
+          "Nepavyko užkrauti prieglaudos duomenų",
+          "error"
+        );
         return;
       }
 
@@ -417,10 +511,23 @@ function bindAnimalImagePreview() {
 
     try {
       const query = buildAnimalQuery();
+      const params = new URLSearchParams(query);
 
-      animals = await apiRequest(`/api/animal/me${query ? `?${query}` : ""}`, {
-        method: "GET"
-      });
+      if (canEditCurrentShelter) {
+        animals = await apiRequest(`/api/animal/me${params.toString() ? `?${params.toString()}` : ""}`, {
+          method: "GET"
+        });
+      } else {
+        if (!currentShelter?.id) {
+          throw new Error("Prieglauda nerasta");
+        }
+
+        params.set("shelter_id", currentShelter.id);
+
+        animals = await apiRequest(`/api/animal?${params.toString()}`, {
+          method: "GET"
+        });
+      }
 
       fillBreedFilter(animals);
       renderAnimals(animals);
@@ -469,7 +576,7 @@ function bindAnimalImagePreview() {
     }
   }
 
-    // Perjungia popup tarp perziuros, redagavimo ir kurimo rezimu
+  // Perjungia popup tarp perziuros, redagavimo ir kurimo rezimu
   function setAnimalModalMode(mode) {
     animalModalMode = mode;
 
@@ -477,12 +584,17 @@ function bindAnimalImagePreview() {
     const isEdit = mode === "edit";
     const isCreate = mode === "create";
 
+    const canEdit =
+      Boolean(authUser) &&
+      authUser.role === "shelter" &&
+      canEditCurrentShelter === true;
+
     getEl("animalViewMode").hidden = !isView;
     getEl("animalForm").hidden = !(isEdit || isCreate);
 
-    getEl("animalEditBtn").hidden = !selectedAnimal || !isView;
-    getEl("animalDeleteBtn").hidden = !selectedAnimal;
-    getEl("animalSaveBtn").hidden = !(isEdit || isCreate);
+    getEl("animalEditBtn").hidden = !selectedAnimal || !isView || !canEdit;
+    getEl("animalDeleteBtn").hidden = !selectedAnimal || !canEdit;
+    getEl("animalSaveBtn").hidden = !(isEdit || isCreate) || !canEdit;
     getEl("animalCancelBtn").hidden = !(isEdit || isCreate);
 
     if (isCreate) {
@@ -495,6 +607,8 @@ function bindAnimalImagePreview() {
 
   // Atidaro popup
   function openAnimalModal(animal = null, mode = "view") {
+    const backdrop = getEl("animalModalBackdrop");
+
     selectedAnimal = animal;
     setMessage(getEl("animalModalMessage"), "");
 
@@ -506,12 +620,20 @@ function bindAnimalImagePreview() {
     }
 
     setAnimalModalMode(mode);
-    getEl("animalModalBackdrop").hidden = false;
+
+    if (backdrop) {
+      backdrop.hidden = false;
+    }
   }
 
   // Uzdaro popup
   function closeAnimalModal() {
-    getEl("animalModalBackdrop").hidden = true;
+    const backdrop = getEl("animalModalBackdrop");
+
+    if (backdrop) {
+      backdrop.hidden = true;
+    }
+
     selectedAnimal = null;
     setMessage(getEl("animalModalMessage"), "");
   }
@@ -616,35 +738,58 @@ function bindAnimalImagePreview() {
   }
 
   // Sukabina visus gyvunu sekcijos eventus
+  // Sukabina visus gyvunu sekcijos eventus
   function bindAnimalEvents() {
+    const backdrop = getEl("animalModalBackdrop");
+    const closeBtn = getEl("closeAnimalModalBtn");
+    const editBtn = getEl("animalEditBtn");
+    const saveBtn = getEl("animalSaveBtn");
+    const deleteBtn = getEl("animalDeleteBtn");
+    const cancelBtn = getEl("animalCancelBtn");
+    const createBtn = getEl("openCreateAnimalBtn");
+
     // Naujo gyvuno popup
-    getEl("openCreateAnimalBtn")?.addEventListener("click", () => {
+    createBtn?.addEventListener("click", () => {
+      const canEdit =
+        Boolean(authUser) &&
+        authUser.role === "shelter" &&
+        canEditCurrentShelter === true;
+
+      if (!canEdit) {
+        return;
+      }
+
       openAnimalModal(null, "create");
     });
 
     // Popup uzdarymas per X
-    getEl("closeAnimalModalBtn")?.addEventListener("click", closeAnimalModal);
+    closeBtn?.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      closeAnimalModal();
+    });
 
     // Popup uzdarymas paspaudus ant fono
-    getEl("animalModalBackdrop")?.addEventListener("click", (e) => {
-      if (e.target.id === "animalModalBackdrop") {
+    backdrop?.addEventListener("click", (event) => {
+      if (event.target === backdrop) {
         closeAnimalModal();
       }
     });
 
     // Perjungimas i redagavima
-    getEl("animalEditBtn")?.addEventListener("click", () => {
+    editBtn?.addEventListener("click", () => {
       if (!selectedAnimal) return;
       setAnimalModalMode("edit");
     });
 
     // Issaugojimas
-    getEl("animalSaveBtn")?.addEventListener("click", saveAnimal);
+    saveBtn?.addEventListener("click", saveAnimal);
 
     // Trinimas
-    getEl("animalDeleteBtn")?.addEventListener("click", deleteAnimal);
+    deleteBtn?.addEventListener("click", deleteAnimal);
 
-    getEl("animalCancelBtn")?.addEventListener("click", () => {
+    // Atsaukimas
+    cancelBtn?.addEventListener("click", () => {
       if (selectedAnimal) {
         fillAnimalView(selectedAnimal);
         fillAnimalForm(selectedAnimal);
@@ -662,7 +807,7 @@ function bindAnimalImagePreview() {
     });
 
     // Nuotraukos preview popup'e
-    bindAnimalImagePreview();    
+    bindAnimalImagePreview();
   }
 
   // Pagrindine shelter puslapio logika
@@ -670,20 +815,23 @@ function bindAnimalImagePreview() {
     const root = getEl("shelterProfilePage");
     if (!root) return;
 
-    const authUser = await authFetchCurrentUser();
-
-    if (!authUser) {
-      window.location.href = "/index.html";
-      return;
-    }
-
-    if (authUser.role !== "shelter") {
-      window.location.href = "/index.html";
-      return;
-    }
-
-    // Is karto nustatom needit rezima
+    // Is karto defaultinam i readonly rezima
+    authUser = null;
+    canEditCurrentShelter = false;
     setShelterEditMode(false);
+    applyShelterPermissions();
+
+    try {
+      authUser = await authFetchCurrentUser();
+    } catch (error) {
+      authUser = null;
+    }
+
+    // Jei vartotojas prisijunges, bet role netinkama
+    if (authUser && authUser.role !== "shelter" && authUser.role !== "volunteer") {
+      window.location.href = "/index.html";
+      return;
+    }
 
     // Uzkraunam shelter duomenis
     await loadShelterProfile();
@@ -691,11 +839,21 @@ function bindAnimalImagePreview() {
     // Uzkraunam shelter gyvunus
     await loadAnimals();
 
-    // Dar karta uztikrinam needit rezima po duomenu uzkrovimo
+    // Po uzkrovimo dar karta uztikrinam readonly busena
     setShelterEditMode(false);
+    applyShelterPermissions();
 
     // Redagavimo mygtukas
     getEl("toggleShelterEditBtn")?.addEventListener("click", () => {
+      const canEdit =
+        Boolean(authUser) &&
+        authUser.role === "shelter" &&
+        canEditCurrentShelter === true;
+
+      if (!canEdit) {
+        return;
+      }
+
       if (!isEditing) {
         fillShelterForm(currentShelter || {});
         setShelterEditMode(true);
@@ -707,14 +865,32 @@ function bindAnimalImagePreview() {
     });
 
     // Issaugojimo mygtukas
-    getEl("saveShelterBtn")?.addEventListener("click", saveShelterProfile);
+    getEl("saveShelterBtn")?.addEventListener("click", async () => {
+      const canEdit =
+        Boolean(authUser) &&
+        authUser.role === "shelter" &&
+        canEditCurrentShelter === true;
+
+      if (!canEdit) {
+        return;
+      }
+
+      await saveShelterProfile();
+    });
 
     // Jei ateita su edit parametru tada atidarom edit rezima
     const shouldOpenEdit =
       new URLSearchParams(window.location.search).get("edit") === "1";
 
     if (shouldOpenEdit) {
-      setShelterEditMode(true);
+      const canEdit =
+        Boolean(authUser) &&
+        authUser.role === "shelter" &&
+        canEditCurrentShelter === true;
+
+      if (canEdit) {
+        setShelterEditMode(true);
+      }
     }
 
     // Sukabinam gyvunu eventus

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Parama</title>
     <link rel="stylesheet" href="/assets/css/main.css" />
+    <link rel="stylesheet" href="/assets/css/aukojimas.css" />
     <link rel="stylesheet" href="/assets/css/navbar.css" />
     <link rel="stylesheet" href="/assets/css/auth-modals.css" />
     <link rel="stylesheet" href="/assets/css/footer.css" />
@@ -13,45 +14,196 @@
     <header id="site-navbar"></header>
     <div id="auth-modals-root"></div>
 
-    <div class="container-gaps">
+    <div class="container-gaps donation-page">
+      <!-- Intro blokas -->
+      <section class="donation-hero">
+        <p class="donation-hero-label">Parama</p>
+        <h1>Jūsų parama mums svarbi!</h1>
+        <p class="donation-hero-text">
+          Prisidėti prie gyvūnų gerovės galite keliais būdais. Žemiau rasite trumpą
+          informaciją apie paramą daiktais, finansinę paramą ir 1,2 % GPM skyrimą,
+          o apačioje – prieglaudų sąrašą.
+        </p>
 
-    <section class="donations">
-  <h2>Parama</h2>
+        <div class="donation-hero-actions">
+          <a href="#daiktais" class="donation-jump-btn">Daiktais</a>
+          <a href="#finansine" class="donation-jump-btn">Finansinė</a>
+          <a href="#gpm" class="donation-jump-btn">GPM</a>
+        </div>
+      </section>
 
-  <div class="cards-donations">
+      <!-- Parama daiktais -->
+      <section class="donation-section" id="daiktais">
+        <div class="section-heading">
+          <h2>Parama daiktais</h2>
+          <p>
+            Prieglaudoms nuolat reikalingi kasdien naudojami daiktai gyvūnų priežiūrai.
+            Dažniausiai labai praverčia maistas, higienos priemonės, tekstilė bei
+            įvairios veterinarinės priemonės.
+          </p>
+        </div>
 
-    <div class="card-donation">
-      <img src="/assets/img/parama1.png" alt="animal" />
-      <p>Lesė</p>
-      <button type="button" class="btn">Aukoti</button>
+        <div class="support-columns">
+          <article class="support-column">
+            <h3>Maistas</h3>
+            <ul>
+              <li>sausasis šunų ir kačių maistas</li>
+              <li>konservai</li>
+              <li>specializuotas maistas jautriems gyvūnams</li>
+            </ul>
+          </article>
+
+          <article class="support-column">
+            <h3>Higienos priemonės</h3>
+            <ul>
+              <li>dezinfekcinės priemonės</li>
+              <li>šiukšlių maišai</li>
+              <li>skalbimo ir valymo priemonės</li>
+            </ul>
+          </article>
+
+          <article class="support-column">
+            <h3>Tekstilė</h3>
+            <ul>
+              <li>rankšluosčiai</li>
+              <li>pledai ir paklotai</li>
+              <li>guoliai bei kita naudinga tekstilė</li>
+            </ul>
+          </article>
+
+          <article class="support-column">
+            <h3>Veterinarinės priemonės</h3>
+            <ul>
+              <li>pirštinės</li>
+              <li>bintai ir kitos priežiūros priemonės</li>
+              <li>paprastos kasdienės veterinarinės priemonės</li>
+            </ul>
+          </article>
+
+          <article class="support-column">
+            <h3>Kita</h3>
+            <ul>
+              <li>pavadėliai ir antkakliai</li>
+              <li>dubeliai</li>
+              <li>kiti gyvūnų priežiūrai naudingi daiktai</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="support-note">
+          <p>
+            Jei norite prisidėti daiktais, geriausia pirmiausia susisiekti su pasirinkta
+            prieglauda ir pasitikslinti, ko tuo metu labiausiai reikia.
+          </p>
+        </div>
+      </section>
+
+      <!-- Finansinė parama -->
+      <section class="donation-section donation-section-alt" id="finansine">
+        <div class="section-heading">
+          <h2>Finansinė parama</h2>
+          <p>
+            Finansinė parama leidžia prieglaudoms lanksčiau padengti kasdienes išlaidas:
+            maistą, gydymą, vaistus, skiepus, transportą ir kitus svarbius poreikius.
+          </p>
+        </div>
+
+        <div class="finance-box">
+          <div class="finance-box-title">
+            <h3>Kaip galima prisidėti?</h3>
+          </div>
+
+          <div class="finance-box-content">
+            <p>
+              Kiekviena prieglauda paprastai turi savo paramos būdus: bankinį pavedimą,
+              oficialų paramos puslapį ar kitą aukojimo formą.
+            </p>
+            <p>
+              Norėdami paaukoti, apačioje pasirinkite dominančią prieglaudą ir atsidarykite
+              jos profilį arba oficialų paramos puslapį.
+            </p>
+            <p>
+              Taip parama pasieks būtent tą organizaciją, kuriai norite padėti.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- GPM -->
+      <section class="donation-section" id="gpm">
+        <div class="section-heading">
+          <h2>Parama 1,2 % GPM</h2>
+          <p>
+            Skirdami 1,2 % GPM galite prisidėti prie gyvūnų gerovės be papildomų išlaidų.
+            Ši parama prieglaudoms yra labai svarbi, nes padeda užtikrinti stabilesnį
+            jų veiklos finansavimą.
+          </p>
+        </div>
+
+        <div class="gpm-box">
+          <p>
+            1,2 % GPM skyrimas vyksta per elektroninę deklaravimo sistemą (EDS).
+          </p>
+          <p>
+            Dažniausiai pakanka pasirinkti paramos gavėją ir pateikti prašymą nustatytu laikotarpiu.
+          </p>
+          <ul>
+            <li>pasirinkite norimą paramos gavėją</li>
+            <li>užpildykite prašymą EDS sistemoje</li>
+            <li>pateikite jį iki nustatyto termino</li>
+          </ul>
+          <p>
+            Tikslią informaciją apie 1,2 % GPM skyrimą rasite oficialiuose paramos gavėjų puslapiuose.
+          </p>
+        </div>
+      </section>
+
+      <!-- Prieglaudų sąrašas -->
+      <section class="donation-section shelters-support-section" id="sheltersSupport">
+        <div class="section-heading">
+          <h2>Prieglaudos</h2>
+          <p>
+            Žemiau galite rasti prieglaudų sąrašą. Paspaudus ant kortelės, atsivers
+            pasirinkimas pereiti į prieglaudos profilį arba į oficialios svetainės
+            paramos puslapį.
+          </p>
+        </div>
+
+        <div class="shelter-search-wrap">
+          <input
+            type="text"
+            id="shelterSupportSearch"
+            class="shelter-search-input"
+            placeholder="Ieškoti pagal prieglaudos pavadinimą"
+          />
+        </div>
+
+        <div id="supportSheltersGrid" class="support-shelters-grid"></div>
+        <p id="supportSheltersMessage" class="support-shelters-message"></p>
+      </section>
     </div>
 
-    <div class="card-donation">
-      <img src="/assets/img/parama1.png" alt="animal" />
-      <p>Draugas</p>
-      <button type="button" class="btn">Aukoti</button>
-    </div>
+    <!-- Prieglaudos pasirinkimo popup -->
+    <div id="supportShelterModal" class="support-modal hidden">
+      <div class="support-modal-backdrop" id="supportShelterModalBackdrop"></div>
 
-    <div class="card-donation">
-      <img src="/assets/img/parama1.png" alt="animal" />
-      <p>Partneris</p>
-      <button type="button" class="btn">Aukoti</button>
-    </div>
+      <div class="support-modal-content">
+        <button type="button" class="support-modal-close" id="supportShelterModalClose">×</button>
 
-    <div class="card-donation">
-      <img src="/assets/img/parama2.png" alt="animal" />
-      <p></p>
-      <button type="button" class="btn">Plačiau</button>
-    </div>
+        <h3 id="supportShelterModalTitle">Pasirinkite veiksmą</h3>
+        <p class="support-modal-text">
+          Kur norite pereiti?
+        </p>
 
-    <div class="card-donation">
-      <img src="/assets/img/parama3.png" alt="animal" />
-      <p></p>
-      <button type="button" class="btn">Plačiau</button>
-    </div>
-
-  </div>
-</section>
+        <div class="support-modal-actions">
+          <a href="#" id="supportShelterProfileLink" class="support-modal-btn">
+            Į prieglaudos profilį
+          </a>
+          <a href="#" id="supportShelterDonateLink" class="support-modal-btn support-modal-btn-alt" target="_blank" rel="noopener noreferrer">
+            Į oficialios svetainės paramos puslapį
+          </a>
+        </div>
+      </div>
     </div>
 
     <footer id="site-footer"></footer>
@@ -60,6 +212,6 @@
     <script src="/assets/js/navbar.js"></script>
     <script src="/assets/js/footer.js"></script> 
     <script src="/assets/js/auth-modals.js"></script>
-    
+    <script src="/assets/js/aukojimas.js"></script>
   </body>
 </html>
