@@ -810,3 +810,137 @@ section h2 {
   object-fit: cover;
   border: 1px solid #ccc;
 }
+
+
+.container-gaps .container-sav {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.h1-savanoris {
+  text-align: center;
+}
+
+.section-sav {
+  margin-top: 40px;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 30px;
+}
+
+
+.volunteer-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  
+}
+
+.volunteer-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  border-bottom: 1px solid #ccc;
+}
+
+.info .name {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* Status styles */
+.status {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  
+}
+/* Pending list container */
+.pending-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Each row */
+.pending-list .volunteer-card {
+  display: grid;
+  grid-template-columns: 180px 250px 100px 100px; /* fixed layout */
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 15px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  box-shadow: none;
+}
+
+/* Make name + email behave like separate columns */
+.pending-list .info {
+  display: contents;
+}
+
+/* Text styling */
+.name {
+  font-weight: 600;
+}
+
+.email {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Fix status (important) */
+.status {
+  display: inline-block;
+  width: fit-content;
+  white-space: nowrap;
+}
+
+/* Registered */
+.registered .status {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+/* Pending */
+.pending .status {
+  background-color: #fff3cd;
+  color: #856404;
+}
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Button */
+.approve-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: #28a745;
+  color: white;
+  cursor: pointer;
+}
+
+.approve-btn:hover {
+  background-color: #218838;
+}
+
+.cancel-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: #881818;
+  color: white;
+  cursor: pointer;
+}
+
+.cancel-btn:hover {
+  background-color: #561414;
+}

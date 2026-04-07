@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kuriama</title>
+    <title>Savanorių sąrašas</title>
     <link rel="stylesheet" href="/assets/css/main.css" />
     <link rel="stylesheet" href="/assets/css/navbar.css" />
     <link rel="stylesheet" href="/assets/css/auth-modals.css" />
@@ -13,10 +13,83 @@
     <header id="site-navbar"></header>
     <div id="auth-modals-root"></div>
 
-    <main style="padding:40px; font-family:Arial, sans-serif;">
-      <h1>Šis puslapis dar kuriamas</h1>
-    </main>
+    <div class="container-gaps container-sav">
+      <h1 class="h1-savanoris">Savanorių valdymas</h1>
+      
+      <section class="section-sav">
+        <h2>Priimti savanoriai</h2>
+        <div class="volunteer-list">
 
+          <div class="volunteer-card registered">
+            <div class="info">
+              <p class="name">Jonas Kojas</p>
+              <p>Email: john@email.com</p>
+            </div>
+            <span class="status">Priimtas</span>
+            <button class="cancel-btn">Atšaukti</button>
+          </div>
+
+          <div class="volunteer-card registered">
+            <div class="info">
+              <p class="name">Ona Ponia</p>
+              <p>Email: anna@email.com</p>
+            </div>
+            <span class="status">Priimtas</span>
+            <button class="cancel-btn">Atšaukti</button>
+          </div>
+
+        </div>
+      </section>
+
+      
+      <section class="section-sav">
+  <h2>Laukiantys savanoriai</h2>
+
+  <div class="volunteer-list pending-list">
+
+  <div class="volunteer-card pending">
+    <div class="info">
+      <span class="name">Rimas Liuksas</span>
+      <span class="email">mark@email.com</span>
+    </div>
+
+    <span class="status">Laukiantis</span>
+    <button class="approve-btn">Priimti</button>
+  </div>
+
+  <div class="volunteer-card pending">
+    <div class="info">
+      <span class="name">Rimas Liuksas</span>
+      <span class="email">mark@email.com</span>
+    </div>
+
+    <span class="status">Laukiantis</span>
+    <button class="approve-btn">Priimti</button>
+  </div>
+  <div class="volunteer-card pending">
+    <div class="info">
+      <span class="name">Rimas Liuksas</span>
+      <span class="email">mark@email.com</span>
+    </div>
+
+    <span class="status">Laukiantis</span>
+    <button class="approve-btn">Priimti</button>
+  </div>
+  <div class="volunteer-card pending">
+    <div class="info">
+      <span class="name">Rimas Liuksas</span>
+      <span class="email">mark@email.com</span>
+    </div>
+
+    <span class="status">Laukiantis</span>
+    <button class="approve-btn">Priimti</button>
+  </div>
+
+</div>
+</section>
+
+    
+</div>
     <footer id="site-footer"></footer>
 
     <script src="/assets/js/auth.js"></script>
