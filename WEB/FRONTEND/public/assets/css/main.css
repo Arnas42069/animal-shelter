@@ -763,3 +763,50 @@ section h2 {
 .loved-animal-name{
     font-size: 20px;
 }
+
+
+
+.news-start{
+    text-align: center;
+    padding-bottom: 2%;
+    border-bottom: 1px solid #ccc;
+}
+
+.news-start h2{
+    font-size: 18px;
+}
+
+/* NEWS ITEM */
+.news-item {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #ccc;
+  padding: 15px 0;
+}
+
+.news-text {
+  max-width: 70%;
+}
+
+.news-text h3 {
+  font-size: 16px;
+  
+}
+
+.news-text .date {
+  font-size: 12px;
+  color: gray;
+}
+
+.news-text a {
+  font-size: 12px;
+  color:#444444;
+  text-decoration: none;
+}
+
+.news-item img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border: 1px solid #ccc;
+}
