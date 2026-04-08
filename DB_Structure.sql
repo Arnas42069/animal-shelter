@@ -118,8 +118,8 @@ CREATE INDEX IF NOT EXISTS animal_image_animal_idx ON animal_image(animal_id);
 CREATE TABLE IF NOT EXISTS visit (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
-    animal_id  BIGINT NOT NULL REFERENCES animal(id) ON DELETE RESTRICT,
-    user_id    BIGINT NOT NULL REFERENCES app_user(id) ON DELETE RESTRICT,
+    shelter_id  BIGINT NOT NULL REFERENCES shelter(id) ON DELETE RESTRICT,
+    user_id     BIGINT NOT NULL REFERENCES app_user(id) ON DELETE RESTRICT,
 
     -- pasirinktas laikas
     start_at   TIMESTAMPTZ NOT NULL,
@@ -127,6 +127,10 @@ CREATE TABLE IF NOT EXISTS visit (
 
     status TEXT NOT NULL DEFAULT 'scheduled'
         CHECK (status IN ('scheduled','cancelled','completed','no_show')),
+
+    is_under_16 BOOLEAN NOT NULL DEFAULT FALSE,
+
+    social_hrs NUMERIC(5,2) NOT NULL DEFAULT 0 CHECK (social_hrs >= 0)
 
     note TEXT,
 
@@ -142,38 +146,58 @@ CREATE INDEX IF NOT EXISTS visit_start_idx ON visit(start_at);
 
 
 -- =========================================
--- VISIT_TASK 
+-- NEWS
 -- =========================================
-CREATE TABLE IF NOT EXISTS visit_task (
+
+CREATE TABLE IF NOT EXISTS visit (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
-    visit_id BIGINT NOT NULL
-        REFERENCES visit(id) ON DELETE CASCADE,
+    shelter_id BIGINT REFERENCES shelter(id) ON DELETE CASCADE,
+    user_id    BIGINT NOT NULL REFERENCES app_user(id),
 
-    task_type TEXT NOT NULL
-        CHECK (task_type IN ('feed','walk','clean','groom','training','other')),
+    title       TEXT NOT NULL,
+    description TEXT NOT NULL,
 
-    description  TEXT,
-    performed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    image_url TEXT,
 
-    social_hrs NUMERIC(5,2) NOT NULL CHECK (social_hrs >= 0),
-    points     INT CHECK (points >= 0),
-    awarded_by BIGINT REFERENCES app_user(id) ON DELETE RESTRICT,
-    awarded_at TIMESTAMPTZ,
-    award_note TEXT,
+    is_published BOOLEAN NOT NULL DEFAULT TRUE,
 
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-
-    -- jei yra points, privalo būti awarded_by ir awarded_at
-    CONSTRAINT award_fields_ok CHECK (
-        (points IS NULL AND awarded_by IS NULL AND awarded_at IS NULL)
-        OR
-        (points IS NOT NULL AND awarded_by IS NOT NULL AND awarded_at IS NOT NULL)
-    )
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS visit_task_visit_idx ON visit_task(visit_id);
-CREATE INDEX IF NOT EXISTS visit_task_awarded_by_idx ON visit_task(awarded_by);
+CREATE INDEX idx_news_shelter_id ON news(shelter_id);
+CREATE INDEX idx_news_created_at ON news(created_at DESC);
+CREATE INDEX idx_news_is_published ON news(is_published);
+
+
+-- =========================================
+-- EVENTS
+-- =========================================
+CREATE TABLE event (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+    shelter_id BIGINT REFERENCES shelter(id) ON DELETE CASCADE,
+    user_id    BIGINT NOT NULL REFERENCES app_user(id),
+
+    title       TEXT NOT NULL,
+    summary     TEXT,
+    description TEXT,
+
+    location TEXT,
+    city TEXT,
+
+    starts_at TIMESTAMPTZ NOT NULL,
+    ends_at TIMESTAMPTZ,
+
+    image_url TEXT,
+
+    is_published BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    CHECK (ends_at IS NULL OR ends_at >= starts_at)
+);
 
 
 COMMIT;
