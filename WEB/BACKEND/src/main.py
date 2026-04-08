@@ -7,7 +7,7 @@ import uuid
 
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
-from sqlalchemy import or_, asc, desc
+from sqlalchemy import or_, and_, asc, desc
 
 from src.database import get_db
 from src.models import (
@@ -15,6 +15,7 @@ from src.models import (
     Shelter,
     Animal,
     AnimalImage,
+    Visit,
 )
 from src.schemas import (
     RegisterRequest,
@@ -30,6 +31,12 @@ from src.schemas import (
     AnimalCreateRequest,
     AnimalResponse,
     AnimalUpdateRequest,
+
+    VisitCreateRequest,
+    VisitResponse,
+    VisitMeResponse,
+    ShelterVisitResponse,
+    VisitStatusUpdateRequest,
 )
 from src.auth import (
     hash_password, 
@@ -1115,3 +1122,199 @@ def delete_my_animal(
     db.commit()
 
     return {"message": "Gyvūnas sėkmingai ištrintas"}
+
+
+# -------------------------------------------------
+# -------------------VISIT-------------------------
+# -------------------------------------------------
+
+@app.post("/visit", response_model=VisitResponse)
+def register_visit(
+    data: VisitCreateRequest,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Savanorio registracija vizitui į prieglaudą.
+
+    Prieiga:
+    - Tik prisijungęs vartotojas
+    - Tik volunteer rolė
+
+    Elgsena:
+    - Patikrina ar prieglauda egzistuoja
+    - Patikrina ar laiko intervalas teisingas
+    - Patikrina ar vartotojas neturi persidengiančio vizito
+    - Sukuria naują visit įrašą
+    """
+
+    if user.role != "volunteer":
+        raise HTTPException(
+            status_code=403,
+            detail="Tik volunteer vartotojas gali registruotis vizitui"
+        )
+
+    shelter = db.query(Shelter).filter(Shelter.id == data.shelter_id).first()
+
+    if not shelter:
+        raise HTTPException(status_code=404, detail="Prieglauda nerasta")
+
+    if not shelter.is_active:
+        raise HTTPException(
+            status_code=400,
+            detail="Registracija negalima, nes prieglauda neaktyvi"
+        )
+
+    # Tikrinam ar tas pats vartotojas neturi persidengiančio aktyvaus vizito
+    overlapping_visit = db.query(Visit).filter(
+        Visit.user_id == user.id,
+        Visit.status == "pending",
+        Visit.status == "scheduled",
+        and_(
+            Visit.start_at < data.end_at,
+            Visit.end_at > data.start_at
+        )
+    ).first()
+
+    if overlapping_visit:
+        raise HTTPException(
+            status_code=400,
+            detail="Jūs jau turite kitą vizitą, kuris persidengia su pasirinktu laiku"
+        )
+
+    visit = Visit(
+        shelter_id=data.shelter_id,
+        user_id=user.id,
+        start_at=data.start_at,
+        end_at=data.end_at,
+        is_under_16=data.is_under_16,
+        social_hrs=data.social_hrs,
+        note=data.note
+    )
+
+    db.add(visit)
+    db.commit()
+    db.refresh(visit)
+
+    return visit
+
+
+@app.get("/visit/me", response_model=list[VisitMeResponse])
+def get_my_visits(
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Gauti prisijungusio savanorio registracijas į prieglaudas.
+    """
+
+    visits = db.query(Visit).filter(
+        Visit.user_id == user.id
+    ).order_by(Visit.start_at.desc()).all()
+
+    result = []
+
+    for visit in visits:
+        shelter = db.query(Shelter).filter(Shelter.id == visit.shelter_id).first()
+
+        result.append({
+            "id": visit.id,
+            "shelter_id": visit.shelter_id,
+            "user_id": visit.user_id,
+            "start_at": visit.start_at,
+            "end_at": visit.end_at,
+            "status": visit.status,
+            "is_under_16": visit.is_under_16,
+            "social_hrs": float(visit.social_hrs),
+            "note": visit.note,
+            "shelter": {
+                "id": shelter.id,
+                "name": shelter.name,
+                "city": shelter.city,
+                "address": shelter.address
+            } if shelter else None
+        })
+
+    return result
+
+
+@app.get("/visit/shelter", response_model=list[ShelterVisitResponse])
+def get_shelter_visits(
+    status: Optional[str] = None,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    shelter = db.query(Shelter).filter(Shelter.created_by == user.id).first()
+
+    if not shelter:
+        raise HTTPException(status_code=404, detail="Prieglauda nerasta")
+
+    query = db.query(Visit).filter(Visit.shelter_id == shelter.id)
+
+    if status:
+        query = query.filter(Visit.status == status)
+
+    visits = query.order_by(Visit.start_at.asc()).all()
+
+    result = []
+
+    for visit in visits:
+        volunteer = db.query(AppUser).filter(AppUser.id == visit.user_id).first()
+
+        result.append({
+            "id": visit.id,
+            "shelter_id": visit.shelter_id,
+            "user_id": visit.user_id,
+            "start_at": visit.start_at,
+            "end_at": visit.end_at,
+            "status": visit.status,
+            "is_under_16": visit.is_under_16,
+            "social_hrs": float(visit.social_hrs),
+            "note": visit.note,
+            "volunteer": {
+                "id": volunteer.id,
+                "name": volunteer.name,
+                "surname": volunteer.surname,
+                "username": volunteer.username,
+                "email": volunteer.email
+            } if volunteer else None
+        })
+
+    return result
+
+
+@app.patch("/visit/{visit_id}/status", response_model=VisitResponse)
+def update_visit_status(
+    visit_id: int,
+    data: VisitStatusUpdateRequest,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if user.role != "shelter":
+        raise HTTPException(
+            status_code=403,
+            detail="Tik shelter vartotojas gali keisti vizito statusą"
+        )
+
+    shelter = db.query(Shelter).filter(Shelter.created_by == user.id).first()
+
+    if not shelter:
+        raise HTTPException(status_code=404, detail="Prieglauda nerasta")
+
+    visit = db.query(Visit).filter(
+        Visit.id == visit_id,
+        Visit.shelter_id == shelter.id
+    ).first()
+
+    if not visit:
+        raise HTTPException(
+            status_code=404,
+            detail="Vizitas nerastas arba nepriklauso jūsų prieglaudai"
+        )
+
+    visit.status = data.status
+
+    db.commit()
+    db.refresh(visit)
+
+    return visit

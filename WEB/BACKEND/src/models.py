@@ -1,6 +1,6 @@
 from typing import Optional
 
-from sqlalchemy import Column, BigInteger, Text, Boolean, TIMESTAMP, func, Identity, text, ForeignKey, Date
+from sqlalchemy import Column, BigInteger, Text, Boolean, TIMESTAMP, func, Identity, text, ForeignKey, Date, Numeric
 from sqlalchemy.orm import relationship
 
 from src.database import Base
@@ -149,3 +149,63 @@ class AnimalImage(Base):
 
     # Relationship i gyvuna
     animal = relationship("Animal", back_populates="images")
+
+
+class Visit(Base):
+    __tablename__ = "visit"
+
+    id = Column(BigInteger, Identity(always=True), primary_key=True)
+
+    shelter_id = Column(
+        BigInteger,
+        ForeignKey("shelter.id", ondelete="RESTRICT"),
+        nullable=False
+    )
+
+    user_id = Column(
+        BigInteger,
+        ForeignKey("app_user.id", ondelete="RESTRICT"),
+        nullable=False
+    )
+
+    start_at = Column(TIMESTAMP(timezone=True), nullable=False)
+    end_at = Column(TIMESTAMP(timezone=True), nullable=False)
+
+    status = Column(
+        Text,
+        nullable=False,
+        default="pending",
+        server_default=text("'pending'")
+    )
+
+    is_under_16 = Column(
+        Boolean,
+        nullable=False,
+        default=False,
+        server_default=text("false")
+    )
+
+    social_hrs = Column(
+        Numeric(5, 2),
+        nullable=False,
+        default=0,
+        server_default=text("0")
+    )
+
+    note = Column(Text, nullable=True)
+
+    created_at = Column(
+        TIMESTAMP(timezone=True),
+        nullable=False,
+        server_default=func.now()
+    )
+
+    updated_at = Column(
+        TIMESTAMP(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now()
+    )
+
+    shelter = relationship("Shelter")
+    user = relationship("AppUser")

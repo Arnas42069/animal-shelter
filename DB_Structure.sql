@@ -125,12 +125,12 @@ CREATE TABLE IF NOT EXISTS visit (
     start_at   TIMESTAMPTZ NOT NULL,
     end_at     TIMESTAMPTZ NOT NULL,
 
-    status TEXT NOT NULL DEFAULT 'scheduled'
-        CHECK (status IN ('scheduled','cancelled','completed','no_show')),
+    status TEXT NOT NULL DEFAULT 'pending'
+        CHECK (status IN ('pending','scheduled','cancelled','completed','no_show')),
 
     is_under_16 BOOLEAN NOT NULL DEFAULT FALSE,
 
-    social_hrs NUMERIC(5,2) NOT NULL DEFAULT 0 CHECK (social_hrs >= 0)
+    social_hrs NUMERIC(5,2) NOT NULL DEFAULT 0 CHECK (social_hrs >= 0),
 
     note TEXT,
 
@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS visit (
     CONSTRAINT visit_time_ok CHECK (end_at > start_at)
 );
 
-CREATE INDEX IF NOT EXISTS visit_animal_idx ON visit(animal_id);
+CREATE INDEX IF NOT EXISTS visit_shelter_idx ON visit(shelter_id);
 CREATE INDEX IF NOT EXISTS visit_user_idx ON visit(user_id);
 CREATE INDEX IF NOT EXISTS visit_start_idx ON visit(start_at);
 
@@ -149,7 +149,7 @@ CREATE INDEX IF NOT EXISTS visit_start_idx ON visit(start_at);
 -- NEWS
 -- =========================================
 
-CREATE TABLE IF NOT EXISTS visit (
+CREATE TABLE IF NOT EXISTS news (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
     shelter_id BIGINT REFERENCES shelter(id) ON DELETE CASCADE,

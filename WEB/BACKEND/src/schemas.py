@@ -1,7 +1,7 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, model_validator
 from enum import Enum
 from typing import Optional
-from datetime import date
+from datetime import date, datetime
 
 # -------------------------------------------------
 # -------------------APP_USER----------------------
@@ -156,3 +156,94 @@ class AnimalUpdateRequest(BaseModel):
         default=None,
         pattern="^(available|reserved|adopted|foster|medical_hold|lost)$"
     )
+
+
+# -------------------------------------------------
+# -------------------VISIT-------------------------
+# -------------------------------------------------
+
+class VisitCreateRequest(BaseModel):
+    shelter_id: int
+    start_at: datetime
+    end_at: datetime
+    is_under_16: bool = False
+    social_hrs: float = Field(default=0, ge=0)
+    note: Optional[str] = None
+
+    @model_validator(mode="after")
+    def validate_time_range(self):
+        if self.end_at <= self.start_at:
+            raise ValueError("end_at turi būti vėliau negu start_at")
+        return self
+
+
+class VisitResponse(BaseModel):
+    id: int
+    shelter_id: int
+    user_id: int
+    start_at: datetime
+    end_at: datetime
+    status: str
+    is_under_16: bool
+    social_hrs: float
+    note: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class VisitVolunteerInfo(BaseModel):
+    id: int
+    name: str
+    surname: str
+    username: str
+    email: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class VisitShelterInfo(BaseModel):
+    id: int
+    name: str
+    city: Optional[str] = None
+    address: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class VisitMeResponse(BaseModel):
+    id: int
+    shelter_id: int
+    user_id: int
+    start_at: datetime
+    end_at: datetime
+    status: str
+    is_under_16: bool
+    social_hrs: float
+    note: Optional[str] = None
+    shelter: VisitShelterInfo
+
+    class Config:
+        from_attributes = True
+
+
+class ShelterVisitResponse(BaseModel):
+    id: int
+    shelter_id: int
+    user_id: int
+    start_at: datetime
+    end_at: datetime
+    status: str
+    is_under_16: bool
+    social_hrs: float
+    note: Optional[str] = None
+    volunteer: VisitVolunteerInfo
+
+    class Config:
+        from_attributes = True
+
+
+class VisitStatusUpdateRequest(BaseModel):
+    status: str = Field(pattern="^(pending|scheduled|cancelled|completed|no_show)$")
