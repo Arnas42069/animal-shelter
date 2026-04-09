@@ -1169,7 +1169,6 @@ def register_visit(
     overlapping_visit = db.query(Visit).filter(
         Visit.user_id == user.id,
         Visit.status == "pending",
-        Visit.status == "scheduled",
         and_(
             Visit.start_at < data.end_at,
             Visit.end_at > data.start_at
