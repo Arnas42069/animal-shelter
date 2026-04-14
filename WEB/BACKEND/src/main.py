@@ -15,6 +15,7 @@ from src.models import (
     Shelter,
     Animal,
     AnimalImage,
+    AnimalFavorite,
     Visit,
 )
 from src.schemas import (
@@ -30,7 +31,12 @@ from src.schemas import (
 
     AnimalCreateRequest,
     AnimalResponse,
+    AnimalListResponse,
     AnimalUpdateRequest,
+
+    AnimalFavoriteCreate,
+    AnimalFavoriteResponse,
+    AnimalFavoriteSimpleResponse,
 
     VisitCreateRequest,
     VisitResponse,
@@ -43,6 +49,7 @@ from src.auth import (
     verify_password, 
     create_token, 
     get_current_user,
+    get_current_user_optional,
 )
 
 from src.validators import validate_password
@@ -764,7 +771,7 @@ def upload_my_animal_image(
 
 
 # READ
-@app.get("/animal", response_model=list[AnimalResponse])
+@app.get("/animal", response_model=AnimalListResponse)
 def get_animals(
     shelter_id: Optional[int] = None,
     status: Optional[str] = None,
@@ -777,6 +784,7 @@ def get_animals(
     sort_order: Optional[str] = "asc",
     page: int = 1,
     page_size: int = 12,
+    user: Optional[AppUser] = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
     """
@@ -802,7 +810,6 @@ def get_animals(
     - page_size
     """
 
-    # Apsauga nuo netinkamų puslapiavimo reikšmių
     if page < 1:
         page = 1
 
@@ -823,11 +830,9 @@ def get_animals(
     if species:
         query = query.filter(Animal.species == species)
 
-    # Filtravimas pagal veisle
     if breed:
         query = query.filter(Animal.breed == breed)
 
-    # Filtravimas pagal lyti
     if sex:
         query = query.filter(Animal.sex == sex)
 
@@ -837,7 +842,6 @@ def get_animals(
     if birth_date_to:
         query = query.filter(Animal.birth_date <= birth_date_to)
 
-    # Rikiavimo logika
     if sort_by == "name":
         if sort_order == "desc":
             query = query.order_by(Animal.name.desc())
@@ -857,19 +861,37 @@ def get_animals(
             query = query.order_by(Animal.birth_date.asc())
 
     else:
-        # Jei nieko nenurodyta, rodom naujausius pirmiau
         query = query.order_by(Animal.created_at.desc())
 
-    # Puslapiavimo skaičiavimas
-    offset = (page - 1) * page_size
+    total = query.count()
 
+    offset = (page - 1) * page_size
     animals = query.offset(offset).limit(page_size).all()
 
-    # Pridedam pagrindines nuotraukos url kiekvienam gyvunui
     attach_primary_image_urls(animals, db)
 
-    return animals
+    if user and animals:
+        animal_ids = [animal.id for animal in animals]
 
+        favorite_rows = db.query(AnimalFavorite.animal_id).filter(
+            AnimalFavorite.user_id == user.id,
+            AnimalFavorite.animal_id.in_(animal_ids)
+        ).all()
+
+        favorite_animal_ids = {animal_id for (animal_id,) in favorite_rows}
+
+        for animal in animals:
+            animal.is_favorite = animal.id in favorite_animal_ids
+    else:
+        for animal in animals:
+            animal.is_favorite = False
+
+    return {
+        "items": animals,
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+    }
 
 # READ MANO PRIEGLAUDOS GYVUNUS
 @app.get("/animal/me", response_model=list[AnimalResponse])
@@ -983,11 +1005,25 @@ def get_my_animals(
     # Pridedam pagrindines nuotraukos url kiekvienam gyvunui
     attach_primary_image_urls(animals, db)
 
+    if animals:
+        animal_ids = [animal.id for animal in animals]
+
+        favorite_rows = db.query(AnimalFavorite.animal_id).filter(
+            AnimalFavorite.user_id == user.id,
+            AnimalFavorite.animal_id.in_(animal_ids)
+        ).all()
+
+        favorite_animal_ids = {animal_id for (animal_id,) in favorite_rows}
+
+        for animal in animals:
+            animal.is_favorite = animal.id in favorite_animal_ids
+
     return animals
 
 @app.get("/animal/by-code/{code}", response_model=AnimalResponse)
 def get_animal_by_code(
     code: str,
+    user: Optional[AppUser] = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
     """
@@ -1012,6 +1048,17 @@ def get_animal_by_code(
 
     # Pridedam pagrindines nuotraukos url
     attach_primary_image_url(animal, db)
+
+    # ANIMAL FAVORITE
+    if user:
+        favorite = db.query(AnimalFavorite).filter(
+            AnimalFavorite.user_id == user.id,
+            AnimalFavorite.animal_id == animal.id
+        ).first()
+
+        animal.is_favorite = favorite is not None
+    else:
+        animal.is_favorite = False
 
     return animal
 
@@ -1317,3 +1364,153 @@ def update_visit_status(
     db.refresh(visit)
 
     return visit
+
+
+# -------------------------------------------------
+# -------------------ANIMAL FAVORITE---------------
+# -------------------------------------------------
+
+# CREATE
+@app.post("/animal/favorite", response_model=AnimalFavoriteResponse)
+def create_animal_favorite(
+    data: AnimalFavoriteCreate,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Pažymėti gyvūną kaip patikusį.
+
+    Parametrai:
+    - data: objektas su `animal_id`
+    - user: prisijungęs vartotojas
+
+    Grąžina:
+    - Sukurtą favorite įrašą
+
+    Klaidos:
+    - 404 jei gyvūnas nerastas
+    - 400 jei gyvūnas jau pažymėtas kaip patikęs
+
+    Pavyzdys:
+    - POST /animal/favorite
+    """
+
+    animal = db.query(Animal).filter(Animal.id == data.animal_id).first()
+
+    if not animal:
+        raise HTTPException(status_code=404, detail="Gyvūnas nerastas")
+
+    existing_favorite = db.query(AnimalFavorite).filter(
+        AnimalFavorite.user_id == user.id,
+        AnimalFavorite.animal_id == data.animal_id
+    ).first()
+
+    if existing_favorite:
+        raise HTTPException(status_code=400, detail="Gyvūnas jau pažymėtas kaip patikęs")
+
+    favorite = AnimalFavorite(
+        user_id=user.id,
+        animal_id=data.animal_id
+    )
+
+    db.add(favorite)
+    db.commit()
+    db.refresh(favorite)
+
+    return favorite
+
+
+# READ
+@app.get("/animal/favorite", response_model=list[AnimalFavoriteResponse])
+def get_my_animal_favorites(
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Gauti prisijungusio vartotojo patikusių gyvūnų sąrašą.
+
+    Parametrai:
+    - user: prisijungęs vartotojas
+
+    Grąžina:
+    - Patikusių gyvūnų įrašų sąrašą
+
+    Pavyzdys:
+    - GET /animal/favorite
+    """
+
+    favorites = db.query(AnimalFavorite).filter(
+        AnimalFavorite.user_id == user.id
+    ).order_by(AnimalFavorite.created_at.desc()).all()
+
+    return favorites
+
+
+@app.get("/animal/favorite/list", response_model=list[AnimalResponse])
+def get_my_favorite_animals(
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Gauti prisijungusio vartotojo patikusių gyvūnų sąrašą.
+
+    Parametrai:
+    - user: prisijungęs vartotojas
+
+    Grąžina:
+    - Patikusių gyvūnų objektų sąrašą
+
+    Pavyzdys:
+    - GET /animal/favorite/list
+    """
+
+    animals = db.query(Animal).join(
+        AnimalFavorite, AnimalFavorite.animal_id == Animal.id
+    ).filter(
+        AnimalFavorite.user_id == user.id
+    ).order_by(
+        AnimalFavorite.created_at.desc()
+    ).all()
+
+    return animals
+
+
+# DELETE
+@app.delete("/animal/favorite/{animal_id}")
+def delete_animal_favorite(
+    animal_id: int,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Pašalinti gyvūną iš prisijungusio vartotojo patikusių sąrašo.
+
+    Parametrai:
+    - animal_id: gyvūno identifikatorius
+    - user: prisijungęs vartotojas
+
+    Grąžina:
+    - Sėkmės žinutę
+
+    Klaidos:
+    - 404 jei favorite įrašas nerastas
+
+    Pavyzdys:
+    - DELETE /animal/favorite/5
+    """
+
+    favorite = db.query(AnimalFavorite).filter(
+        AnimalFavorite.user_id == user.id,
+        AnimalFavorite.animal_id == animal_id
+    ).first()
+
+    if not favorite:
+        raise HTTPException(
+            status_code=404,
+            detail="Patikęs gyvūnas nerastas"
+        )
+
+    db.delete(favorite)
+    db.commit()
+
+    return {"message": "Gyvūnas pašalintas iš patikusių"}

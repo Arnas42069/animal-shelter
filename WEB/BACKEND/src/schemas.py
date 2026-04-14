@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field, model_validator
+from pydantic import BaseModel, EmailStr, Field, model_validator, ConfigDict
 from enum import Enum
 from typing import Optional
 from datetime import date, datetime
@@ -137,8 +137,17 @@ class AnimalResponse(BaseModel):
     # Pagrindines nuotraukos url
     primary_image_url: Optional[str] = None
 
+    is_favorite: bool = False
+
     class Config:
         from_attributes = True
+
+
+class AnimalListResponse(BaseModel):
+    items: list[AnimalResponse]
+    total: int
+    page: int
+    page_size: int
 
 
 # Gyvuno atnaujinimo uzklausa
@@ -157,6 +166,28 @@ class AnimalUpdateRequest(BaseModel):
         pattern="^(available|reserved|adopted|foster|medical_hold|lost)$"
     )
 
+
+# -------------------------------------------------
+# -------------------ANIMAL FAVORITE---------------
+# -------------------------------------------------
+class AnimalFavoriteCreate(BaseModel):
+    animal_id: int
+
+
+class AnimalFavoriteResponse(BaseModel):
+    id: int
+    user_id: int
+    animal_id: int
+    created_at: datetime
+
+    is_favorite: bool = False
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AnimalFavoriteSimpleResponse(BaseModel):
+    animal_id: int
+    is_favorite: bool
 
 # -------------------------------------------------
 # -------------------VISIT-------------------------

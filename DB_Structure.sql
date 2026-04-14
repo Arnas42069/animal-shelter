@@ -113,6 +113,27 @@ CREATE INDEX IF NOT EXISTS animal_image_animal_idx ON animal_image(animal_id);
 
 
 -- =========================================
+-- ANIMAL_FAVORITE
+-- =========================================
+CREATE TABLE animal_favorite (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+    user_id BIGINT NOT NULL REFERENCES app_user(id) ON DELETE CASCADE,
+    animal_id BIGINT NOT NULL REFERENCES animal(id) ON DELETE CASCADE,
+    
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+    CONSTRAINT uq_animal_favorite_user_animal UNIQUE (user_id, animal_id)
+);
+
+CREATE INDEX idx_animal_favorite_user_id
+    ON animal_favorite(user_id);
+
+CREATE INDEX idx_animal_favorite_animal_id
+    ON animal_favorite(animal_id);
+
+
+-- =========================================
 -- VISIT
 -- =========================================
 CREATE TABLE IF NOT EXISTS visit (
@@ -143,6 +164,7 @@ CREATE TABLE IF NOT EXISTS visit (
 CREATE INDEX IF NOT EXISTS visit_shelter_idx ON visit(shelter_id);
 CREATE INDEX IF NOT EXISTS visit_user_idx ON visit(user_id);
 CREATE INDEX IF NOT EXISTS visit_start_idx ON visit(start_at);
+
 
 
 -- =========================================

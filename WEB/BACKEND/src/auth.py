@@ -1,6 +1,7 @@
 import os
 from datetime import datetime, timedelta, timezone
 
+from typing import Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
@@ -16,6 +17,7 @@ TOKEN_EXPIRE_MINUTES = 60
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 security = HTTPBearer()
+security_optional = HTTPBearer(auto_error=False)
 
 def hash_password(password: str):
     return pwd_context.hash(password)
@@ -92,5 +94,43 @@ def get_current_user(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Account inactive",
         )
+
+    return user
+
+
+
+def get_current_user_optional(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security_optional),
+    db: Session = Depends(get_db),
+) -> Optional[AppUser]:
+
+    if credentials is None:
+        return None
+
+    token = credentials.credentials
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+
+        token_type = payload.get("type")
+        if token_type != "access":
+            return None
+
+        user_id = payload.get("sub")
+        if not user_id:
+            return None
+
+        user_id = int(user_id)
+
+    except (JWTError, ValueError):
+        return None
+
+    user = db.get(AppUser, user_id)
+
+    if not user:
+        return None
+
+    if not user.is_active:
+        return None
 
     return user

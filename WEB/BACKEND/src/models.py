@@ -1,6 +1,22 @@
 from typing import Optional
 
-from sqlalchemy import Column, BigInteger, Text, Boolean, TIMESTAMP, func, Identity, text, ForeignKey, Date, Numeric
+from sqlalchemy import (
+    Column,
+    BigInteger,
+    Text,
+    Boolean,
+    TIMESTAMP,
+    DateTime,
+    Date,
+    Numeric,
+    ForeignKey,
+    Identity,
+    UniqueConstraint,
+    Index,
+    func,
+    text,
+)
+
 from sqlalchemy.orm import relationship
 
 from src.database import Base
@@ -31,6 +47,12 @@ class AppUser(Base):
     )
 
     last_login_at = Column(TIMESTAMP(timezone=True), nullable=True)
+
+    favorite_animals = relationship(
+        "AnimalFavorite",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
 
 
 class Shelter(Base):
@@ -117,6 +139,12 @@ class Animal(Base):
         cascade="all, delete-orphan"
     )
 
+    favorited_by = relationship(
+        "AnimalFavorite",
+        back_populates="animal",
+        cascade="all, delete-orphan"
+    )
+
 
 class AnimalImage(Base):
     __tablename__ = "animal_image"
@@ -149,6 +177,32 @@ class AnimalImage(Base):
 
     # Relationship i gyvuna
     animal = relationship("Animal", back_populates="images")
+
+
+class AnimalFavorite(Base):
+    __tablename__ = "animal_favorite"
+
+    id = Column(BigInteger, Identity(always=True), primary_key=True)
+    user_id = Column(
+        BigInteger,
+        ForeignKey("app_user.id", ondelete="CASCADE"),
+        nullable=False
+    )
+    animal_id = Column(
+        BigInteger,
+        ForeignKey("animal.id", ondelete="CASCADE"),
+        nullable=False
+    )
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "animal_id", name="uq_animal_favorite_user_animal"),
+        Index("idx_animal_favorite_user_id", "user_id"),
+        Index("idx_animal_favorite_animal_id", "animal_id"),
+    )
+
+    user = relationship("AppUser", back_populates="favorite_animals")
+    animal = relationship("Animal", back_populates="favorited_by")
 
 
 class Visit(Base):

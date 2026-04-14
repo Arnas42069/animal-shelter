@@ -5,6 +5,7 @@
 // Prieglaudu ir gyvunu duomenys
 let shelters = [];
 let animals = [];
+let totalAnimalCount = 0;
 
 // Prieglaudu karuseles busena
 let shelterStartIndex = 0;
@@ -12,7 +13,7 @@ const visibleShelterCount = 4;
 
 // Gyvunu katalogo busena
 let currentAnimalPage = 1;
-const animalsPerPage = 8;
+const animalsPerPage = 16;
 
 // Default logotipai prieglaudoms
 const shelterLogos = [
@@ -24,7 +25,7 @@ const shelterLogos = [
 ];
 
 // Uzklausos pagalbininke
-async function fetchJson(url) {
+/*async function fetchJson(url) {
   const response = await fetch(url);
 
   if (!response.ok) {
@@ -32,7 +33,43 @@ async function fetchJson(url) {
   }
 
   return response.json();
+}*/
+
+async function fetchJson(url, options = {}) {
+  const token =
+    localStorage.getItem("access_token") ||
+    localStorage.getItem("token");
+
+  const makeRequest = async (withAuth) => {
+    const headers = {
+      ...(options.headers || {})
+    };
+
+    if (withAuth && token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    return fetch(url, {
+      ...options,
+      headers
+    });
+  };
+
+  let response = await makeRequest(true);
+
+  // Jei tokenas blogas, bandom dar karta be jo
+  if (response.status === 401 && token) {
+    response = await makeRequest(false);
+  }
+
+  if (!response.ok) {
+    throw new Error(`Klaida gaunant duomenis: ${response.status}`);
+  }
+
+  return response.json();
 }
+
+
 
 // Grazina default prieglaudos logotipa pagal jos id
 function getShelterLogo(shelter) {
@@ -80,8 +117,35 @@ async function loadShelters() {
 }
 
 // Uzkrauna visus gyvunus
-async function loadAnimals() {
-  animals = await fetchJson("/api/animal?sort_order=desc");
+//async function loadAnimals() {
+//  animals = await fetchJson("/api/animal?sort_order=desc");
+//  renderAnimals();
+//}
+
+async function loadAnimals(page = 1) {
+  const shelterValue = document.getElementById("animalShelterFilter")?.value || "";
+  const speciesValue = document.getElementById("animalSpeciesFilter")?.value || "";
+  const genderValue = document.getElementById("animalGenderFilter")?.value || "";
+  const statusValue = document.getElementById("animalStatusFilter")?.value || "";
+  const sortOrder = document.getElementById("animalSortOrder")?.value || "desc";
+
+  const params = new URLSearchParams({
+    page: String(page),
+    page_size: String(animalsPerPage),
+    sort_order: sortOrder
+  });
+
+  if (shelterValue) params.append("shelter_id", shelterValue);
+  if (speciesValue) params.append("species", speciesValue);
+  if (genderValue) params.append("sex", genderValue); // 🔥 FIX
+  if (statusValue) params.append("status", statusValue);
+
+  const data = await fetchJson(`/api/animal?${params.toString()}`);
+
+  animals = data.items;              // 🔥 FIX
+  totalAnimalCount = data.total;     // 🔥 FIX
+  currentAnimalPage = page;
+
   renderAnimals();
 }
 
@@ -182,15 +246,15 @@ function getFilteredAnimals() {
 }
 
 // Sugeneruoja gyvunu katalogo korteles pagal aktyvu puslapi
-function renderAnimals() {
+/*function renderAnimals() {
   const container = document.getElementById("animalCardsContainer");
 
   if (!container) {
     return;
   }
 
-  const filteredAnimals = getFilteredAnimals();
-  const totalPages = Math.max(1, Math.ceil(filteredAnimals.length / animalsPerPage));
+  //const filteredAnimals = getFilteredAnimals();
+  //const totalPages = Math.max(1, Math.ceil(filteredAnimals.length / animalsPerPage));
 
   if (currentAnimalPage > totalPages) {
     currentAnimalPage = totalPages;
@@ -214,9 +278,20 @@ function renderAnimals() {
     const card = document.createElement("div");
     card.className = "card-animal";
 
+
+    // -------------------------------------------------------
+    // ----------------ANIMAL FAVORITE------------------------
+    // -------------------------------------------------------
     card.innerHTML = `
-      <h3>${animal.name || "Be vardo"}</h3>
+      <h3 class="animal-title">
+        <span class="favorite-btn ${animal.is_favorite ? "active" : ""}" data-id="${animal.id}">
+          ${animal.is_favorite ? "❤️" : "🤍"}
+        </span>
+        ${animal.name || "Be vardo"}
+      </h3>
+
       <img src="${getAnimalImage(animal)}" alt="Gyvūnas" />
+
       <p><strong>Rūšis:</strong> ${translateSpecies(animal.species)}</p>
       <p><strong>Veislė:</strong> ${animal.breed || "-"}</p>
       <p><strong>Prieglauda:</strong> ${shelterName}</p>
@@ -231,9 +306,58 @@ function renderAnimals() {
 
   renderAnimalsPagination(totalPages);
 }
+*/
+
+
+function renderAnimals() {
+  const container = document.getElementById("animalCardsContainer");
+
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  if (!animals || !animals.length) {
+    container.innerHTML = "<p>Gyvūnų nerasta.</p>";
+    renderAnimalsPagination(0);
+    return;
+  }
+
+  animals.forEach((animal) => {
+    const shelterName =
+      shelters.find((shelter) => shelter.id === animal.shelter_id)?.name || "-";
+
+    const card = document.createElement("div");
+    card.className = "card-animal";
+
+    card.innerHTML = `
+      <h3 class="animal-title">
+        <span class="favorite-btn ${animal.is_favorite ? "active" : ""}" data-id="${animal.id}">
+          ${animal.is_favorite ? "❤️" : "🤍"}
+        </span>
+        ${animal.name || "Be vardo"}
+      </h3>
+
+      <img src="${getAnimalImage(animal)}" alt="Gyvūnas" />
+
+      <p><strong>Rūšis:</strong> ${translateSpecies(animal.species)}</p>
+      <p><strong>Veislė:</strong> ${animal.breed || "-"}</p>
+      <p><strong>Prieglauda:</strong> ${shelterName}</p>
+      <p><strong>Statusas:</strong> ${translateStatus(animal.status)}</p>
+    `;
+
+    card.addEventListener("click", () => {
+      openAnimalModal(animal);
+    });
+
+    container.appendChild(card);
+  });
+
+  const totalPages = Math.ceil(totalAnimalCount / animalsPerPage);
+  renderAnimalsPagination(totalPages);
+}
 
 // Sugeneruoja puslapiavimo mygtukus
-function renderAnimalsPagination(totalPages) {
+/*function renderAnimalsPagination(totalPages) {
   const container = document.getElementById("animalsPagination");
 
   if (!container) {
@@ -287,6 +411,66 @@ function renderAnimalsPagination(totalPages) {
   });
   container.appendChild(nextBtn);
 }
+*/
+
+function renderAnimalsPagination(totalPages) {
+  const container = document.getElementById("animalsPagination");
+
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = "";
+
+  if (totalPages <= 1) {
+    return;
+  }
+
+  // ◀ PREV
+  const prevBtn = document.createElement("button");
+  prevBtn.type = "button";
+  prevBtn.textContent = "«";
+  prevBtn.disabled = currentAnimalPage === 1;
+
+  prevBtn.addEventListener("click", () => {
+    if (currentAnimalPage > 1) {
+      loadAnimals(currentAnimalPage - 1); // 🔥 vietoj renderAnimals
+    }
+  });
+
+  container.appendChild(prevBtn);
+
+  // 🔢 PAGE BUTTONS
+  for (let page = 1; page <= totalPages; page += 1) {
+    const pageBtn = document.createElement("button");
+    pageBtn.type = "button";
+    pageBtn.textContent = page;
+
+    if (page === currentAnimalPage) {
+      pageBtn.classList.add("active");
+    }
+
+    pageBtn.addEventListener("click", () => {
+      loadAnimals(page); // 🔥 vietoj renderAnimals
+    });
+
+    container.appendChild(pageBtn);
+  }
+
+  // ▶ NEXT
+  const nextBtn = document.createElement("button");
+  nextBtn.type = "button";
+  nextBtn.textContent = "»";
+  nextBtn.disabled = currentAnimalPage === totalPages;
+
+  nextBtn.addEventListener("click", () => {
+    if (currentAnimalPage < totalPages) {
+      loadAnimals(currentAnimalPage + 1); // 🔥 vietoj renderAnimals
+    }
+  });
+
+  container.appendChild(nextBtn);
+}
 
 // Isvercia gyvuno rusį i lietuviu kalba
 function translateSpecies(species) {
@@ -295,9 +479,9 @@ function translateSpecies(species) {
   return "Kita";
 }
 
-function translateGender(gender) {
-  if (gender === "male") return "Patinas";
-  if (gender === "female") return "Patelė";
+function translateGender(sex) {
+  if (sex === "male") return "Patinas";
+  if (sex === "female") return "Patelė";
   return "-";
 }
 
@@ -345,10 +529,16 @@ function bindMainPageEvents() {
     renderShelterCarousel();
   });
 
-  [shelterFilter, speciesFilter, genderFilter, statusFilter, sortOrderFilter].forEach((filter) => {
+  /*[shelterFilter, speciesFilter, genderFilter, statusFilter, sortOrderFilter].forEach((filter) => {
     filter?.addEventListener("change", () => {
       currentAnimalPage = 1;
       renderAnimals();
+    });
+  });*/
+
+  [shelterFilter, speciesFilter, genderFilter, statusFilter, sortOrderFilter].forEach((filter) => {
+    filter?.addEventListener("change", () => {
+      loadAnimals(1); // 🔥 vietoj renderAnimals
     });
   });
 
@@ -382,7 +572,7 @@ function openAnimalModal(animal) {
   document.getElementById("animalModalShelter").textContent = shelterName;
   document.getElementById("animalModalSpecies").textContent = translateSpecies(animal.species);
   document.getElementById("animalModalBreed").textContent = animal.breed || "-";
-  document.getElementById("animalModalGender").textContent = translateGender(animal.gender);
+  document.getElementById("animalModalGender").textContent = translateGender(animal.sex);
   document.getElementById("animalModalStatus").textContent = translateStatus(animal.status);
   document.getElementById("animalModalColor").textContent = animal.color || "-";
   document.getElementById("animalModalBirthDate").textContent = animal.birth_date || "-";
