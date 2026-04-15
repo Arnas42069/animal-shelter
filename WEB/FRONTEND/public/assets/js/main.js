@@ -4,16 +4,19 @@
 
 // Prieglaudu ir gyvunu duomenys
 let shelters = [];
+let allShelters = [];
 let animals = [];
 let totalAnimalCount = 0;
+let currentUser = null;
 
 // Prieglaudu karuseles busena
 let shelterStartIndex = 0;
 const visibleShelterCount = 4;
 
+
 // Gyvunu katalogo busena
 let currentAnimalPage = 1;
-const animalsPerPage = 16;
+const animalsPerPage = 8;
 
 // Default logotipai prieglaudoms
 const shelterLogos = [
@@ -108,9 +111,10 @@ function getAnimalImage(animal) {
 
 // Uzkrauna visas verified prieglaudas
 async function loadShelters() {
-  const allShelters = await fetchJson("/api/shelter");
+  const fetchedShelters = await fetchJson("/api/shelter");
 
-  shelters = allShelters.filter((shelter) => shelter.is_verified);
+  allShelters = fetchedShelters;
+  shelters = fetchedShelters.filter((shelter) => shelter.is_verified);
 
   renderShelterCarousel();
   fillAnimalShelterFilter();
@@ -132,6 +136,7 @@ async function loadAnimals(page = 1) {
   const params = new URLSearchParams({
     page: String(page),
     page_size: String(animalsPerPage),
+    sort_by: "created_at",
     sort_order: sortOrder
   });
 
@@ -193,7 +198,7 @@ function fillAnimalShelterFilter() {
 
   select.innerHTML = `<option value="">Visos prieglaudos</option>`;
 
-  shelters.forEach((shelter) => {
+  allShelters.forEach((shelter) => {
     const option = document.createElement("option");
     option.value = shelter.id;
     option.textContent = shelter.name;
@@ -245,68 +250,105 @@ function getFilteredAnimals() {
   return filteredAnimals;
 }
 
-// Sugeneruoja gyvunu katalogo korteles pagal aktyvu puslapi
-/*function renderAnimals() {
-  const container = document.getElementById("animalCardsContainer");
+// Sugeneruoja puslapiavimo mygtukus
+function renderAnimalsPagination(totalPages) {
+  const container = document.getElementById("animalsPagination");
 
   if (!container) {
     return;
   }
 
-  //const filteredAnimals = getFilteredAnimals();
-  //const totalPages = Math.max(1, Math.ceil(filteredAnimals.length / animalsPerPage));
-
-  if (currentAnimalPage > totalPages) {
-    currentAnimalPage = totalPages;
-  }
-
-  const startIndex = (currentAnimalPage - 1) * animalsPerPage;
-  const visibleAnimals = filteredAnimals.slice(startIndex, startIndex + animalsPerPage);
-
   container.innerHTML = "";
 
-  if (!visibleAnimals.length) {
-    container.innerHTML = "<p>Gyvūnų nerasta.</p>";
-    renderAnimalsPagination(0);
+  if (totalPages <= 1) {
     return;
   }
 
-  visibleAnimals.forEach((animal) => {
-    const shelterName =
-      shelters.find((shelter) => shelter.id === animal.shelter_id)?.name || "-";
+  const createButton = (text, page, disabled = false, isActive = false) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = text;
+    btn.disabled = disabled;
 
-    const card = document.createElement("div");
-    card.className = "card-animal";
+    if (isActive) {
+      btn.classList.add("active");
+    }
 
+    if (!disabled && page !== null) {
+      btn.addEventListener("click", () => {
+        loadAnimals(page);
+      });
+    }
 
-    // -------------------------------------------------------
-    // ----------------ANIMAL FAVORITE------------------------
-    // -------------------------------------------------------
-    card.innerHTML = `
-      <h3 class="animal-title">
-        <span class="favorite-btn ${animal.is_favorite ? "active" : ""}" data-id="${animal.id}">
-          ${animal.is_favorite ? "❤️" : "🤍"}
-        </span>
-        ${animal.name || "Be vardo"}
-      </h3>
+    return btn;
+  };
 
-      <img src="${getAnimalImage(animal)}" alt="Gyvūnas" />
+  const createDots = () => {
+    const span = document.createElement("span");
+    span.className = "pagination-dots";
+    span.textContent = "...";
+    return span;
+  };
 
-      <p><strong>Rūšis:</strong> ${translateSpecies(animal.species)}</p>
-      <p><strong>Veislė:</strong> ${animal.breed || "-"}</p>
-      <p><strong>Prieglauda:</strong> ${shelterName}</p>
-      <p><strong>Statusas:</strong> ${translateStatus(animal.status)}</p>
-    `;
+  const startPage = Math.max(1, currentAnimalPage - 3);
+  const endPage = Math.min(totalPages, currentAnimalPage + 3);
 
-    card.addEventListener("click", () => {
-      openAnimalModal(animal);
-    });
-    container.appendChild(card);
-  });
+  // Į pradžią
+  container.appendChild(
+    createButton("««", 1, currentAnimalPage === 1)
+  );
 
-  renderAnimalsPagination(totalPages);
+  // Atgal per vieną
+  container.appendChild(
+    createButton("«", currentAnimalPage - 1, currentAnimalPage === 1)
+  );
+
+  // Pirmas puslapis, jei nepatenka į langą
+  if (startPage > 1) {
+    container.appendChild(
+      createButton("1", 1, false, currentAnimalPage === 1)
+    );
+  }
+
+  // Daugtaškis po pradžios
+  if (startPage > 2) {
+    container.appendChild(createDots());
+  }
+
+  // Matomi puslapiai aplink aktyvų
+  for (let page = startPage; page <= endPage; page += 1) {
+    container.appendChild(
+      createButton(String(page), page, false, page === currentAnimalPage)
+    );
+  }
+
+  // Daugtaškis prieš galą
+  if (endPage < totalPages - 1) {
+    container.appendChild(createDots());
+  }
+
+  // Paskutinis puslapis, jei nepatenka į langą
+  if (endPage < totalPages) {
+    container.appendChild(
+      createButton(
+        String(totalPages),
+        totalPages,
+        false,
+        currentAnimalPage === totalPages
+      )
+    );
+  }
+
+  // Pirmyn per vieną
+  container.appendChild(
+    createButton("»", currentAnimalPage + 1, currentAnimalPage === totalPages)
+  );
+
+  // Į galą
+  container.appendChild(
+    createButton("»»", totalPages, currentAnimalPage === totalPages)
+  );
 }
-*/
 
 
 function renderAnimals() {
@@ -322,18 +364,26 @@ function renderAnimals() {
     return;
   }
 
+  const canShowFavorite = currentUser?.role === "volunteer";
+
   animals.forEach((animal) => {
     const shelterName =
-      shelters.find((shelter) => shelter.id === animal.shelter_id)?.name || "-";
+      allShelters.find((shelter) => Number(shelter.id) === Number(animal.shelter_id))?.name || "-";
 
     const card = document.createElement("div");
     card.className = "card-animal";
 
     card.innerHTML = `
       <h3 class="animal-title">
-        <span class="favorite-btn ${animal.is_favorite ? "active" : ""}" data-id="${animal.id}">
-          ${animal.is_favorite ? "❤️" : "🤍"}
-        </span>
+        ${
+          canShowFavorite
+            ? `
+              <span class="favorite-btn ${animal.is_favorite ? "active" : ""}" data-id="${animal.id}">
+                ${animal.is_favorite ? "❤️" : "🤍"}
+              </span>
+            `
+            : ""
+        }
         ${animal.name || "Be vardo"}
       </h3>
 
@@ -349,127 +399,20 @@ function renderAnimals() {
       openAnimalModal(animal);
     });
 
+    const favoriteBtn = card.querySelector(".favorite-btn");
+
+    if (favoriteBtn) {
+      favoriteBtn.addEventListener("click", async (event) => {
+        event.stopPropagation();
+        await toggleAnimalFavorite(animal.id, animal.is_favorite);
+      });
+    }
+
     container.appendChild(card);
   });
 
   const totalPages = Math.ceil(totalAnimalCount / animalsPerPage);
   renderAnimalsPagination(totalPages);
-}
-
-// Sugeneruoja puslapiavimo mygtukus
-/*function renderAnimalsPagination(totalPages) {
-  const container = document.getElementById("animalsPagination");
-
-  if (!container) {
-    return;
-  }
-
-  container.innerHTML = "";
-
-  if (totalPages <= 1) {
-    return;
-  }
-
-  const prevBtn = document.createElement("button");
-  prevBtn.type = "button";
-  prevBtn.textContent = "«";
-  prevBtn.disabled = currentAnimalPage === 1;
-  prevBtn.addEventListener("click", () => {
-    if (currentAnimalPage > 1) {
-      currentAnimalPage -= 1;
-      renderAnimals();
-    }
-  });
-  container.appendChild(prevBtn);
-
-  for (let page = 1; page <= totalPages; page += 1) {
-    const pageBtn = document.createElement("button");
-    pageBtn.type = "button";
-    pageBtn.textContent = page;
-
-    if (page === currentAnimalPage) {
-      pageBtn.classList.add("active");
-    }
-
-    pageBtn.addEventListener("click", () => {
-      currentAnimalPage = page;
-      renderAnimals();
-    });
-
-    container.appendChild(pageBtn);
-  }
-
-  const nextBtn = document.createElement("button");
-  nextBtn.type = "button";
-  nextBtn.textContent = "»";
-  nextBtn.disabled = currentAnimalPage === totalPages;
-  nextBtn.addEventListener("click", () => {
-    if (currentAnimalPage < totalPages) {
-      currentAnimalPage += 1;
-      renderAnimals();
-    }
-  });
-  container.appendChild(nextBtn);
-}
-*/
-
-function renderAnimalsPagination(totalPages) {
-  const container = document.getElementById("animalsPagination");
-
-  if (!container) {
-    return;
-  }
-
-  container.innerHTML = "";
-
-  if (totalPages <= 1) {
-    return;
-  }
-
-  // ◀ PREV
-  const prevBtn = document.createElement("button");
-  prevBtn.type = "button";
-  prevBtn.textContent = "«";
-  prevBtn.disabled = currentAnimalPage === 1;
-
-  prevBtn.addEventListener("click", () => {
-    if (currentAnimalPage > 1) {
-      loadAnimals(currentAnimalPage - 1); // 🔥 vietoj renderAnimals
-    }
-  });
-
-  container.appendChild(prevBtn);
-
-  // 🔢 PAGE BUTTONS
-  for (let page = 1; page <= totalPages; page += 1) {
-    const pageBtn = document.createElement("button");
-    pageBtn.type = "button";
-    pageBtn.textContent = page;
-
-    if (page === currentAnimalPage) {
-      pageBtn.classList.add("active");
-    }
-
-    pageBtn.addEventListener("click", () => {
-      loadAnimals(page); // 🔥 vietoj renderAnimals
-    });
-
-    container.appendChild(pageBtn);
-  }
-
-  // ▶ NEXT
-  const nextBtn = document.createElement("button");
-  nextBtn.type = "button";
-  nextBtn.textContent = "»";
-  nextBtn.disabled = currentAnimalPage === totalPages;
-
-  nextBtn.addEventListener("click", () => {
-    if (currentAnimalPage < totalPages) {
-      loadAnimals(currentAnimalPage + 1); // 🔥 vietoj renderAnimals
-    }
-  });
-
-  container.appendChild(nextBtn);
 }
 
 // Isvercia gyvuno rusį i lietuviu kalba
@@ -555,6 +498,7 @@ function bindMainPageEvents() {
 async function initMainPage() {
   try {
     bindMainPageEvents();
+    await loadCurrentUser();
     await loadShelters();
     await loadAnimals();
   } catch (error) {
@@ -565,7 +509,7 @@ async function initMainPage() {
 // Atidaro pasirinkto gyvuno popup langa
 function openAnimalModal(animal) {
   const shelterName =
-    shelters.find((shelter) => Number(shelter.id) === Number(animal.shelter_id))?.name || "-";
+    allShelters.find((shelter) => Number(shelter.id) === Number(animal.shelter_id))?.name || "-";
 
   document.getElementById("animalModalImage").src = getAnimalImage(animal);
   document.getElementById("animalModalName").textContent = animal.name || "Be vardo";
@@ -589,5 +533,70 @@ function closeAnimalModal() {
   document.body.style.overflow = "";
 }
 
+
+async function loadCurrentUser() {
+  const token =
+    localStorage.getItem("access_token") ||
+    localStorage.getItem("token");
+
+  if (!token) {
+    currentUser = null;
+    return;
+  }
+
+  try {
+    currentUser = await fetchJson("/api/auth/me");
+  } catch (error) {
+    currentUser = null;
+  }
+}
+
+async function toggleAnimalFavorite(animalId, isFavorite) {
+  const token =
+    localStorage.getItem("access_token") ||
+    localStorage.getItem("token");
+
+  if (!token || currentUser?.role !== "volunteer") {
+    return;
+  }
+
+  try {
+    let response;
+
+    if (isFavorite) {
+      response = await fetch(`/api/animal/favorite/${animalId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    } else {
+      response = await fetch("/api/animal/favorite", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          animal_id: animalId
+        })
+      });
+    }
+
+    if (!response.ok) {
+      throw new Error(`Nepavyko pakeisti favorite būsenos: ${response.status}`);
+    }
+
+    const animal = animals.find((item) => Number(item.id) === Number(animalId));
+
+    if (animal) {
+      animal.is_favorite = !isFavorite;
+    }
+
+    renderAnimals();
+  } catch (error) {
+    console.error("Klaida keičiant favorite būseną:", error);
+  }
+}
 
 document.addEventListener("DOMContentLoaded", initMainPage);

@@ -13,6 +13,7 @@
   <body>
     <header id="site-navbar"></header>
     <div id="auth-modals-root"></div>
+
     <div class="container-gaps">
       <header class="loved-startEnd">
         <h1 class="h1">❤️ Pamėgti gyvūnai</h1>
@@ -20,93 +21,92 @@
       </header>
 
       <main>
-      <!-- Jei yra gyvūnų -->
-      <section class="animals">
-        <div class="animals-toolbar">
-          <select id="animalShelterFilter">
-            <option value="">Visos prieglaudos</option>
-          </select>
+        <section class="animals">
+          <div class="animals-toolbar">
+            <select id="animalShelterFilter">
+              <option value="">Visos prieglaudos</option>
+            </select>
 
-          <select id="animalSpeciesFilter">
-            <option value="">Visos rūšys</option>
-            <option value="dog">Šuo</option>
-            <option value="cat">Katė</option>
-          </select>
+            <select id="animalSpeciesFilter">
+              <option value="">Visos rūšys</option>
+              <option value="dog">Šuo</option>
+              <option value="cat">Katė</option>
+            </select>
 
-          <select id="animalGenderFilter">
-            <option value="">Visos lytys</option>
-            <option value="male">Patinas</option>
-            <option value="female">Patelė</option>
-          </select>
+            <select id="animalGenderFilter">
+              <option value="">Visos lytys</option>
+              <option value="male">Patinas</option>
+              <option value="female">Patelė</option>
+            </select>
 
-          <select id="animalStatusFilter">
-            <option value="">Visi statusai</option>
-            <option value="available">Available</option>
-            <option value="reserved">Reserved</option>
-            <option value="adopted">Adopted</option>
-            <option value="foster">Foster</option>
-            <option value="medical_hold">Medical hold</option>
-            <option value="lost">Lost</option>
-          </select>
+            <select id="animalStatusFilter">
+              <option value="">Visi statusai</option>
+              <option value="available">Available</option>
+              <option value="reserved">Reserved</option>
+              <option value="adopted">Adopted</option>
+              <option value="foster">Foster</option>
+              <option value="medical_hold">Medical hold</option>
+              <option value="lost">Lost</option>
+            </select>
 
-          <select id="animalSortOrder">
-            <option value="desc">Naujausi pirmiau</option>
-            <option value="asc">Seniausi pirmiau</option>
-          </select>
-        </div>
-
-        <div class="cards-animal">
-          <div class="card-animal">
-            <h2 class="loved-animal-name">Molly</h2>
-            <img src="/assets/img/dog5.jpg" alt="dog">
-            <p><strong>Rūšis:</strong> Šuo</p>
-            <p><strong>Veislė:</strong> Border Collie</p>
-            <p><strong>Prieglauda:</strong> -</p>
-            <p><strong>Statusas:</strong> Reserved</p>
+            <select id="animalSortOrder">
+              <option value="desc">Naujausi pirmiau</option>
+              <option value="asc">Seniausi pirmiau</option>
+            </select>
           </div>
 
-          <div class="card-animal">
-            <h2 class="loved-animal-name">Buddy</h2>
-            <img src="/assets/img/cat4.jpg" alt="cat">
-            <p><strong>Rūšis:</strong> Katė</p>
-            <p><strong>Veislė:</strong> Golden Retriever</p>
-            <p><strong>Prieglauda:</strong> -</p>
-            <p><strong>Statusas:</strong> Available</p>
+          <div class="cards-animal" id="animalCardsContainer">
+            <!-- Pamėgtų gyvūnų kortelės bus sugeneruotos per JS -->
           </div>
 
-          <div class="card-animal">
-            <h2 class="loved-animal-name">Nala</h2>
-            <img src="/assets/img/dog2.jpg" alt="dog">
-            <p><strong>Rūšis:</strong> Šuo</p>
-            <p><strong>Veislė:</strong> Mixed</p>
-            <p><strong>Prieglauda:</strong> Happy Paws Shelter</p>
-            <p><strong>Statusas:</strong> Available</p>
+          <div class="pagination" id="animalsPagination">
+            <!-- Puslapiavimas bus sugeneruotas per JS -->
           </div>
+        </section>
 
-          <div class="card-animal">
-            <h2 class="loved-animal-name">Simba</h2>
-            <img src="/assets/img/cat5.jpg" alt="">
-            <p><strong>Rūšis:</strong> Katė</p>
-            <p><strong>Veislė:</strong> Mixed</p>
-            <p><strong>Prieglauda:</strong> Happy Paws Shelter</p>
-            <p><strong>Statusas:</strong> Available</p>
-          </div>
-        </div>
-      </section>
-      <header class="loved-startEnd">
-        <a class="btn" href="index.html#gyvunai">Peržiūrėti visus gyvūnus</a>
-      </header>
+        <header class="loved-startEnd">
+          <a class="btn" href="/index.html#gyvunai">Peržiūrėti visus gyvūnus</a>
+        </header>
+      </main>
     </div>
-  <!-- Tuščia būsena (rodyk vietoj grid jei nėra duomenų) -->
-  
 
-</main>
-    </div>
     <footer id="site-footer"></footer>
+
+    <div class="animal-modal-backdrop" id="animalModalBackdrop" hidden>
+      <div class="animal-modal">
+        <button class="animal-modal-close" id="animalModalCloseBtn" type="button">×</button>
+
+        <img
+          id="animalModalImage"
+          class="animal-modal-image"
+          src="/assets/img/cat1.png"
+          alt="Gyvūnas"
+        />
+
+        <h2 id="animalModalName">Gyvūnas</h2>
+
+        <div class="animal-modal-grid">
+          <p><strong>Prieglauda:</strong> <span id="animalModalShelter">-</span></p>
+          <p><strong>Rūšis:</strong> <span id="animalModalSpecies">-</span></p>
+          <p><strong>Veislė:</strong> <span id="animalModalBreed">-</span></p>
+          <p><strong>Lytis:</strong> <span id="animalModalGender">-</span></p>
+          <p><strong>Statusas:</strong> <span id="animalModalStatus">-</span></p>
+          <p><strong>Spalva:</strong> <span id="animalModalColor">-</span></p>
+          <p><strong>Gimimo data:</strong> <span id="animalModalBirthDate">-</span></p>
+          <p><strong>Kodas:</strong> <span id="animalModalCode">-</span></p>
+        </div>
+
+        <div class="animal-modal-description">
+          <h3>Aprašymas</h3>
+          <p id="animalModalDescription">-</p>
+        </div>
+      </div>
+    </div>
 
     <script src="/assets/js/auth.js"></script>
     <script src="/assets/js/navbar.js"></script>
-    <script src="/assets/js/footer.js"></script> 
+    <script src="/assets/js/footer.js"></script>
     <script src="/assets/js/auth-modals.js"></script>
+    <script src="/assets/js/megstami-gyvunai.js"></script>
   </body>
 </html>
