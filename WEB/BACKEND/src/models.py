@@ -149,33 +149,25 @@ class Animal(Base):
 class AnimalImage(Base):
     __tablename__ = "animal_image"
 
-    # Viena nuotrauka priklauso vienam gyvunui
+    id = Column(BigInteger, primary_key=True, index=True)
+
     animal_id = Column(
         BigInteger,
         ForeignKey("animal.id", ondelete="CASCADE"),
-        primary_key=True,
-        nullable=False
-    )
-
-    # Nuotraukos kelias arba url
-    url = Column(Text, primary_key=True, nullable=False)
-
-    # Ar si nuotrauka yra pagrindine
-    is_primary = Column(
-        Boolean,
         nullable=False,
-        default=False,
-        server_default=text("false")
     )
 
-    # Sukurimo data
+    url = Column(Text, nullable=False)
+
+    is_primary = Column(Boolean, nullable=False, default=False)
+
     created_at = Column(
         TIMESTAMP(timezone=True),
+        server_default=func.now(),
         nullable=False,
-        server_default=func.now()
     )
 
-    # Relationship i gyvuna
+    # relationship (jei reikia)
     animal = relationship("Animal", back_populates="images")
 
 

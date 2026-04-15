@@ -63,7 +63,7 @@ VALUES
         'Kaunas',
         '44240',
         'Lithuania',
-        FALSE,
+        TRUE,
         TRUE,
         (SELECT id FROM app_user WHERE username = 'shelter2')
     )

@@ -134,7 +134,6 @@ class AnimalResponse(BaseModel):
     description: Optional[str]
     status: str
 
-    # Pagrindines nuotraukos url
     primary_image_url: Optional[str] = None
 
     is_favorite: bool = False
@@ -166,6 +165,30 @@ class AnimalUpdateRequest(BaseModel):
         pattern="^(available|reserved|adopted|foster|medical_hold|lost)$"
     )
 
+
+# -------------------------------------------------
+# -------------------ANIMAL IMAGE------------------
+# -------------------------------------------------
+class AnimalImageCreate(BaseModel):
+    animal_id: int
+    url: str  # gali dėti HttpUrl jei tik external URL
+    is_primary: Optional[bool] = False
+
+
+class AnimalImageResponse(BaseModel):
+    id: int
+    animal_id: int
+    url: str
+    is_primary: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True  # Pydantic v2
+
+
+class AnimalImageUpdate(BaseModel):
+    url: Optional[str] = None
+    is_primary: Optional[bool] = None
 
 # -------------------------------------------------
 # -------------------ANIMAL FAVORITE---------------

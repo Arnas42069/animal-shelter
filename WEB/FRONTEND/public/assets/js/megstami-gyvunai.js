@@ -1,5 +1,6 @@
 // -------------------------------------
 // Mėgstamų gyvūnų puslapio logika
+// Naudoja bendras funkcijas iš common.js
 // -------------------------------------
 
 let shelters = [];
@@ -11,122 +12,23 @@ let currentUser = null;
 let currentAnimalPage = 1;
 const animalsPerPage = 8;
 
-// Default logotipai prieglaudoms / gyvūnų nuotraukoms
-const shelterLogos = [
-  "/assets/img/logo1.png",
-  "/assets/img/logo2.png",
-  "/assets/img/logo3.png",
-  "/assets/img/logo4.jpg",
-  "/assets/img/logo5.jpg"
-];
-
-async function fetchJson(url, options = {}) {
-  const token =
-    localStorage.getItem("access_token") ||
-    localStorage.getItem("token");
-
-  const makeRequest = async (withAuth) => {
-    const headers = {
-      ...(options.headers || {})
-    };
-
-    if (withAuth && token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-
-    return fetch(url, {
-      ...options,
-      headers
-    });
-  };
-
-  let response = await makeRequest(true);
-
-  // Jei token blogas, bandom dar kartą be jo
-  if (response.status === 401 && token) {
-    response = await makeRequest(false);
-  }
-
-  if (!response.ok) {
-    throw new Error(`Klaida gaunant duomenis: ${response.status}`);
-  }
-
-  return response.json();
-}
-
-function getShelterLogo(shelter) {
-  const safeId = Number(shelter?.id || 0);
-  return shelterLogos[safeId % shelterLogos.length];
-}
-
-function getAnimalImage(animal) {
-  const dogImages = [
-    "/assets/img/dog2.jpg",
-    "/assets/img/dog3.jpg",
-    "/assets/img/dog4.jpg",
-    "/assets/img/dog5.jpg"
-  ];
-
-  const catImages = [
-    "/assets/img/cat2.jpg",
-    "/assets/img/cat3.png",
-    "/assets/img/cat4.jpg",
-    "/assets/img/cat5.jpg"
-  ];
-
-  const safeId = Number(animal?.id || 0);
-
-  if (animal?.species === "cat") {
-    return catImages[safeId % catImages.length];
-  }
-
-  if (animal?.species === "dog") {
-    return dogImages[safeId % dogImages.length];
-  }
-
-  return "/assets/img/prieglauda.png";
-}
-
-function translateSpecies(species) {
-  if (species === "dog") return "Šuo";
-  if (species === "cat") return "Katė";
-  return "Kita";
-}
-
-function translateGender(sex) {
-  if (sex === "male") return "Patinas";
-  if (sex === "female") return "Patelė";
-  return "-";
-}
-
-function translateStatus(status) {
-  const map = {
-    available: "Available",
-    reserved: "Reserved",
-    adopted: "Adopted",
-    foster: "Foster",
-    medical_hold: "Medical hold",
-    lost: "Lost"
-  };
-
-  return map[status] || status || "-";
-}
+const {
+  getEl,
+  fetchJson,
+  loadCurrentUser: loadCurrentUserCommon,
+  getAnimalImage,
+  translateSpecies,
+  translateGender,
+  translateStatus,
+  fillShelterFilter,
+  readAnimalFilters,
+  renderPagination,
+  openModal,
+  closeModal
+} = window.AppCommon;
 
 async function loadCurrentUser() {
-  const token =
-    localStorage.getItem("access_token") ||
-    localStorage.getItem("token");
-
-  if (!token) {
-    currentUser = null;
-    return;
-  }
-
-  try {
-    currentUser = await fetchJson("/api/auth/me");
-  } catch (error) {
-    currentUser = null;
-  }
+  currentUser = await loadCurrentUserCommon();
 }
 
 async function loadShelters() {
@@ -139,20 +41,8 @@ async function loadShelters() {
 }
 
 function fillAnimalShelterFilter() {
-  const select = document.getElementById("animalShelterFilter");
-
-  if (!select) {
-    return;
-  }
-
-  select.innerHTML = `<option value="">Visos prieglaudos</option>`;
-
-  allShelters.forEach((shelter) => {
-    const option = document.createElement("option");
-    option.value = shelter.id;
-    option.textContent = shelter.name;
-    select.appendChild(option);
-  });
+  const select = getEl("animalShelterFilter");
+  fillShelterFilter(select, allShelters, "Visos prieglaudos");
 }
 
 // Užkrauna visus gyvūnus ir palieka tik pamėgtus
@@ -186,140 +76,64 @@ async function loadFavoriteAnimals() {
 }
 
 function getFilteredFavoriteAnimals() {
-  const shelterValue = document.getElementById("animalShelterFilter")?.value || "";
-  const speciesValue = document.getElementById("animalSpeciesFilter")?.value || "";
-  const genderValue = document.getElementById("animalGenderFilter")?.value || "";
-  const statusValue = document.getElementById("animalStatusFilter")?.value || "";
-  const sortOrder = document.getElementById("animalSortOrder")?.value || "desc";
+  const filters = readAnimalFilters({
+    shelterId: "animalShelterFilter",
+    speciesId: "animalSpeciesFilter",
+    genderId: "animalGenderFilter",
+    statusId: "animalStatusFilter",
+    sortOrderId: "animalSortOrder"
+  });
 
   let result = [...favoriteAnimals];
 
-  if (shelterValue) {
+  if (filters.shelter_id) {
     result = result.filter(
-      (animal) => String(animal.shelter_id) === String(shelterValue)
+      (animal) => String(animal.shelter_id) === String(filters.shelter_id)
     );
   }
 
-  if (speciesValue) {
+  if (filters.species) {
     result = result.filter(
-      (animal) => String(animal.species) === String(speciesValue)
+      (animal) => String(animal.species) === String(filters.species)
     );
   }
 
-  if (genderValue) {
+  if (filters.sex) {
     result = result.filter(
-      (animal) => String(animal.sex) === String(genderValue)
+      (animal) => String(animal.sex) === String(filters.sex)
     );
   }
 
-  if (statusValue) {
+  if (filters.status) {
     result = result.filter(
-      (animal) => String(animal.status) === String(statusValue)
+      (animal) => String(animal.status) === String(filters.status)
     );
   }
 
   result.sort((a, b) => {
     const aId = Number(a.id || 0);
     const bId = Number(b.id || 0);
-    return sortOrder === "asc" ? aId - bId : bId - aId;
+    return filters.sort_order === "asc" ? aId - bId : bId - aId;
   });
 
   return result;
 }
 
 function renderAnimalsPagination(totalPages) {
-  const container = document.getElementById("animalsPagination");
+  const container = getEl("animalsPagination");
 
-  if (!container) {
-    return;
-  }
-
-  container.innerHTML = "";
-
-  if (totalPages <= 1) {
-    return;
-  }
-
-  const createButton = (text, page, disabled = false, isActive = false) => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.textContent = text;
-    btn.disabled = disabled;
-
-    if (isActive) {
-      btn.classList.add("active");
+  renderPagination(container, {
+    currentPage: currentAnimalPage,
+    totalPages,
+    onPageChange: (page) => {
+      currentAnimalPage = page;
+      renderAnimals();
     }
-
-    if (!disabled && page !== null) {
-      btn.addEventListener("click", () => {
-        currentAnimalPage = page;
-        renderAnimals();
-      });
-    }
-
-    return btn;
-  };
-
-  const createDots = () => {
-    const span = document.createElement("span");
-    span.className = "pagination-dots";
-    span.textContent = "...";
-    return span;
-  };
-
-  const startPage = Math.max(1, currentAnimalPage - 3);
-  const endPage = Math.min(totalPages, currentAnimalPage + 3);
-
-  container.appendChild(
-    createButton("««", 1, currentAnimalPage === 1)
-  );
-
-  container.appendChild(
-    createButton("«", currentAnimalPage - 1, currentAnimalPage === 1)
-  );
-
-  if (startPage > 1) {
-    container.appendChild(
-      createButton("1", 1, false, currentAnimalPage === 1)
-    );
-  }
-
-  if (startPage > 2) {
-    container.appendChild(createDots());
-  }
-
-  for (let page = startPage; page <= endPage; page += 1) {
-    container.appendChild(
-      createButton(String(page), page, false, page === currentAnimalPage)
-    );
-  }
-
-  if (endPage < totalPages - 1) {
-    container.appendChild(createDots());
-  }
-
-  if (endPage < totalPages) {
-    container.appendChild(
-      createButton(
-        String(totalPages),
-        totalPages,
-        false,
-        currentAnimalPage === totalPages
-      )
-    );
-  }
-
-  container.appendChild(
-    createButton("»", currentAnimalPage + 1, currentAnimalPage === totalPages)
-  );
-
-  container.appendChild(
-    createButton("»»", totalPages, currentAnimalPage === totalPages)
-  );
+  });
 }
 
 function renderAnimals() {
-  const container = document.getElementById("animalCardsContainer");
+  const container = getEl("animalCardsContainer");
 
   if (!container) {
     return;
@@ -359,7 +173,6 @@ function renderAnimals() {
 
   const startIndex = (currentAnimalPage - 1) * animalsPerPage;
   const endIndex = startIndex + animalsPerPage;
-
   const pageItems = filteredFavoriteAnimals.slice(startIndex, endIndex);
 
   pageItems.forEach((animal) => {
@@ -411,30 +224,23 @@ function openAnimalModal(animal) {
   const shelterName =
     allShelters.find((shelter) => Number(shelter.id) === Number(animal.shelter_id))?.name || "-";
 
-  document.getElementById("animalModalImage").src = getAnimalImage(animal);
-  document.getElementById("animalModalName").textContent = animal.name || "Be vardo";
-  document.getElementById("animalModalShelter").textContent = shelterName;
-  document.getElementById("animalModalSpecies").textContent = translateSpecies(animal.species);
-  document.getElementById("animalModalBreed").textContent = animal.breed || "-";
-  document.getElementById("animalModalGender").textContent = translateGender(animal.sex);
-  document.getElementById("animalModalStatus").textContent = translateStatus(animal.status);
-  document.getElementById("animalModalColor").textContent = animal.color || "-";
-  document.getElementById("animalModalBirthDate").textContent = animal.birth_date || "-";
-  document.getElementById("animalModalCode").textContent = animal.code || "-";
-  document.getElementById("animalModalDescription").textContent = animal.description || "-";
+  getEl("animalModalImage").src = getAnimalImage(animal);
+  getEl("animalModalName").textContent = animal.name || "Be vardo";
+  getEl("animalModalShelter").textContent = shelterName;
+  getEl("animalModalSpecies").textContent = translateSpecies(animal.species);
+  getEl("animalModalBreed").textContent = animal.breed || "-";
+  getEl("animalModalGender").textContent = translateGender(animal.sex);
+  getEl("animalModalStatus").textContent = translateStatus(animal.status);
+  getEl("animalModalColor").textContent = animal.color || "-";
+  getEl("animalModalBirthDate").textContent = animal.birth_date || "-";
+  getEl("animalModalCode").textContent = animal.code || "-";
+  getEl("animalModalDescription").textContent = animal.description || "-";
 
-  document.getElementById("animalModalBackdrop").hidden = false;
-  document.body.style.overflow = "hidden";
+  openModal("animalModalBackdrop");
 }
 
 function closeAnimalModal() {
-  const backdrop = document.getElementById("animalModalBackdrop");
-
-  if (backdrop) {
-    backdrop.hidden = true;
-  }
-
-  document.body.style.overflow = "";
+  closeModal("animalModalBackdrop");
 }
 
 async function removeAnimalFavorite(animalId) {
@@ -482,13 +288,13 @@ async function removeAnimalFavorite(animalId) {
 }
 
 function bindPageEvents() {
-  const shelterFilter = document.getElementById("animalShelterFilter");
-  const speciesFilter = document.getElementById("animalSpeciesFilter");
-  const genderFilter = document.getElementById("animalGenderFilter");
-  const statusFilter = document.getElementById("animalStatusFilter");
-  const sortOrderFilter = document.getElementById("animalSortOrder");
-  const modalCloseBtn = document.getElementById("animalModalCloseBtn");
-  const modalBackdrop = document.getElementById("animalModalBackdrop");
+  const shelterFilter = getEl("animalShelterFilter");
+  const speciesFilter = getEl("animalSpeciesFilter");
+  const genderFilter = getEl("animalGenderFilter");
+  const statusFilter = getEl("animalStatusFilter");
+  const sortOrderFilter = getEl("animalSortOrder");
+  const modalCloseBtn = getEl("animalModalCloseBtn");
+  const modalBackdrop = getEl("animalModalBackdrop");
 
   [shelterFilter, speciesFilter, genderFilter, statusFilter, sortOrderFilter].forEach((filter) => {
     filter?.addEventListener("change", () => {
@@ -515,7 +321,7 @@ async function initFavoriteAnimalsPage() {
   } catch (error) {
     console.error("Nepavyko užkrauti mėgstamų gyvūnų puslapio:", error);
 
-    const container = document.getElementById("animalCardsContainer");
+    const container = getEl("animalCardsContainer");
     if (container) {
       container.innerHTML = "<p>Nepavyko užkrauti mėgstamų gyvūnų.</p>";
     }

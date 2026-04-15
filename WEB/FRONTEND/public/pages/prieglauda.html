@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="/assets/css/navbar.css" />
     <link rel="stylesheet" href="/assets/css/auth-modals.css" />
     <link rel="stylesheet" href="/assets/css/footer.css" />
+    <link rel="stylesheet" href="/assets/css/main.css" />
   </head>
 
   <body>
@@ -172,19 +173,19 @@
           <div class="stat-card">
             <img src="/assets/svg/paw-outline.svg" alt="Pėdutės" class="paw-hover-icon" />
             <p>Turime:</p>
-            <strong>17</strong>
+            <strong id="availableAnimalsCount">0</strong>
           </div>
 
           <div class="stat-card">
             <img src="/assets/svg/paw2.svg" alt="Pėdutės" class="paw-hover-icon" />
             <p>Rado namus:</p>
-            <strong>53</strong>
+            <strong id="adoptedAnimalsCount">0</strong>
           </div>
 
           <div class="stat-card">
             <img src="/assets/svg/paw-outline.svg" alt="Pėdutės" class="paw-hover-icon" />
             <p>Savanoriai:</p>
-            <strong>12</strong>
+            <strong>??</strong>
           </div>
         </div>
       </section>
@@ -255,7 +256,7 @@
 
         <!-- Dinaminis gyvunu grid -->
         <div class="cards-animal" id="animalsGrid"></div>
-        <div id="animalsPagination" class="animals-pagination"></div>
+        <div id="animalsPagination" class="pagination"></div>
       </section>
 
       <!-- Gyvuno popup fonas -->
@@ -407,6 +408,7 @@
     <script src="/assets/js/auth-modals.js"></script>
 
     <!-- Prieglaudos puslapio logika -->
+     <script src="/assets/js/common.js"></script>
     <script src="/assets/js/prieglauda.js"></script>
   </body>
 </html>

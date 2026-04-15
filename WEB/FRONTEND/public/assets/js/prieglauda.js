@@ -1,98 +1,57 @@
 (function () {
-  // Dabartines prieglaudos duomenys
   let currentShelter = null;
-
-  // Prisijunges vartotojas
   let authUser = null;
-
-  // Ar rodoma savo prieglauda
   let canEditCurrentShelter = false;
-
-  // Ar ijungtas prieglaudos redagavimo rezimas
   let isEditing = false;
-  // Dabartinis gyvunu sarasas
   let animals = [];
-
-  // Siuo metu popup atidarytas gyvunas
   let selectedAnimal = null;
-
-  // Popup rezimas: view | edit | create
   let animalModalMode = "view";
 
-  // Patogesnis elemento paemimas pagal id
-  function getEl(id) {
-    return document.getElementById(id);
+  const {
+    getEl,
+    getToken,
+    setMessage,
+    clearMessage,
+    apiRequest,
+    authFetchCurrentUser,
+    buildAddress,
+    normalizeWebsiteUrl,
+    getRequestedId,
+    getShelterById,
+    translateSpecies,
+    translateSex,
+    translateStatus,
+    getAnimalImage,
+    fillBreedFilter,
+    openModal,
+    closeModal,
+    createObjectPreview
+  } = window.AppCommon;
+
+  function setShelterMessage(text, type = "") {
+    setMessage(getEl("shelterMessage"), text, type, "shelter-message");
   }
 
-  // Zinutes parodymas
-  function setMessage(el, text, type = "") {
-    if (!el) return;
-
-    el.textContent = text || "";
-    el.className = `shelter-message ${type}`.trim();
+  function clearShelterMessage() {
+    clearMessage(getEl("shelterMessage"), "shelter-message");
   }
 
-  // Bendras request su token
-  async function apiRequest(url, options = {}) {
-    const token = authGetToken();
-
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        ...(options.headers || {}),
-        ...(token ? { Authorization: `Bearer ${token}` } : {})
-      }
-    });
-
-    const result = await response.json().catch(() => null);
-
-    if (!response.ok) {
-      const error = new Error(result?.detail || "Request failed");
-      error.status = response.status;
-      error.result = result;
-      throw error;
-    }
-
-    return result;
+  function setAnimalsMessage(text, type = "") {
+    setMessage(getEl("animalsMessage"), text, type, "shelter-message");
   }
 
-  // Pilnas adresas rodymui
-  // Formatas Miestas, Adresas
-  function buildAddress(data) {
-    const parts = [data.city, data.address].filter(Boolean);
-    return parts.join(", ");
+  function clearAnimalsMessage() {
+    clearMessage(getEl("animalsMessage"), "shelter-message");
   }
 
-  // Svetaines url sutvarkymas
-  function normalizeWebsiteUrl(url) {
-    if (!url) return "";
-    if (url.startsWith("http://") || url.startsWith("https://")) return url;
-    return `https://${url}`;
+  function setAnimalModalMessage(text, type = "") {
+    setMessage(getEl("animalModalMessage"), text, type, "shelter-message");
   }
 
-    // Paimam shelter id is url
-  function getRequestedShelterId() {
-    const rawId = new URLSearchParams(window.location.search).get("id");
-
-    if (!rawId) {
-      return null;
-    }
-
-    const id = Number(rawId);
-    return Number.isNaN(id) ? null : id;
+  function clearAnimalModalMessage() {
+    clearMessage(getEl("animalModalMessage"), "shelter-message");
   }
 
-  // Grazina viena prieglauda pagal id is bendro saraso
-  async function getShelterById(id) {
-    const shelters = await apiRequest("/api/shelter", {
-      method: "GET"
-    });
-
-    return shelters.find((shelter) => Number(shelter.id) === Number(id)) || null;
-  }
-
-  // Pritaiko puslapio teises pagal tai ar rodoma sava prieglauda
   function applyShelterPermissions() {
     const editBtn = getEl("toggleShelterEditBtn");
     const saveBtn = getEl("saveShelterBtn");
@@ -116,7 +75,6 @@
     }
   }
 
-  // Uzpildo shelter perziuros laukus
   function fillShelterView(data) {
     getEl("shelterNameView").textContent =
       data.name || "Prieglaudos pavadinimas";
@@ -144,7 +102,6 @@
     }
   }
 
-  // Uzpildo shelter redagavimo laukus
   function fillShelterForm(data) {
     getEl("editShelterName").value = data.name || "";
     getEl("editShelterDescription").value = data.description || "";
@@ -157,19 +114,15 @@
     getEl("editShelterCountry").value = data.country || "";
   }
 
-  // Ijungia arba isjungia shelter redagavimo rezima
   function setShelterEditMode(show) {
     isEditing = show;
 
-    // Virsutinis blokas
     getEl("shelterHeaderView").hidden = show;
     getEl("shelterHeaderEdit").hidden = !show;
 
-    // Aprasymas
     getEl("shelterDescriptionView").hidden = show;
     getEl("shelterDescriptionEditWrap").hidden = !show;
 
-    // Kontaktai
     getEl("shelterContactsView").hidden = show;
     getEl("shelterContactsEdit").hidden = !show;
 
@@ -185,16 +138,12 @@
     }
   }
 
-  // Uzkrauna prisijungusios prieglaudos duomenis
-  // Uzkrauna prieglaudos duomenis
   async function loadShelterProfile() {
-    const msg = getEl("shelterMessage");
-    setMessage(msg, "");
+    clearShelterMessage();
 
-    const requestedShelterId = getRequestedShelterId();
+    const requestedShelterId = getRequestedId("id");
 
     try {
-      // Shelter role
       if (authUser?.role === "shelter") {
         const myShelter = await apiRequest("/api/shelter/me", {
           method: "GET"
@@ -216,10 +165,7 @@
           currentShelter = otherShelter;
           canEditCurrentShelter = false;
         }
-      }
-
-      // Volunteer arba neprisijunges lankytojas
-      else {
+      } else {
         if (!requestedShelterId) {
           throw new Error("Prieglaudos id nerastas");
         }
@@ -241,26 +187,19 @@
       console.error(error);
 
       if (error.status === 401 || error.status === 403) {
-        setMessage(
-          msg,
-          "Nepavyko užkrauti prieglaudos duomenų",
-          "error"
-        );
+        setShelterMessage("Nepavyko užkrauti prieglaudos duomenų", "error");
         return;
       }
 
-      setMessage(
-        msg,
+      setShelterMessage(
         error.message || "Nepavyko užkrauti prieglaudos duomenų",
         "error"
       );
     }
   }
 
-  // Issaugo shelter duomenis
   async function saveShelterProfile() {
-    const msg = getEl("shelterMessage");
-    setMessage(msg, "");
+    clearShelterMessage();
 
     const payload = {
       name: getEl("editShelterName").value.trim(),
@@ -275,12 +214,12 @@
     };
 
     if (!payload.name) {
-      setMessage(msg, "Įrašykite prieglaudos pavadinimą", "error");
+      setShelterMessage("Įrašykite prieglaudos pavadinimą", "error");
       return;
     }
 
     if (!payload.city || !payload.address) {
-      setMessage(msg, "Įrašykite miestą ir adresą", "error");
+      setShelterMessage("Įrašykite miestą ir adresą", "error");
       return;
     }
 
@@ -294,75 +233,16 @@
       fillShelterForm(currentShelter);
       setShelterEditMode(false);
 
-      setMessage(msg, "Prieglaudos informacija atnaujinta", "success");
+      setShelterMessage("Prieglaudos informacija atnaujinta", "success");
     } catch (error) {
       console.error(error);
-      setMessage(
-        msg,
+      setShelterMessage(
         error.message || "Nepavyko atnaujinti prieglaudos",
         "error"
       );
     }
   }
 
-  // Grazina rusies pavadinima rodymui
-  function mapSpeciesLabel(value) {
-    if (value === "dog") return "Šuo";
-    if (value === "cat") return "Katė";
-    return "Kitas";
-  }
-
-  // Grazina lyties pavadinima rodymui
-  function mapSexLabel(value) {
-    if (value === "male") return "Patinas";
-    if (value === "female") return "Patelė";
-    return "Nežinoma";
-  }
-
-  // Grazina statuso pavadinima rodymui
-  function mapStatusLabel(value) {
-    const map = {
-      available: "Available",
-      reserved: "Reserved",
-      adopted: "Adopted",
-      foster: "Foster",
-      medical_hold: "Medical hold",
-      lost: "Lost"
-    };
-
-    return map[value] || value || "-";
-  }
-
-  
-  function getAnimalImage(animal) {
-    const dogImages = [
-      "/assets/img/dog2.jpg",
-      "/assets/img/dog3.jpg",
-      "/assets/img/dog4.jpg",
-      "/assets/img/dog5.jpg"
-    ];
-
-    const catImages = [
-      "/assets/img/cat2.jpg",
-      "/assets/img/cat3.png",
-      "/assets/img/cat4.jpg",
-      "/assets/img/cat5.jpg"
-    ];
-
-    const id = Number(animal.id || 0);
-
-    if (animal.species === "cat") {
-      return catImages[id % catImages.length];
-    }
-
-    if (animal.species === "dog") {
-      return dogImages[id % dogImages.length];
-    }
-
-    return "/assets/img/prieglauda.png";
-  }
-
-  // Perskaito rikiavimo select ir pavercia i backend parametrus
   function getSortParams() {
     const value = getEl("sortAnimals")?.value || "created_at_desc";
 
@@ -376,7 +256,6 @@
     return { sort_by: "", sort_order: "desc" };
   }
 
-  // Surenka filtrus ir suformuoja query string
   function buildAnimalQuery() {
     const params = new URLSearchParams();
 
@@ -398,31 +277,6 @@
     return params.toString();
   }
 
-  // Uzpildo breed filtro select pagal esamus gyvunus
-  function fillBreedFilter(list) {
-    const breedSelect = getEl("filterBreed");
-    if (!breedSelect) return;
-
-    const currentValue = breedSelect.value;
-
-    const breeds = [...new Set(list.map((animal) => animal.breed).filter(Boolean))]
-      .sort((a, b) => a.localeCompare(b, "lt"));
-
-    breedSelect.innerHTML = `<option value="">Visos veislės</option>`;
-
-    breeds.forEach((breed) => {
-      const option = document.createElement("option");
-      option.value = breed;
-      option.textContent = breed;
-      breedSelect.appendChild(option);
-    });
-
-    if ([...breedSelect.options].some((option) => option.value === currentValue)) {
-      breedSelect.value = currentValue;
-    }
-  }
-
-  // Atvaizduoja gyvunu korteles shelter puslapyje
   function renderAnimals(list) {
     const grid = getEl("animalsGrid");
     if (!grid) return;
@@ -439,14 +293,13 @@
         <img src="${getAnimalImage(animal)}" alt="Gyvūnas" />
 
         <div class="card-animal-meta">
-          <div><strong>Rūšis:</strong> ${mapSpeciesLabel(animal.species)}</div>
+          <div><strong>Rūšis:</strong> ${translateSpecies(animal.species)}</div>
           <div><strong>Veislė:</strong> ${animal.breed || "-"}</div>
-          <div><strong>Statusas:</strong> ${mapStatusLabel(animal.status)}</div>
+          <div><strong>Statusas:</strong> ${translateStatus(animal.status)}</div>
         </div>
       </div>
     `).join("");
 
-    // Ant kiekvienos korteles uzdedam paspaudima popup atidarymui
     grid.querySelectorAll(".card-animal").forEach((card) => {
       card.addEventListener("click", () => {
         const code = card.dataset.code;
@@ -459,95 +312,167 @@
     });
   }
 
-  // Failo ikelimo requestas
-// Naudojam FormData, todel Content-Type ranka nenustatom
-async function uploadAnimalImage(animalId, file) {
-  const token = authGetToken();
+  async function uploadAnimalImage(animalId, file) {
+    const token = getToken();
 
-  const formData = new FormData();
-  formData.append("image", file);
+    const formData = new FormData();
+    formData.append("image", file);
 
-  const response = await fetch(`/api/animal/${animalId}/image`, {
-    method: "POST",
-    headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
-    },
-    body: formData
-  });
+    const response = await fetch(`/api/animal/${animalId}/image`, {
+      method: "POST",
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
+      body: formData
+    });
 
-  const result = await response.json().catch(() => null);
+    const result = await response.json().catch(() => null);
 
-  if (!response.ok) {
-    const error = new Error(result?.detail || "Image upload failed");
-    error.status = response.status;
-    error.result = result;
-    throw error;
+    if (!response.ok) {
+      const error = new Error(result?.detail || "Nepavyko įkelti nuotraukos");
+      error.status = response.status;
+      error.result = result;
+      throw error;
+    }
+
+    return result;
   }
 
-  return result;
-}
+  function setAnimalModalImageFromSelectedFile() {
+    const imageInput = getEl("animalImageInput");
+    const file = imageInput?.files?.[0];
 
-// Gyvai parodo pasirinkta nauja nuotrauka popup virsuje
-function bindAnimalImagePreview() {
-  const imageInput = getEl("animalImageInput");
+    if (!file) {
+      if (animalModalMode === "create") {
+        getEl("animalModalImage").src = window.AppCommon.fallbackAnimalImage;
+      } else if (selectedAnimal) {
+        getEl("animalModalImage").src = getAnimalImage(selectedAnimal);
+      }
+      return;
+    }
 
-  if (!imageInput) return;
+    createObjectPreview(file, "animalModalImage");
+  }
 
-  imageInput.addEventListener("change", () => {
-    const file = imageInput.files?.[0];
+  function bindAnimalImagePreview() {
+    const imageInput = getEl("animalImageInput");
+    if (!imageInput) return;
 
-    if (!file) return;
+    imageInput.addEventListener("change", setAnimalModalImageFromSelectedFile);
+  }
 
-    const previewUrl = URL.createObjectURL(file);
-    getEl("animalModalImage").src = previewUrl;
-  });
-}
-
-
-  // Uzkrauna prisijungusios prieglaudos gyvunus
-  async function loadAnimals() {
-    const msg = getEl("animalsMessage");
-    setMessage(msg, "");
+  async function loadAnimals(page = 1) {
+    clearAnimalsMessage();
 
     try {
+      if (!currentShelter?.id) {
+        throw new Error("Prieglauda nerasta");
+      }
+
       const query = buildAnimalQuery();
       const params = new URLSearchParams(query);
 
-      if (canEditCurrentShelter) {
-        animals = await apiRequest(`/api/animal/me${params.toString() ? `?${params.toString()}` : ""}`, {
-          method: "GET"
-        });
-      } else {
-        if (!currentShelter?.id) {
-          throw new Error("Prieglauda nerasta");
-        }
+      params.set("shelter_id", currentShelter.id);
+      params.set("page", String(page));
+      params.set("page_size", "8");
 
-        params.set("shelter_id", currentShelter.id);
+      const result = await apiRequest(`/api/animal?${params.toString()}`, {
+        method: "GET"
+      });
 
-        animals = await apiRequest(`/api/animal?${params.toString()}`, {
-          method: "GET"
-        });
-      }
+      animals = Array.isArray(result?.items) ? result.items : [];
+      const total = Number(result?.total || 0);
+      const totalPages = Math.ceil(total / 8);
 
-      fillBreedFilter(animals);
+      fillBreedFilter(getEl("filterBreed"), animals, "Visos veislės");
       renderAnimals(animals);
+      renderAnimalsPagination(totalPages, page);
     } catch (error) {
       console.error(error);
-      setMessage(msg, error.message || "Nepavyko užkrauti gyvūnų", "error");
+      setAnimalsMessage(error.message || "Nepavyko užkrauti gyvūnų", "error");
     }
   }
 
-  // Uzpildo popup perziuros laukus
+  function renderAnimalsPagination(totalPages, currentPage) {
+    const container = getEl("animalsPagination");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    if (totalPages <= 1) {
+      return;
+    }
+
+    const createButton = (text, page, disabled = false, isActive = false) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = text;
+      btn.disabled = disabled;
+
+      if (isActive) {
+        btn.classList.add("active");
+      }
+
+      if (!disabled) {
+        btn.addEventListener("click", () => {
+          loadAnimals(page);
+        });
+      }
+
+      return btn;
+    };
+
+    const createDots = () => {
+      const span = document.createElement("span");
+      span.className = "pagination-dots";
+      span.textContent = "...";
+      return span;
+    };
+
+    const startPage = Math.max(1, currentPage - 3);
+    const endPage = Math.min(totalPages, currentPage + 3);
+
+    container.appendChild(createButton("««", 1, currentPage === 1));
+    container.appendChild(createButton("«", currentPage - 1, currentPage === 1));
+
+    if (startPage > 1) {
+      container.appendChild(createButton("1", 1, false, currentPage === 1));
+    }
+
+    if (startPage > 2) {
+      container.appendChild(createDots());
+    }
+
+    for (let page = startPage; page <= endPage; page += 1) {
+      container.appendChild(
+        createButton(String(page), page, false, page === currentPage)
+      );
+    }
+
+    if (endPage < totalPages - 1) {
+      container.appendChild(createDots());
+    }
+
+    if (endPage < totalPages) {
+      container.appendChild(
+        createButton(String(totalPages), totalPages, false, currentPage === totalPages)
+      );
+    }
+
+    container.appendChild(createButton("»", currentPage + 1, currentPage === totalPages));
+    container.appendChild(createButton("»»", totalPages, currentPage === totalPages));
+  }
+
   function fillAnimalView(animal) {
     getEl("animalModalTitle").textContent = animal.name || "Be vardo";
 
     getEl("animalModalSubtitle").textContent =
-      `${mapSpeciesLabel(animal.species)}${animal.breed ? ` • ${animal.breed}` : ""}`;
+      `${translateSpecies(animal.species)}${animal.breed ? ` • ${animal.breed}` : ""}`;
 
-    getEl("animalViewSpecies").textContent = mapSpeciesLabel(animal.species);
+    getEl("animalViewSpecies").textContent = translateSpecies(animal.species);
     getEl("animalViewBreed").textContent = animal.breed || "-";
-    getEl("animalViewSex").textContent = mapSexLabel(animal.sex);
-    getEl("animalViewStatus").textContent = mapStatusLabel(animal.status);
+    getEl("animalViewSex").textContent = translateSex(animal.sex);
+    getEl("animalViewStatus").textContent = translateStatus(animal.status);
     getEl("animalViewBirthDate").textContent = animal.birth_date || "-";
     getEl("animalViewColor").textContent = animal.color || "-";
     getEl("animalViewCode").textContent = animal.code || "-";
@@ -557,7 +482,6 @@ function bindAnimalImagePreview() {
     getEl("animalModalImage").src = getAnimalImage(animal);
   }
 
-  // Uzpildo popup forma redagavimui arba kurimui
   function fillAnimalForm(animal = {}) {
     getEl("animalNameInput").value = animal.name || "";
     getEl("animalCodeInput").value = animal.code || "";
@@ -568,15 +492,13 @@ function bindAnimalImagePreview() {
     getEl("animalBirthDateInput").value = animal.birth_date || "";
     getEl("animalColorInput").value = animal.color || "";
     getEl("animalDescriptionInput").value = animal.description || "";
-  
-    // Failo pasirinkimas neturi likti nuo ankstesnio atidarymo
+
     const imageInput = getEl("animalImageInput");
     if (imageInput) {
       imageInput.value = "";
     }
   }
 
-  // Perjungia popup tarp perziuros, redagavimo ir kurimo rezimu
   function setAnimalModalMode(mode) {
     animalModalMode = mode;
 
@@ -601,44 +523,40 @@ function bindAnimalImagePreview() {
       getEl("animalModalTitle").textContent = "Naujas gyvūnas";
       getEl("animalModalSubtitle").textContent = "Įveskite informaciją";
       getEl("animalDeleteBtn").hidden = true;
-      getEl("animalModalImage").src = "/assets/img/cat1.png";
+      getEl("animalModalImage").src = window.AppCommon.fallbackAnimalImage;
+    }
+
+    if (isEdit && selectedAnimal) {
+      getEl("animalModalImage").src = getAnimalImage(selectedAnimal);
+    }
+
+    if (isView && selectedAnimal) {
+      getEl("animalModalImage").src = getAnimalImage(selectedAnimal);
     }
   }
 
-  // Atidaro popup
   function openAnimalModal(animal = null, mode = "view") {
-    const backdrop = getEl("animalModalBackdrop");
-
     selectedAnimal = animal;
-    setMessage(getEl("animalModalMessage"), "");
+    clearAnimalModalMessage();
 
     if (animal) {
       fillAnimalView(animal);
       fillAnimalForm(animal);
     } else {
       fillAnimalForm({});
+      getEl("animalModalImage").src = window.AppCommon.fallbackAnimalImage;
     }
 
     setAnimalModalMode(mode);
-
-    if (backdrop) {
-      backdrop.hidden = false;
-    }
+    openModal("animalModalBackdrop", false);
   }
 
-  // Uzdaro popup
   function closeAnimalModal() {
-    const backdrop = getEl("animalModalBackdrop");
-
-    if (backdrop) {
-      backdrop.hidden = true;
-    }
-
+    closeModal("animalModalBackdrop", false);
     selectedAnimal = null;
-    setMessage(getEl("animalModalMessage"), "");
+    clearAnimalModalMessage();
   }
 
-  // Surenka popup formos duomenis i objekta
   function collectAnimalFormData() {
     return {
       name: getEl("animalNameInput").value.trim() || null,
@@ -653,41 +571,42 @@ function bindAnimalImagePreview() {
     };
   }
 
-  // Issaugo gyvuna
-  // Jei create rezimas - kuria
-  // Jei edit rezimas - atnaujina
-  // Issaugo gyvuna
-  // Jei create rezimas - kuria
-  // Jei edit rezimas - atnaujina
-  // Jei pasirinkta nuotrauka - po issaugojimo ikelia ja atskiru requestu
   async function saveAnimal() {
-    const msg = getEl("animalModalMessage");
-    setMessage(msg, "");
+    clearAnimalModalMessage();
 
     const payload = collectAnimalFormData();
-
-    // Pasirinktas nuotraukos failas
     const selectedImageFile = getEl("animalImageInput")?.files?.[0] || null;
 
-    // Bent rusis turi buti pasirinkta
     if (!payload.species) {
-      setMessage(msg, "Pasirinkite gyvūno rūšį", "error");
+      setAnimalModalMessage("Pasirinkite gyvūno rūšį", "error");
       return;
     }
 
     let savedAnimal = null;
 
     try {
-      // Kurimas
       if (animalModalMode === "create") {
         savedAnimal = await apiRequest("/api/animal", {
           method: "POST",
           body: JSON.stringify(payload)
         });
-      }
 
-      // Redagavimas
-      else if (animalModalMode === "edit" && selectedAnimal?.code) {
+        if (selectedImageFile && savedAnimal?.id) {
+          try {
+            await uploadAnimalImage(savedAnimal.id, selectedImageFile);
+          } catch (imageError) {
+            console.error(imageError);
+
+            await loadAnimals();
+
+            setAnimalModalMessage(
+              "Gyvūnas sukurtas, bet nuotraukos įkelti nepavyko",
+              "error"
+            );
+            return;
+          }
+        }
+      } else if (animalModalMode === "edit" && selectedAnimal?.code) {
         savedAnimal = await apiRequest(
           `/api/animal/by-code/${encodeURIComponent(selectedAnimal.code)}`,
           {
@@ -695,50 +614,58 @@ function bindAnimalImagePreview() {
             body: JSON.stringify(payload)
           }
         );
+
+        if (selectedImageFile && savedAnimal?.id) {
+          try {
+            await uploadAnimalImage(savedAnimal.id, selectedImageFile);
+          } catch (imageError) {
+            console.error(imageError);
+
+            await loadAnimals();
+
+            setAnimalModalMessage(
+              "Gyvūno duomenys atnaujinti, bet nuotraukos įkelti nepavyko",
+              "error"
+            );
+            return;
+          }
+        }
       }
 
-      // Jei pasirinkta nauja nuotrauka - ikeliam ja
-      if (selectedImageFile && savedAnimal?.id) {
-        await uploadAnimalImage(savedAnimal.id, selectedImageFile);
-      }
-
-      // Atnaujinam gyvunu sarasa
+      await loadShelterStats();
       await loadAnimals();
 
-      // Uzdarom popup
       closeAnimalModal();
+
     } catch (error) {
       console.error(error);
-      setMessage(msg, error.message || "Nepavyko išsaugoti gyvūno", "error");
+      setAnimalModalMessage(error.message || "Nepavyko išsaugoti gyvūno", "error");
     }
   }
 
-  // Istrina pasirinkta gyvuna
   async function deleteAnimal() {
     if (!selectedAnimal?.code) return;
 
     const confirmed = window.confirm("Ar tikrai norite ištrinti šį gyvūną?");
     if (!confirmed) return;
 
-    const msg = getEl("animalModalMessage");
-    setMessage(msg, "");
+    clearAnimalModalMessage();
 
     try {
       await apiRequest(`/api/animal/by-code/${encodeURIComponent(selectedAnimal.code)}`, {
         method: "DELETE"
       });
 
-      // Po istrynimo atnaujinam kataloga ir uzdarom popup
+      await loadShelterStats();
       await loadAnimals();
+      
       closeAnimalModal();
     } catch (error) {
       console.error(error);
-      setMessage(msg, error.message || "Nepavyko ištrinti gyvūno", "error");
+      setAnimalModalMessage(error.message || "Nepavyko ištrinti gyvūno", "error");
     }
   }
 
-  // Sukabina visus gyvunu sekcijos eventus
-  // Sukabina visus gyvunu sekcijos eventus
   function bindAnimalEvents() {
     const backdrop = getEl("animalModalBackdrop");
     const closeBtn = getEl("closeAnimalModalBtn");
@@ -748,7 +675,6 @@ function bindAnimalImagePreview() {
     const cancelBtn = getEl("animalCancelBtn");
     const createBtn = getEl("openCreateAnimalBtn");
 
-    // Naujo gyvuno popup
     createBtn?.addEventListener("click", () => {
       const canEdit =
         Boolean(authUser) &&
@@ -762,60 +688,49 @@ function bindAnimalImagePreview() {
       openAnimalModal(null, "create");
     });
 
-    // Popup uzdarymas per X
     closeBtn?.addEventListener("click", (event) => {
       event.preventDefault();
       event.stopPropagation();
       closeAnimalModal();
     });
 
-    // Popup uzdarymas paspaudus ant fono
     backdrop?.addEventListener("click", (event) => {
       if (event.target === backdrop) {
         closeAnimalModal();
       }
     });
 
-    // Perjungimas i redagavima
     editBtn?.addEventListener("click", () => {
       if (!selectedAnimal) return;
       setAnimalModalMode("edit");
     });
 
-    // Issaugojimas
     saveBtn?.addEventListener("click", saveAnimal);
-
-    // Trinimas
     deleteBtn?.addEventListener("click", deleteAnimal);
 
-    // Atsaukimas
     cancelBtn?.addEventListener("click", () => {
       if (selectedAnimal) {
         fillAnimalView(selectedAnimal);
         fillAnimalForm(selectedAnimal);
         setAnimalModalMode("view");
-        setMessage(getEl("animalModalMessage"), "");
+        clearAnimalModalMessage();
         return;
       }
 
       closeAnimalModal();
     });
 
-    // Filtru ir rikiavimo pakeitimu eventai
     ["filterSpecies", "filterBreed", "filterSex", "filterStatus", "sortAnimals"].forEach((id) => {
-      getEl(id)?.addEventListener("change", loadAnimals);
+      getEl(id)?.addEventListener("change", () => loadAnimals(1));
     });
 
-    // Nuotraukos preview popup'e
     bindAnimalImagePreview();
   }
 
-  // Pagrindine shelter puslapio logika
   async function initShelterPage() {
     const root = getEl("shelterProfilePage");
     if (!root) return;
 
-    // Is karto defaultinam i readonly rezima
     authUser = null;
     canEditCurrentShelter = false;
     setShelterEditMode(false);
@@ -827,23 +742,18 @@ function bindAnimalImagePreview() {
       authUser = null;
     }
 
-    // Jei vartotojas prisijunges, bet role netinkama
     if (authUser && authUser.role !== "shelter" && authUser.role !== "volunteer") {
       window.location.href = "/index.html";
       return;
     }
 
-    // Uzkraunam shelter duomenis
     await loadShelterProfile();
-
-    // Uzkraunam shelter gyvunus
+    await loadShelterStats();
     await loadAnimals();
 
-    // Po uzkrovimo dar karta uztikrinam readonly busena
     setShelterEditMode(false);
     applyShelterPermissions();
 
-    // Redagavimo mygtukas
     getEl("toggleShelterEditBtn")?.addEventListener("click", () => {
       const canEdit =
         Boolean(authUser) &&
@@ -864,7 +774,6 @@ function bindAnimalImagePreview() {
       setShelterEditMode(false);
     });
 
-    // Issaugojimo mygtukas
     getEl("saveShelterBtn")?.addEventListener("click", async () => {
       const canEdit =
         Boolean(authUser) &&
@@ -878,7 +787,6 @@ function bindAnimalImagePreview() {
       await saveShelterProfile();
     });
 
-    // Jei ateita su edit parametru tada atidarom edit rezima
     const shouldOpenEdit =
       new URLSearchParams(window.location.search).get("edit") === "1";
 
@@ -893,8 +801,40 @@ function bindAnimalImagePreview() {
       }
     }
 
-    // Sukabinam gyvunu eventus
     bindAnimalEvents();
+  }
+
+  async function loadShelterStats() {
+    try {
+      if (!currentShelter?.id) {
+        return;
+      }
+
+      const [availableResult, adoptedResult] = await Promise.all([
+        apiRequest(`/api/animal?shelter_id=${currentShelter.id}&status=available&page=1&page_size=1`, {
+          method: "GET"
+        }),
+        apiRequest(`/api/animal?shelter_id=${currentShelter.id}&status=adopted&page=1&page_size=1`, {
+          method: "GET"
+        })
+      ]);
+
+      const availableCount = Number(availableResult?.total || 0);
+      const adoptedCount = Number(adoptedResult?.total || 0);
+
+      const availableEl = getEl("availableAnimalsCount");
+      const adoptedEl = getEl("adoptedAnimalsCount");
+
+      if (availableEl) {
+        availableEl.textContent = String(availableCount);
+      }
+
+      if (adoptedEl) {
+        adoptedEl.textContent = String(adoptedCount);
+      }
+    } catch (error) {
+      console.error("Nepavyko užkrauti prieglaudos statistikos:", error);
+    }
   }
 
   document.addEventListener("DOMContentLoaded", initShelterPage);
