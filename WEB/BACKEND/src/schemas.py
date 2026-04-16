@@ -1,4 +1,12 @@
-from pydantic import BaseModel, EmailStr, Field, model_validator, ConfigDict
+from pydantic import (
+    BaseModel, 
+    EmailStr, 
+    Field, 
+    model_validator, 
+    field_validator, 
+    ConfigDict,
+)
+
 from enum import Enum
 from typing import Optional
 from datetime import date, datetime
@@ -301,3 +309,99 @@ class ShelterVisitResponse(BaseModel):
 
 class VisitStatusUpdateRequest(BaseModel):
     status: str = Field(pattern="^(pending|scheduled|cancelled|completed|no_show)$")
+
+
+# -------------------------------------------------
+# -------------------NEWS--------------------------
+# -------------------------------------------------
+class NewsBase(BaseModel):
+    shelter_id: Optional[int] = None
+    title: str
+    description: str
+    image_url: Optional[str] = None
+    is_published: bool = True
+
+
+class NewsCreate(NewsBase):
+    pass
+
+
+class NewsUpdate(BaseModel):
+    shelter_id: Optional[int] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+    is_published: Optional[bool] = None
+
+
+class NewsResponse(BaseModel):
+    id: int
+    shelter_id: Optional[int]
+    user_id: int
+    title: str
+    description: str
+    image_url: Optional[str]
+    is_published: bool
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# -------------------------------------------------
+# -------------------EVENTS------------------------
+# -------------------------------------------------
+class EventBase(BaseModel):
+    shelter_id: Optional[int] = None
+    title: str
+    summary: Optional[str] = None
+    description: Optional[str] = None
+    location: Optional[str] = None
+    city: Optional[str] = None
+    starts_at: datetime
+    ends_at: Optional[datetime] = None
+    image_url: Optional[str] = None
+    is_published: bool = True
+
+    @field_validator("ends_at")
+    @classmethod
+    def validate_ends_at(cls, value, info):
+        starts_at = info.data.get("starts_at")
+        if value is not None and starts_at is not None and value < starts_at:
+            raise ValueError("Event pabaiga negali būti ankstesnė už pradžią")
+        return value
+
+
+class EventCreate(EventBase):
+    pass
+
+
+class EventUpdate(BaseModel):
+    shelter_id: Optional[int] = None
+    title: Optional[str] = None
+    summary: Optional[str] = None
+    description: Optional[str] = None
+    location: Optional[str] = None
+    city: Optional[str] = None
+    starts_at: Optional[datetime] = None
+    ends_at: Optional[datetime] = None
+    image_url: Optional[str] = None
+    is_published: Optional[bool] = None
+
+    @field_validator("ends_at")
+    @classmethod
+    def validate_ends_at(cls, value, info):
+        starts_at = info.data.get("starts_at")
+        if value is not None and starts_at is not None and value < starts_at:
+            raise ValueError("Event pabaiga negali būti ankstesnė už pradžią")
+        return value
+
+
+class EventResponse(EventBase):
+    id: int
+    user_id: int
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+

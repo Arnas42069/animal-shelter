@@ -1,5 +1,5 @@
 from typing import Optional
-from datetime import date
+from datetime import date, datetime
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 import shutil
@@ -17,6 +17,8 @@ from src.models import (
     AnimalImage,
     AnimalFavorite,
     Visit,
+    News,
+    Event,
 )
 from src.schemas import (
     RegisterRequest,
@@ -47,6 +49,16 @@ from src.schemas import (
     VisitMeResponse,
     ShelterVisitResponse,
     VisitStatusUpdateRequest,
+
+    NewsBase,
+    NewsCreate,
+    NewsUpdate,
+    NewsResponse,
+
+    EventBase,
+    EventCreate,
+    EventUpdate,
+    EventResponse,
 )
 from src.auth import (
     hash_password, 
@@ -1889,5 +1901,638 @@ def update_visit_status(
     db.refresh(visit)
 
     return visit
+
+# -------------------------------------------------
+# -------------------NEWS--------------------------
+# -------------------------------------------------
+
+# CREATE
+@app.post("/news", response_model=NewsResponse)
+def create_news(
+    data: NewsCreate,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Sukurti naują naujieną.
+
+    Parametrai:
+    - data: naujienos duomenys
+    - user: prisijungęs vartotojas
+
+    Grąžina:
+    - Sukurtą naujienos objektą
+
+    Klaidos:
+    - 403 jei vartotojas neturi teisės kurti naujienos
+    - 404 jei nurodyta prieglauda nerasta
+    - 403 jei prieglaudos vartotojas bando kurti naujieną ne savo prieglaudai
+
+    Pavyzdys:
+    - POST /news
+    """
+    shelter_id = data.shelter_id
+
+    # ADMIN gali kurti bet kuriai prieglaudai arba bendrai naujienai
+    if user.role == "admin":
+        if shelter_id is not None:
+            shelter = db.query(Shelter).filter(Shelter.id == shelter_id).first()
+            if not shelter:
+                raise HTTPException(status_code=404, detail="Prieglauda nerasta")
+
+    # SHELTER vartotojas gali kurti tik savo prieglaudai
+    elif user.role == "shelter":
+        my_shelter = db.query(Shelter).filter(Shelter.created_by == user.id).first()
+
+        if not my_shelter:
+            raise HTTPException(status_code=404, detail="Jūsų prieglauda nerasta")
+
+        # jei shelter_id nepaduotas, priskiriam automatiškai
+        if shelter_id is None:
+            shelter_id = my_shelter.id
+        elif shelter_id != my_shelter.id:
+            raise HTTPException(
+                status_code=403,
+                detail="Galite kurti naujienas tik savo prieglaudai"
+            )
+
+    # kiti vartotojai negali kurti naujienų
+    else:
+        raise HTTPException(
+            status_code=403,
+            detail="Neturite teisės kurti naujienų"
+        )
+
+    news = News(
+        shelter_id=shelter_id,
+        user_id=user.id,
+        title=data.title,
+        description=data.description,
+        image_url=data.image_url,
+        is_published=data.is_published
+    )
+
+    db.add(news)
+    db.commit()
+    db.refresh(news)
+
+    return news
+
+
+# READ
+@app.get("/news", response_model=list[NewsResponse])
+def get_news(
+    shelter_id: Optional[int] = None,
+    is_published: Optional[bool] = True,
+    sort_by: Optional[str] = "created_at",
+    sort_order: Optional[str] = "desc",
+    page: int = 1,
+    page_size: int = 10,
+    user: Optional[AppUser] = Depends(get_current_user_optional),
+    db: Session = Depends(get_db)
+):
+    """
+    Gauti naujienų sąrašą.
+
+    Filtravimas:
+    - shelter_id: konkrečios prieglaudos naujienos
+    - is_published: rodyti tik publikuotas (default: TRUE)
+
+    Rikiavimas:
+    - sort_by: created_at, title
+    - sort_order: asc | desc
+
+    Puslapiavimas:
+    - page: puslapio numeris
+    - page_size: įrašų kiekis puslapyje
+
+    Grąžina:
+    - Naujienų sąrašą
+
+    Klaidos:
+    - Nėra (grąžinamas tuščias sąrašas jei nieko nerasta)
+
+    Pavyzdys:
+    - /news
+    - /news?shelter_id=1
+    - /news?page=2&page_size=5
+    """
+
+    query = db.query(News)
+
+    # 🔹 Filtras pagal prieglaudą
+    if shelter_id is not None:
+        query = query.filter(News.shelter_id == shelter_id)
+
+    # 🔹 Publish logika
+    if user and user.role in ["admin", "shelter"]:
+        # admin ir savo prieglauda gali matyti ir nepublikuotas
+        if user.role == "shelter":
+            my_shelter = db.query(Shelter).filter(Shelter.created_by == user.id).first()
+
+            if my_shelter:
+                query = query.filter(
+                    (News.is_published == True) |
+                    (News.shelter_id == my_shelter.id)
+                )
+            else:
+                query = query.filter(News.is_published == True)
+        else:
+            # admin mato viską
+            if is_published is not None:
+                query = query.filter(News.is_published == is_published)
+    else:
+        # neprisijungęs arba paprastas vartotojas
+        query = query.filter(News.is_published == True)
+
+    # 🔹 Sorting
+    sort_fields = {
+        "created_at": News.created_at,
+        "title": News.title
+    }
+
+    sort_column = sort_fields.get(sort_by, News.created_at)
+
+    if sort_order == "asc":
+        query = query.order_by(sort_column.asc())
+    else:
+        query = query.order_by(sort_column.desc())
+
+    # 🔹 Pagination
+    offset = (page - 1) * page_size
+    news_list = query.offset(offset).limit(page_size).all()
+
+    return news_list
+
+
+@app.get("/news/{news_id}", response_model=NewsResponse)
+def get_news_by_id(
+    news_id: int,
+    user: Optional[AppUser] = Depends(get_current_user_optional),
+    db: Session = Depends(get_db)
+):
+    """
+    Gauti vieną naujieną pagal ID.
+
+    Parametrai:
+    - news_id: naujienos ID
+
+    Grąžina:
+    - Vieną naujienos objektą
+
+    Klaidos:
+    - 404 jei naujiena nerasta
+    - 403 jei bandoma pasiekti nepublikuotą naujieną
+
+    Pavyzdys:
+    - /news/1
+    """
+
+    news = db.query(News).filter(News.id == news_id).first()
+
+    if not news:
+        raise HTTPException(status_code=404, detail="Naujiena nerasta")
+
+    # 🔹 Publish access kontrolė
+    if not news.is_published:
+        if not user:
+            raise HTTPException(status_code=403, detail="Naujiena nepublikuota")
+
+        if user.role == "admin":
+            return news
+
+        if user.role == "shelter":
+            my_shelter = db.query(Shelter).filter(Shelter.created_by == user.id).first()
+
+            if not my_shelter or news.shelter_id != my_shelter.id:
+                raise HTTPException(status_code=403, detail="Neturite prieigos prie šios naujienos")
+
+        else:
+            raise HTTPException(status_code=403, detail="Naujiena nepublikuota")
+
+    return news
+
+
+# UPDATE
+@app.patch("/news/{news_id}", response_model=NewsResponse)
+def update_news(
+    news_id: int,
+    data: NewsUpdate,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Atnaujinti naujieną pagal ID.
+
+    Parametrai:
+    - news_id: naujienos ID
+    - data: atnaujinami naujienos duomenys
+    - user: prisijungęs vartotojas
+
+    Grąžina:
+    - Atnaujintą naujienos objektą
+
+    Klaidos:
+    - 404 jei naujiena nerasta
+    - 403 jei vartotojas neturi teisės redaguoti šios naujienos
+    - 404 jei nurodyta nauja prieglauda nerasta
+    - 403 jei prieglaudos vartotojas bando priskirti naujieną kitai prieglaudai
+
+    Pavyzdys:
+    - PATCH /news/1
+    """
+    news = db.query(News).filter(News.id == news_id).first()
+
+    if not news:
+        raise HTTPException(status_code=404, detail="Naujiena nerasta")
+
+    # ADMIN gali redaguoti viską
+    if user.role == "admin":
+        if data.shelter_id is not None:
+            shelter = db.query(Shelter).filter(Shelter.id == data.shelter_id).first()
+            if not shelter:
+                raise HTTPException(status_code=404, detail="Prieglauda nerasta")
+
+    # SHELTER gali redaguoti tik savo prieglaudos naujienas
+    elif user.role == "shelter":
+        my_shelter = db.query(Shelter).filter(Shelter.created_by == user.id).first()
+
+        if not my_shelter:
+            raise HTTPException(status_code=404, detail="Jūsų prieglauda nerasta")
+
+        if news.shelter_id != my_shelter.id:
+            raise HTTPException(
+                status_code=403,
+                detail="Galite redaguoti tik savo prieglaudos naujienas"
+            )
+
+        # shelter vartotojas negali perkelti naujienos kitai prieglaudai
+        if data.shelter_id is not None and data.shelter_id != my_shelter.id:
+            raise HTTPException(
+                status_code=403,
+                detail="Negalite priskirti naujienos kitai prieglaudai"
+            )
+
+    else:
+        raise HTTPException(
+            status_code=403,
+            detail="Neturite teisės redaguoti naujienų"
+        )
+
+    # Atnaujinami tik pateikti laukai
+    update_data = data.model_dump(exclude_unset=True)
+
+    for field, value in update_data.items():
+        setattr(news, field, value)
+
+    db.commit()
+    db.refresh(news)
+
+    return news
+
+
+# DELETE
+@app.delete("/news/{news_id}")
+def delete_news(
+    news_id: int,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Ištrinti naujieną pagal ID.
+
+    Parametrai:
+    - news_id: naujienos ID
+    - user: prisijungęs vartotojas
+
+    Grąžina:
+    - Sėkmės žinutę apie ištrintą naujieną
+
+    Klaidos:
+    - 404 jei naujiena nerasta
+    - 403 jei vartotojas neturi teisės ištrinti šios naujienos
+
+    Pavyzdys:
+    - DELETE /news/1
+    """
+    news = db.query(News).filter(News.id == news_id).first()
+
+    if not news:
+        raise HTTPException(status_code=404, detail="Naujiena nerasta")
+
+    # ADMIN gali trinti bet kurią naujieną
+    if user.role == "admin":
+        pass
+
+    # SHELTER gali trinti tik savo prieglaudos naujienas
+    elif user.role == "shelter":
+        my_shelter = db.query(Shelter).filter(Shelter.created_by == user.id).first()
+
+        if not my_shelter:
+            raise HTTPException(status_code=404, detail="Jūsų prieglauda nerasta")
+
+        if news.shelter_id != my_shelter.id:
+            raise HTTPException(
+                status_code=403,
+                detail="Galite ištrinti tik savo prieglaudos naujienas"
+            )
+
+    else:
+        raise HTTPException(
+            status_code=403,
+            detail="Neturite teisės trinti naujienų"
+        )
+
+    db.delete(news)
+    db.commit()
+
+    return {"message": "Naujiena sėkmingai ištrinta"}
+
+
+# -------------------------------------------------
+# -------------------EVENTS------------------------
+# -------------------------------------------------
+
+# CREATE
+@app.post("/event", response_model=EventResponse)
+def create_event(
+    data: EventCreate,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Sukurti naują renginį.
+
+    Parametrai:
+    - data: renginio duomenys
+    - user: prisijungęs vartotojas
+
+    Grąžina:
+    - Sukurtą renginio įrašą
+
+    Klaidos:
+    - 404 jei nurodyta prieglauda nerasta
+    - 400 jei `ends_at` yra ankstesnė už `starts_at`
+
+    Pavyzdys:
+    - POST /event
+    """
+
+    if data.ends_at is not None and data.ends_at < data.starts_at:
+        raise HTTPException(
+            status_code=400,
+            detail="Renginio pabaiga negali būti ankstesnė už pradžią"
+        )
+
+    if data.shelter_id is not None:
+        shelter = db.query(Shelter).filter(Shelter.id == data.shelter_id).first()
+
+        if not shelter:
+            raise HTTPException(status_code=404, detail="Prieglauda nerasta")
+
+    event = Event(
+        shelter_id=data.shelter_id,
+        user_id=user.id,
+        title=data.title,
+        summary=data.summary,
+        description=data.description,
+        location=data.location,
+        city=data.city,
+        starts_at=data.starts_at,
+        ends_at=data.ends_at,
+        image_url=data.image_url,
+        is_published=data.is_published
+    )
+
+    db.add(event)
+    db.commit()
+    db.refresh(event)
+
+    return event
+
+# READ
+@app.get("/event", response_model=list[EventResponse])
+def get_events(
+    shelter_id: Optional[int] = None,
+    city: Optional[str] = None,
+    is_published: Optional[bool] = True,
+
+    starts_from: Optional[datetime] = None,
+    starts_to: Optional[datetime] = None,
+
+    sort_by: Optional[str] = "starts_at",
+    sort_order: Optional[str] = "asc",
+
+    page: int = 1,
+    page_size: int = 10,
+
+    user: Optional[AppUser] = Depends(get_current_user_optional),
+    db: Session = Depends(get_db)
+):
+    """
+    Gauti renginių sąrašą su filtrais.
+
+    Filtravimas:
+    - shelter_id: pagal prieglaudą
+    - city: pagal miestą
+    - is_published: tik publikuoti (default TRUE)
+    - starts_from / starts_to: pagal datą
+
+    Rikiavimas:
+    - starts_at, created_at
+
+    Puslapiavimas:
+    - page, page_size
+
+    Pavyzdys:
+    - /event
+    - /event?city=Kaunas
+    """
+
+    query = db.query(Event)
+
+    # Filtrai
+    if shelter_id is not None:
+        query = query.filter(Event.shelter_id == shelter_id)
+
+    if city is not None:
+        query = query.filter(Event.city.ilike(f"%{city}%"))
+
+    if is_published is not None:
+        query = query.filter(Event.is_published == is_published)
+
+    if starts_from is not None:
+        query = query.filter(Event.starts_at >= starts_from)
+
+    if starts_to is not None:
+        query = query.filter(Event.starts_at <= starts_to)
+
+    # Sorting
+    sort_column = getattr(Event, sort_by, Event.starts_at)
+
+    if sort_order == "desc":
+        query = query.order_by(desc(sort_column))
+    else:
+        query = query.order_by(asc(sort_column))
+
+    # Puslapiavimas
+    offset = (page - 1) * page_size
+    events = query.offset(offset).limit(page_size).all()
+
+    return events
+
+
+@app.get("/event/{event_id}", response_model=EventResponse)
+def get_event_by_id(
+    event_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Gauti konkretų renginį pagal ID.
+
+    Parametrai:
+    - event_id: renginio ID
+
+    Klaidos:
+    - 404 jei nerastas
+    """
+
+    event = db.query(Event).filter(Event.id == event_id).first()
+
+    if not event:
+        raise HTTPException(status_code=404, detail="Renginys nerastas")
+
+    return event
+
+
+# UPDATE
+@app.patch("/event/{event_id}", response_model=EventResponse)
+def update_event(
+    event_id: int,
+    data: EventUpdate,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Atnaujinti renginį pagal ID.
+
+    Parametrai:
+    - event_id: renginio ID
+    - data: atnaujinami renginio duomenys
+    - user: prisijungęs vartotojas
+
+    Grąžina:
+    - Atnaujintą renginio įrašą
+
+    Klaidos:
+    - 404 jei renginys nerastas
+    - 403 jei vartotojas neturi teisės redaguoti šio renginio
+    - 404 jei nurodyta nauja prieglauda nerasta
+    - 400 jei `ends_at` yra ankstesnė už `starts_at`
+
+    Pavyzdys:
+    - PATCH /event/1
+    """
+
+    event = db.query(Event).filter(Event.id == event_id).first()
+
+    if not event:
+        raise HTTPException(status_code=404, detail="Renginys nerastas")
+
+    user_shelter = db.query(Shelter).filter(Shelter.created_by == user.id).first()
+
+    is_admin = user.role == "admin"
+    is_owner = event.user_id == user.id
+    is_same_shelter = (
+        user_shelter is not None and
+        event.shelter_id is not None and
+        event.shelter_id == user_shelter.id
+    )
+
+    if not is_admin and not is_owner and not is_same_shelter:
+        raise HTTPException(
+            status_code=403,
+            detail="Neturite teisės redaguoti šio renginio"
+        )
+
+    update_data = data.model_dump(exclude_unset=True)
+
+    # Jei keičiam shelter_id, patikrinam ar tokia prieglauda egzistuoja
+    if "shelter_id" in update_data and update_data["shelter_id"] is not None:
+        shelter = db.query(Shelter).filter(Shelter.id == update_data["shelter_id"]).first()
+
+        if not shelter:
+            raise HTTPException(status_code=404, detail="Prieglauda nerasta")
+
+    # Tikrinam datas
+    new_starts_at = update_data.get("starts_at", event.starts_at)
+    new_ends_at = update_data.get("ends_at", event.ends_at)
+
+    if new_ends_at is not None and new_ends_at < new_starts_at:
+        raise HTTPException(
+            status_code=400,
+            detail="Renginio pabaiga negali būti ankstesnė už pradžią"
+        )
+
+    for field, value in update_data.items():
+        setattr(event, field, value)
+
+    db.commit()
+    db.refresh(event)
+
+    return event
+
+
+# DELETE
+@app.delete("/event/{event_id}")
+def delete_event(
+    event_id: int,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Ištrinti renginį pagal ID.
+
+    Parametrai:
+    - event_id: renginio ID
+    - user: prisijungęs vartotojas
+
+    Grąžina:
+    - Sėkmės žinutę
+
+    Klaidos:
+    - 404 jei renginys nerastas
+    - 403 jei vartotojas neturi teisės trinti šio renginio
+
+    Pavyzdys:
+    - DELETE /event/1
+    """
+
+    event = db.query(Event).filter(Event.id == event_id).first()
+
+    if not event:
+        raise HTTPException(status_code=404, detail="Renginys nerastas")
+
+    user_shelter = db.query(Shelter).filter(Shelter.created_by == user.id).first()
+
+    is_admin = user.role == "admin"
+    is_owner = event.user_id == user.id
+    is_same_shelter = (
+        user_shelter is not None and
+        event.shelter_id is not None and
+        event.shelter_id == user_shelter.id
+    )
+
+    if not is_admin and not is_owner and not is_same_shelter:
+        raise HTTPException(
+            status_code=403,
+            detail="Neturite teisės ištrinti šio renginio"
+        )
+
+    db.delete(event)
+    db.commit()
+
+    return {"message": "Renginys sėkmingai ištrintas"}
+
 
 ###

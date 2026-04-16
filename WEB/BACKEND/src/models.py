@@ -1,4 +1,5 @@
 from typing import Optional
+from datetime import datetime
 
 from sqlalchemy import (
     Column,
@@ -15,9 +16,14 @@ from sqlalchemy import (
     Index,
     func,
     text,
+    CheckConstraint,
 )
 
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import (
+    relationship,
+    Mapped,
+    mapped_column
+)
 
 from src.database import Base
 
@@ -255,3 +261,96 @@ class Visit(Base):
 
     shelter = relationship("Shelter")
     user = relationship("AppUser")
+
+
+class News(Base):
+    __tablename__ = "news"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+
+    shelter_id: Mapped[int | None] = mapped_column(
+        BigInteger,
+        ForeignKey("shelter.id", ondelete="CASCADE"),
+        nullable=True
+    )
+
+    user_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("app_user.id"),
+        nullable=False
+    )
+
+    title: Mapped[str] = mapped_column(Text, nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=False)
+
+    image_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    is_published: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+
+    created_at: Mapped[DateTime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now()
+    )
+
+    updated_at: Mapped[DateTime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now()
+    )
+
+    shelter = relationship("Shelter", back_populates="news")
+    user = relationship("AppUser", back_populates="news")
+
+
+class Event(Base):
+    __tablename__ = "event"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+
+    shelter_id: Mapped[int | None] = mapped_column(
+        BigInteger,
+        ForeignKey("shelter.id", ondelete="CASCADE"),
+        nullable=True
+    )
+
+    user_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("app_user.id"),
+        nullable=False
+    )
+
+    title: Mapped[str] = mapped_column(Text, nullable=False)
+    summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    location: Mapped[str | None] = mapped_column(Text, nullable=True)
+    city: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    starts_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    ends_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    image_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    is_published: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, server_default="true")
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now()
+    )
+
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now()
+    )
+
+    __table_args__ = (
+        CheckConstraint("ends_at IS NULL OR ends_at >= starts_at", name="chk_event_ends_at"),
+    )
+
+    shelter = relationship("Shelter", back_populates="events")
+    user = relationship("AppUser", back_populates="events")
