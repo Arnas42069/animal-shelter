@@ -60,6 +60,18 @@ class AppUser(Base):
         cascade="all, delete-orphan"
     )
 
+    news = relationship(
+        "News",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
+    events = relationship(
+        "Event",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
 
 class Shelter(Base):
     __tablename__ = "shelter"
@@ -96,6 +108,21 @@ class Shelter(Base):
     )
 
     user = relationship("AppUser")
+
+    news   = relationship("News", back_populates="shelter")
+    events = relationship("Event", back_populates="shelter")
+
+    news = relationship(
+        "News",
+        back_populates="shelter",
+        cascade="all, delete-orphan"
+    )
+
+    events = relationship(
+        "Event",
+        back_populates="shelter",
+        cascade="all, delete-orphan"
+    )
 
 
 class Animal(Base):
