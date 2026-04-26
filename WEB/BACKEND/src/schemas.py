@@ -413,5 +413,5 @@ class AdminUserRoleUpdateRequest(BaseModel):
     role: UserRole
 
 
-class AdminShelterApprovalRequest(BaseModel):
+class AdminShelterVerificationRequest(BaseModel):
     is_approved: bool
