@@ -30,6 +30,7 @@ from src.schemas import (
     ShelterRegisterRequest,
     ShelterResponse,
     ShelterUpdateRequest,
+    ShelterActiveUpdateRequest,
 
     AnimalCreateRequest,
     AnimalResponse,
@@ -62,6 +63,7 @@ from src.schemas import (
 
     AdminUserRoleUpdateRequest,
     AdminShelterVerificationRequest,
+    AdminUserActiveUpdateRequest,
 )
 from src.auth import (
     hash_password, 
@@ -607,6 +609,34 @@ def delete_my_shelter(
 
     return {"message": "Prieglauda ištrinta sėkmingai"}
 
+
+@app.patch("/shelter/me/active", response_model=ShelterResponse)
+def update_my_shelter_active_status(
+    data: ShelterActiveUpdateRequest,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Leisti prieglaudai įjungti/išjungti savo aktyvumą.
+    """
+
+    shelter = db.query(Shelter).filter(Shelter.created_by == user.id).first()
+
+    if not shelter:
+        raise HTTPException(status_code=404, detail="Prieglauda nerasta")
+
+    if not shelter.is_verified:
+        raise HTTPException(
+            status_code=403,
+            detail="Negalite aktyvuoti nepatvirtintos prieglaudos"
+        )
+
+    shelter.is_active = data.is_active
+
+    db.commit()
+    db.refresh(shelter)
+
+    return shelter
 
 # -------------------------------------------------
 # -------------------ANIMAL------------------------
@@ -2610,9 +2640,10 @@ def admin_change_user_role(
     return user
 
 
-@app.delete("/admin/users/{user_id}")
-def admin_delete_user(
+@app.patch("/admin/users/{user_id}/active", response_model=UserResponse)
+def admin_update_user_active_status(
     user_id: int,
+    data: AdminUserActiveUpdateRequest,
     admin: AppUser = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -2621,7 +2652,7 @@ def admin_delete_user(
     is_active = true -> is_active = false
 
     Parametrai:
-    - user_id: vartotojo ID, kurio paskyra deaktyvuojama
+    - user_id: vartotojo ID
     - admin: prisijungęs administratorius
 
     Grąžina:
@@ -2634,7 +2665,7 @@ def admin_delete_user(
     - 400 jei bandoma deaktyvuoti paskutinį administratorių
 
     Pavyzdys:
-    - DELETE /admin/users/5
+    - PATCH /admin/users/5
     """
     ensure_admin(admin)
 
@@ -2643,27 +2674,30 @@ def admin_delete_user(
     if not user:
         raise HTTPException(status_code=404, detail="Vartotojas nerastas")
 
-    if user.id == admin.id:
+    if user.id == admin.id and data.is_active is False:
         raise HTTPException(
             status_code=400,
-            detail="Negalite ištrinti savo paskyros"
+            detail="Negalite deaktyvuoti savo paskyros"
         )
 
-    if user.role == "admin":
-        admin_count = db.query(AppUser).filter(AppUser.role == "admin").count()
+    if user.role == "admin" and data.is_active is False:
+        active_admin_count = db.query(AppUser).filter(
+            AppUser.role == "admin",
+            AppUser.is_active == True
+        ).count()
 
-        if admin_count <= 1:
+        if active_admin_count <= 1:
             raise HTTPException(
                 status_code=400,
-                detail="Negalima ištrinti paskutinio administratoriaus"
+                detail="Negalima deaktyvuoti paskutinio aktyvaus administratoriaus"
             )
 
-    # Saugesnis trynimas, nes vartotojas gali turėti vizitų, naujienų, renginių ar prieglaudą
-    user.is_active = False
+    user.is_active = data.is_active
 
     db.commit()
+    db.refresh(user)
 
-    return {"message": "Vartotojo paskyra sėkmingai deaktyvuota"}
+    return user
 
 
 @app.get("/admin/shelters/pending", response_model=list[ShelterResponse])
@@ -2689,8 +2723,7 @@ def admin_get_pending_shelters(
     ensure_admin(admin)
 
     shelters = db.query(Shelter).filter(
-        Shelter.is_verified == False,
-        Shelter.is_active == True
+        Shelter.is_verified == False
     ).order_by(Shelter.created_at.desc()).all()
 
     return shelters
@@ -2737,7 +2770,6 @@ def admin_verify_or_reject_shelter(
 
     if data.is_verified:
         shelter.is_verified = True
-        shelter.is_active = True
 
         if owner:
             owner.role = "shelter"
@@ -2745,7 +2777,6 @@ def admin_verify_or_reject_shelter(
 
     else:
         shelter.is_verified = False
-        shelter.is_active = False
 
         if owner and owner.role == "shelter":
             owner.role = "volunteer"

@@ -106,7 +106,9 @@ class ShelterUpdateRequest(BaseModel):
     postal_code: Optional[str] = None
     country: Optional[str] = None
 
-
+class ShelterActiveUpdateRequest(BaseModel):
+    is_active: bool
+    
 # -------------------------------------------------
 # -------------------ANIMAL------------------------
 # -------------------------------------------------
@@ -405,13 +407,17 @@ class EventResponse(EventBase):
 
     model_config = ConfigDict(from_attributes=True)
 
-#-----------
-#---ADMIN---
-#-----------
+# -------------------------------------------------
+# -------------------ADMIN-------------------------
+# -------------------------------------------------
 
 class AdminUserRoleUpdateRequest(BaseModel):
     role: UserRole
 
 
 class AdminShelterVerificationRequest(BaseModel):
-    is_approved: bool
+    is_verified: bool
+
+
+class AdminUserActiveUpdateRequest(BaseModel):
+    is_active: bool
