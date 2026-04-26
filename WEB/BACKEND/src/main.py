@@ -59,6 +59,9 @@ from src.schemas import (
     EventCreate,
     EventUpdate,
     EventResponse,
+
+    AdminUserRoleUpdateRequest,
+    AdminShelterVerificationRequest,
 )
 from src.auth import (
     hash_password, 
@@ -402,7 +405,7 @@ def register_shelter(
     db.refresh(current_user)
 
     return {
-        "message": "Shelter registered successfully",
+        "message": "Prieglauda užregistruota ir pateikta administratoriaus patvirtinimui",
         "role": current_user.role
     }
 
@@ -2455,4 +2458,299 @@ def delete_event(
     return {"message": "Renginys sėkmingai ištrintas"}
 
 
-###
+# -------------------------------------------------
+# -------------------ADMIN-------------------------
+# -------------------------------------------------
+
+def ensure_admin(user: AppUser):
+    """
+    Patikrina ar prisijungęs vartotojas turi administratoriaus rolę.
+
+    Klaidos:
+    - 403 jei vartotojas nėra administratorius
+    """
+    if user.role != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Tik administratorius gali atlikti šį veiksmą"
+        )
+
+
+@app.get("/admin/users", response_model=list[UserResponse])
+def admin_get_users(
+
+    role: Optional[str] = None,
+    is_active: Optional[bool] = None,
+    search: Optional[str] = None,
+    admin: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Gauti visų sistemos vartotojų sąrašą administratoriui.
+
+    Parametrai:
+    - role: (nebūtinas) filtruoti vartotojus pagal rolę: admin, shelter, volunteer
+    - is_active: (nebūtinas) filtruoti pagal paskyros aktyvumą
+    - search: (nebūtinas) ieškoti pagal vardą, pavardę, vartotojo vardą arba el. paštą
+    - admin: prisijungęs administratorius
+
+    Grąžina:
+    - Vartotojų sąrašą
+
+    Klaidos:
+    - 403 jei vartotojas nėra administratorius
+    - 400 jei nurodyta neteisinga rolė
+
+    Pavyzdys:
+    - GET /admin/users
+    - GET /admin/users?role=volunteer
+    - GET /admin/users?search=jonas
+    """
+    ensure_admin(admin)
+
+    query = db.query(AppUser)
+
+    if role is not None:
+        if role not in ["admin", "shelter", "volunteer"]:
+            raise HTTPException(
+                status_code=400,
+                detail="Neteisinga vartotojo rolė"
+            )
+        query = query.filter(AppUser.role == role)
+
+    if is_active is not None:
+        query = query.filter(AppUser.is_active == is_active)
+
+    if search:
+        query = query.filter(
+            or_(
+                AppUser.name.ilike(f"%{search}%"),
+                AppUser.surname.ilike(f"%{search}%"),
+                AppUser.username.ilike(f"%{search}%"),
+                AppUser.email.ilike(f"%{search}%")
+            )
+        )
+
+    return query.order_by(AppUser.created_at.desc()).all()
+
+
+@app.patch("/admin/users/{user_id}/role", response_model=UserResponse)
+def admin_change_user_role(
+    user_id: int,
+    data: AdminUserRoleUpdateRequest,
+    admin: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Pakeisti pasirinkto vartotojo rolę.
+
+    Parametrai:
+    - user_id: vartotojo ID, kurio rolė keičiama
+    - data: nauja vartotojo rolė
+    - admin: prisijungęs administratorius
+
+    Grąžina:
+    - Atnaujintą vartotojo objektą
+
+    Klaidos:
+    - 403 jei vartotojas nėra administratorius
+    - 404 jei vartotojas nerastas
+    - 400 jei administratorius bando pakeisti savo rolę
+    - 400 jei bandoma pašalinti paskutinio administratoriaus rolę
+    - 400 jei vartotojui suteikiama shelter rolė, bet jis neturi prieglaudos
+    - 400 jei vartotojo prieglauda dar nėra patvirtinta
+
+    Pavyzdys:
+    - PATCH /admin/users/5/role
+    """
+    ensure_admin(admin)
+
+    user = db.query(AppUser).filter(AppUser.id == user_id).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="Vartotojas nerastas")
+
+    new_role = data.role.value
+
+    if user.id == admin.id and new_role != "admin":
+        raise HTTPException(
+            status_code=400,
+            detail="Negalite pakeisti savo administratoriaus rolės"
+        )
+
+    if user.role == "admin" and new_role != "admin":
+        admin_count = db.query(AppUser).filter(AppUser.role == "admin").count()
+
+        if admin_count <= 1:
+            raise HTTPException(
+                status_code=400,
+                detail="Negalima pašalinti paskutinio administratoriaus rolės"
+            )
+
+    if new_role == "shelter":
+        shelter = db.query(Shelter).filter(Shelter.created_by == user.id).first()
+
+        if not shelter:
+            raise HTTPException(
+                status_code=400,
+                detail="Vartotojas neturi užregistruotos prieglaudos"
+            )
+
+        if not shelter.is_verified:
+            raise HTTPException(
+                status_code=400,
+                detail="Vartotojo prieglauda dar nėra patvirtinta"
+            )
+
+    user.role = new_role
+
+    db.commit()
+    db.refresh(user)
+
+    return user
+
+
+@app.delete("/admin/users/{user_id}")
+def admin_delete_user(
+    user_id: int,
+    admin: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Deaktyvuoti pasirinkto vartotojo paskyrą.
+    is_active = true -> is_active = false
+
+    Parametrai:
+    - user_id: vartotojo ID, kurio paskyra deaktyvuojama
+    - admin: prisijungęs administratorius
+
+    Grąžina:
+    - Sėkmės pranešimą
+
+    Klaidos:
+    - 403 jei vartotojas nėra administratorius
+    - 404 jei vartotojas nerastas
+    - 400 jei administratorius bando deaktyvuoti savo paskyrą
+    - 400 jei bandoma deaktyvuoti paskutinį administratorių
+
+    Pavyzdys:
+    - DELETE /admin/users/5
+    """
+    ensure_admin(admin)
+
+    user = db.query(AppUser).filter(AppUser.id == user_id).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="Vartotojas nerastas")
+
+    if user.id == admin.id:
+        raise HTTPException(
+            status_code=400,
+            detail="Negalite ištrinti savo paskyros"
+        )
+
+    if user.role == "admin":
+        admin_count = db.query(AppUser).filter(AppUser.role == "admin").count()
+
+        if admin_count <= 1:
+            raise HTTPException(
+                status_code=400,
+                detail="Negalima ištrinti paskutinio administratoriaus"
+            )
+
+    # Saugesnis trynimas, nes vartotojas gali turėti vizitų, naujienų, renginių ar prieglaudą
+    user.is_active = False
+
+    db.commit()
+
+    return {"message": "Vartotojo paskyra sėkmingai deaktyvuota"}
+
+
+@app.get("/admin/shelters/pending", response_model=list[ShelterResponse])
+def admin_get_pending_shelters(
+    admin: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Gauti administratoriaus patvirtinimo laukiančių prieglaudų sąrašą.
+
+    Parametrai:
+    - admin: prisijungęs administratorius
+
+    Grąžina:
+    - Nepatvirtintų prieglaudų sąrašą
+
+    Klaidos:
+    - 403 jei vartotojas nėra administratorius
+
+    Pavyzdys:
+    - GET /admin/shelters/pending
+    """
+    ensure_admin(admin)
+
+    shelters = db.query(Shelter).filter(
+        Shelter.is_verified == False,
+        Shelter.is_active == True
+    ).order_by(Shelter.created_at.desc()).all()
+
+    return shelters
+
+
+@app.patch("/admin/shelters/{shelter_id}/verification", response_model=ShelterResponse)
+def admin_verify_or_reject_shelter(
+    shelter_id: int,
+    data: AdminShelterVerificationRequest,
+    admin: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Patvirtinti arba atmesti prieglaudos registraciją. 
+
+    Parametrai:
+    - shelter_id: prieglaudos ID, kuri patvirtinama arba atmetama
+    - data: patvirtinimo duomenys (`is_verified`)
+    - admin: prisijungęs administratorius
+
+    Grąžina:
+    - Atnaujintą prieglaudos objektą
+
+    Klaidos:
+    - 403 jei vartotojas nėra administratorius
+    - 404 jei prieglauda nerasta
+
+    Pavyzdys:
+    - PATCH /admin/shelters/3/verification
+
+    Body:
+    {
+        "is_verified": true
+    }
+    """
+    ensure_admin(admin)
+
+    shelter = db.query(Shelter).filter(Shelter.id == shelter_id).first()
+
+    if not shelter:
+        raise HTTPException(status_code=404, detail="Prieglauda nerasta")
+
+    owner = db.query(AppUser).filter(AppUser.id == shelter.created_by).first()
+
+    if data.is_verified:
+        shelter.is_verified = True
+        shelter.is_active = True
+
+        if owner:
+            owner.role = "shelter"
+            owner.is_active = True
+
+    else:
+        shelter.is_verified = False
+        shelter.is_active = False
+
+        if owner and owner.role == "shelter":
+            owner.role = "volunteer"
+
+    db.commit()
+    db.refresh(shelter)
+
+    return shelter

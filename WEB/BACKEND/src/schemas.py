@@ -405,3 +405,13 @@ class EventResponse(EventBase):
 
     model_config = ConfigDict(from_attributes=True)
 
+#-----------
+#---ADMIN---
+#-----------
+
+class AdminUserRoleUpdateRequest(BaseModel):
+    role: UserRole
+
+
+class AdminShelterApprovalRequest(BaseModel):
+    is_approved: bool
