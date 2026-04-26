@@ -5,9 +5,10 @@ from pathlib import Path
 import shutil
 import uuid
 
-from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, BackgroundTasks
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_, asc, desc
+from src.email_service import build_pending_visit_email, send_email
 
 from src.database import get_db
 from src.models import (
@@ -1668,6 +1669,7 @@ def delete_animal_favorite(
 @app.post("/visit", response_model=VisitResponse)
 def register_visit(
     data: VisitCreateRequest,
+    background_tasks: BackgroundTasks,
     user: AppUser = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -1731,6 +1733,23 @@ def register_visit(
     db.add(visit)
     db.commit()
     db.refresh(visit)
+
+    if shelter.email:
+        subject, body = build_pending_visit_email(
+            shelter_name=shelter.name,
+            volunteer_name=f"{user.name} {user.surname}",
+            volunteer_email=user.email,
+            start_at=visit.start_at,
+            end_at=visit.end_at,
+            note=visit.note
+        )
+
+        background_tasks.add_task(
+            send_email,
+            shelter.email,
+            subject,
+            body
+        )
 
     return visit
 
