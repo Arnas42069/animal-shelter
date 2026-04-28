@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prieglaudos naujienos</title>
+
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/navbar.css">
+    <link rel="stylesheet" href="/assets/css/auth-modals.css">
+    <link rel="stylesheet" href="/assets/css/footer.css">
+</head>
+
+<body>
+    <header id="site-navbar"></header>
+    <div id="auth-modals-root"></div>
+
+    <div class="container-gaps">
+        <div class="news-list-container">
+
+            <!-- NEWS LIST -->
+            <div class="news-list-content">
+
+                <!-- POST 1 -->
+                <div class="news-list-post">
+                    <img src="/assets/img/dog.png" alt="">
+
+                    <div class="news-list-post-text">
+                        <h2 class="news-list-h2">
+                            <a href="https://example.com" target="_blank">
+                                Naujas sezonas
+                            </a>
+                        </h2>
+
+                        <p>
+                            Pagalbos sezonas prasideda, todėl laukiame jūsų pas mus su visa širdimi.
+                        </p>
+
+                        <span class="news-list-date">2024-06-20</span>
+
+                        <div class="news-actions">
+                            <button class="edit-btn">Redaguoti</button>
+                            <button class="delete-btn">Ištrinti</button>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- POST 2 -->
+                <div class="news-list-post">
+                    <img src="/assets/img/cat1.png" alt="">
+
+                    <div class="news-list-post-text">
+                        <h2 class="news-list-h2">
+                            <a href="https://example.com" target="_blank">
+                                Šie metai pasistūmėjo naudingai!
+                            </a>
+                        </h2>
+
+                        <p>
+                            Per pusę metų padėta apie 300 augintinių.
+                            Jiems suteikti nauji namai.
+                        </p>
+
+                        <span class="news-list-date">2024-06-20</span>
+
+                        <div class="news-actions">
+                            <button class="edit-btn">Redaguoti</button>
+                            <button class="delete-btn">Ištrinti</button>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- POST 3 -->
+                <div class="news-list-post">
+                    <img src="/assets/img/dog2.jpg" alt="">
+
+                    <div class="news-list-post-text">
+                        <h2 class="news-list-h2">
+                            <a href="https://example.com" target="_blank">
+                                Prieglaudų perpildymas. SOS
+                            </a>
+                        </h2>
+
+                        <p>
+                            Prieglaudos šiuo metu susiduria su dideliu gyvūnų perpildymu.
+                        </p>
+
+                        <span class="news-list-date">2024-01-13</span>
+
+                        <div class="news-actions">
+                            <button class="edit-btn">Redaguoti</button>
+                            <button class="delete-btn">Ištrinti</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- SIDEBAR -->
+            <aside class="sidebar">
+                <div class="search-box">
+                    <input type="text" placeholder="Ieškoti">
+                    <button>
+                        <img src="/assets/svg/search-icon.svg" alt="Search" width="20" height="20">
+                    </button>
+                </div>
+
+                <button class="btn btn-volunteer" id="openModalBtn">
+                    Naujas įrašas
+                </button>
+            </aside>
+
+        </div>
+    </div>
+
+
+    <footer id="site-footer"></footer>
+
+    <script src="/assets/js/auth.js"></script>
+    <script src="/assets/js/navbar.js"></script>
+    <script src="/assets/js/footer.js"></script>
+    <script src="/assets/js/auth-modals.js"></script>
+    <script src="/assets/js/news-modal.js"></script>
+
+
+</body>
+</html>

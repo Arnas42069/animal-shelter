@@ -1,27 +1,181 @@
 <!DOCTYPE html>
 <html lang="lt">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kuriama</title>
-    <link rel="stylesheet" href="/assets/css/main.css" />
-    <link rel="stylesheet" href="/assets/css/navbar.css" />
-    <link rel="stylesheet" href="/assets/css/auth-modals.css" />
-    <link rel="stylesheet" href="/assets/css/footer.css" />
-  </head>
-  <body>
-    <header id="site-navbar"></header>
-    <div id="auth-modals-root"></div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vartotojų valdymas</title>
 
-    <main style="padding:40px; font-family:Arial, sans-serif;">
-      <h1>Šis puslapis dar kuriamas</h1>
-    </main>
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="/assets/css/navbar.css" />
+  <link rel="stylesheet" href="/assets/css/auth-modals.css" />
+  <link rel="stylesheet" href="/assets/css/footer.css" />
+</head>
 
-    <footer id="site-footer"></footer>
+<body>
 
-    <script src="/assets/js/auth.js"></script>
-    <script src="/assets/js/navbar.js"></script>
-    <script src="/assets/js/footer.js"></script> 
+<header id="site-navbar"></header>
+<div id="auth-modals-root"></div>
 
-  </body>
+<div class="container-gaps">
+
+  <main class="main-content-admin">
+
+    <h1></h1>
+
+    <!-- SEARCH -->
+    <div class="search-box">
+      <input type="text" id="userSearch" placeholder="Ieškoti vartotojų...">
+    </div>
+
+    <!-- USERS TABLE -->
+    <h2>Vartotojai</h2>
+
+    <table class="table-admin" id="usersTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Vardas</th>
+          <th>El. paštas</th>
+          <th>Rolė</th>
+          <th>Statusas</th>
+          <th>Veiksmai</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <!-- USER 1 -->
+        <tr>
+          <td>001</td>
+          <td>John Doe</td>
+          <td>john@mail.com</td>
+
+          <!-- ROLE DROPDOWN -->
+          <td>
+            <select class="role-select">
+              <option value="Savanoris" selected>Savanoris</option>
+              <option value="Prieglauda">Prieglauda</option>
+              <option value="Admin">Admin</option>
+            </select>
+          </td>
+
+          <td>Aktyvus</td>
+
+          <td>
+            <button class="save-role-btn">Keisti</button>
+            <button class="delete-user-btn">Ištrinti</button>
+          </td>
+        </tr>
+
+        <!-- USER 2 -->
+        <tr>
+          <td>002</td>
+          <td>Rimas</td>
+          <td>rimas@mail.com</td>
+
+          <td>
+            <select class="role-select">
+              <option value="Savanoris" selected>Savanoris</option>
+              <option value="Prieglauda">Prieglauda</option>
+              <option value="Admin">Admin</option>
+            </select>
+          </td>
+
+          <td>Aktyvus</td>
+
+          <td>
+            <button class="save-role-btn">Keisti</button>
+            <button class="delete-user-btn">Ištrinti</button>
+          </td>
+        </tr>
+
+        <!-- USER 3 -->
+        <tr>
+          <td>003</td>
+          <td>Petras</td>
+          <td>petras@mail.com</td>
+
+          <td>
+            <select class="role-select">
+              <option value="Savanoris" selected>Savanoris</option>
+              <option value="Prieglauda">Prieglauda</option>
+              <option value="Admin">Admin</option>
+            </select>
+          </td>
+
+          <td>Aktyvus</td>
+
+          <td>
+            <button class="save-role-btn">Keisti</button>
+            <button class="delete-user-btn">Ištrinti</button>
+          </td>
+        </tr>
+
+        <!-- USER 4 -->
+        <tr>
+          <td>004</td>
+          <td>Jonas</td>
+          <td>jonas@mail.com</td>
+
+          <td>
+            <select class="role-select">
+              <option value="Savanoris" selected>Savanoris</option>
+              <option value="Prieglauda">Prieglauda</option>
+              <option value="Admin">Admin</option>
+            </select>
+          </td>
+
+          <td>Aktyvus</td>
+
+          <td>
+            <button class="save-role-btn">Keisti</button>
+            <button class="delete-user-btn">Ištrinti</button>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+
+    <!-- SHELTER APPROVAL -->
+    <h2>Laukiantys prieglaudų patvirtinimai</h2>
+
+    <table class="table-admin" id="shelterTable">
+      <thead>
+        <tr>
+          <th>Pavadinimas</th>
+          <th>Email</th>
+          <th>Statusas</th>
+          <th>Veiksmai</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>Penkta Koja</td>
+          <td>shelter@mail.com</td>
+          <td>Laukia</td>
+          <td>
+            <button class="approve-shelter-btn">Patvirtinti</button>
+            <button class="reject-shelter-btn">Atmesti</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </main>
+
+</div>
+
+<!-- TOAST -->
+<div id="admin-toast" class="admin-toast"></div>
+
+<footer id="site-footer"></footer>
+
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/navbar.js"></script>
+<script src="/assets/js/footer.js"></script> 
+<script src="/assets/js/auth-modals.js"></script>
+<script src="/assets/js/admin-users.js"></script>
+
+</body>
 </html>

@@ -984,6 +984,34 @@ section h2 {
   background: #ddd;
 }
 
+.news-actions {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.news-actions .edit-btn,
+.news-actions .delete-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+
+  width: auto;        /* neleidžia išsitampyti */
+  flex: 0 0 auto;     /* svarbiausias fix */
+}
+
+.news-actions .edit-btn {
+  background: #c78625;
+  color: white;
+}
+
+.news-actions .delete-btn {
+  background: #555452;
+  color: white;
+}
+
 
 .container-gaps .container-sav {
   max-width: 900px;
@@ -1116,4 +1144,123 @@ section h2 {
 
 .cancel-btn:hover {
   background-color: #561414;
+}
+
+/*admin*/
+
+.main-content-admin {
+  flex: 1;
+  padding: 30px;
+  background: #F5EFE6;
+}
+
+
+.table-admin {
+  width: 100%;
+  background: #F5EFE6;
+  border-collapse: collapse;
+  margin-top: 10px;
+  border: 2px solid #afaba4;
+}
+
+
+.table-admin th {
+  padding: 15px;
+  border-bottom: 1px solid #afaba4;
+  background: #afaba4;
+}
+
+
+.table-admin td {
+  padding: 15px;
+  border-bottom: 1px solid #a8a7a5;
+}
+
+/* Buttons */
+.edit-btn-admin {
+  background: orange;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+}
+
+.delete-btn-admin {
+  background: red;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+}
+
+.admin-toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #222;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 8px;
+  opacity: 0;
+  transition: 0.3s;
+  pointer-events: none;
+}
+
+.admin-toast.show {
+  opacity: 1;
+}
+
+
+
+.modal-shelter-news {
+  display: none; 
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+}
+
+.modal-content-shelter-news {
+  background: #afaba4;
+  width: 500px;
+  max-width: 90%;
+  padding: 25px;
+  border-radius: 12px;
+  margin: 100px auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.modal-content-shelter-news input,
+.modal-content-shelter-news textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box; /* svarbiausias fix */
+}
+
+.modal-content-shelter-news textarea {
+  resize: none;
+  height: 120px;
+}
+
+.close-btn-shelter-news {
+  position: absolute;
+  right: 20px;
+  top: 15px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.submit-news-shelter-news {
+  background: #232423;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
 }

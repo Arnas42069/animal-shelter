@@ -102,7 +102,7 @@ function buildProfileDropdown(user) {
       <a href="${shelterProfilePage}" class="dropdown-item">Prieglaudos profilis</a>
       <a href="${volunteerProfilePage}" class="dropdown-item">Vartotojo profilis</a>
       <a href="/pages/savanoriai.html" class="dropdown-item">Savanoriai</a>
-      <a href="/pages/naujienos.html" class="dropdown-item">Naujienos</a>
+      <a href="/pages/naujienos-prieglauda.html" class="dropdown-item">Naujienos</a>
     `;
   }
 
