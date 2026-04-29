@@ -1,3 +1,46 @@
+function translateError(msg) {
+  if (!msg) return "Įvyko klaida.";
+
+  if (typeof msg === "object") {
+    msg = msg.msg || msg.message || JSON.stringify(msg);
+  }
+
+  const text = msg.toString().toLowerCase();
+
+  if (text.includes("at least 8")) {
+    return "Slaptažodis turi būti bent 8 simbolių ilgio.";
+  }
+ if (text.includes("invalid credentials")) {
+  return "Neteisingi prisijungimo duomenys.";
+}
+  if (text.includes("at least 2")) {
+    return "Tekstas turi būti bent 2 simbolių ilgio.";
+  }
+
+  if (text.includes("at least 3")) {
+    return "Tekstas turi būti bent 3 simbolių ilgio.";
+  }
+
+  
+  if (text.includes("part after the @")) {
+    return "El. pašto dalis po @ yra neteisinga (trūksta taško).";
+  }
+
+  if (text.includes("not a valid email")) {
+    return "Neteisingas el. pašto adresas.";
+  }
+
+  if (text.includes("email")) {
+    return "Neteisingas el. pašto adresas.";
+  }
+ if (text.includes(" must contain an uppercase letter")) {
+    return "Slaptažodyje turi būti bent viena didžioji raidė.";
+  }
+   if (text.includes("must contain a digit")) {
+    return "Slaptažodyje turi būti bent vienas skaičius.";
+  }
+  return msg;
+}
 function renderAuthModals() {
   const root = document.getElementById("auth-modals-root");
 
@@ -12,7 +55,14 @@ function renderAuthModals() {
         <h2>PRISIJUNGIMAS</h2>
 
         <form id="loginForm">
-          <input type="email" id="login_email" placeholder="el. paštas" required />
+          <input
+  type="email"
+  id="login_email"
+  placeholder="el. paštas"
+  required
+  oninvalid="this.setCustomValidity('Įveskite galiojantį el. pašto adresą (pvz. vardas@gmail.com)')"
+  oninput="this.setCustomValidity('')"
+/>
           <input type="password" id="login_password" placeholder="slaptažodis" required />
 
           <button type="submit" class="auth-btn auth-submit-btn">Prisijungti</button>
@@ -36,7 +86,14 @@ function renderAuthModals() {
           <input type="text" id="v_name" placeholder="vardas" required />
           <input type="text" id="v_surname" placeholder="pavardė" required />
           <input type="text" id="v_username" placeholder="slapyvardis" required />
-          <input type="email" id="v_email" placeholder="el. paštas" required />
+          <input
+  type="email"
+  id="v_email"
+  placeholder="el. paštas"
+  required
+  oninvalid="this.setCustomValidity('Įveskite galiojantį el. pašto adresą (pvz. vardas@gmail.com)')"
+  oninput="this.setCustomValidity('')"
+/>
           <input type="password" id="v_password" placeholder="slaptažodis" required />
 
           <button type="submit" class="auth-btn auth-submit-btn">Registruotis</button>
@@ -167,11 +224,11 @@ function bindLoginSubmit() {
       const result = await response.json().catch(() => null);
 
       if (!response.ok) {
-        messageEl.textContent = result?.detail || `Prisijungti nepavyko (${response.status}).`;
+        messageEl.textContent = translateError(result?.detail || `Prisijungti nepavyko (${response.status}).`);
         messageEl.style.color = "red";
         return;
       }
-
+;
       authStoreToken(result.access_token);
 
       messageEl.textContent = "Prisijungimas sėkmingas.";
@@ -224,16 +281,17 @@ function bindVolunteerRegisterSubmit() {
       const result = await response.json().catch(() => null);
 
       if (!response.ok) {
-        if (Array.isArray(result?.detail)) {
-          messageEl.textContent = result.detail.map((err) => err.msg).join(", ");
-        } else {
-          messageEl.textContent = result?.detail || `Registracija nepavyko (${response.status}).`;
-        }
+  if (Array.isArray(result?.detail)) {
+    messageEl.textContent = result.detail
+      .map(err => translateError(err.msg))
+      .join(", ");
+  } else {
+    messageEl.textContent = translateError(result?.detail);
+  }
 
-        messageEl.style.color = "red";
-        return;
-      }
-
+  messageEl.style.color = "red";
+  return;
+}
       messageEl.textContent = "Registracija sėkminga. Dabar galite prisijungti.";
       messageEl.style.color = "green";
 

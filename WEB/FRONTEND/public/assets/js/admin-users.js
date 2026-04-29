@@ -1,87 +1,120 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    const toast = document.getElementById("admin-toast");
+    function notify(message, type = "success") {
+        const containerId = "appNotifications";
 
-    // ======================
-    // TOAST
-    // ======================
-    function showToast(msg) {
-        toast.textContent = msg;
-        toast.classList.add("show");
+        let container = document.getElementById(containerId);
+
+        if (!container) {
+            container = document.createElement("div");
+            container.id = containerId;
+
+            Object.assign(container.style, {
+                position: "fixed",
+                bottom: "20px",
+                right: "20px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+                zIndex: "99999",
+                maxWidth: "340px"
+            });
+
+            document.body.appendChild(container);
+        }
+
+        const el = document.createElement("div");
+        el.textContent = message;
+
+        const colors = {
+            success: "#444",
+            error: "#444",
+            info: "#444",
+            warning: "##444"
+        };
+
+        Object.assign(el.style, {
+            minWidth: "150px",
+            padding: "12px 22px",
+            borderRadius: "999px",
+            background: colors[type] || "#444",
+            border: "2px solid #fff",
+            color: "#fff",
+            fontFamily: '"Source Sans 3", sans-serif',
+            fontWeight: "700",
+            fontSize: "18px",
+            textAlign: "center",
+            display: "inline-block",
+            cursor: "default",
+            boxShadow: "0 6px 18px rgba(0,0,0,0.15)",
+            opacity: "0",
+            transform: "translateY(10px) scale(0.98)",
+            transition: "transform 0.18s ease, opacity 0.25s ease"
+        });
+
+        container.appendChild(el);
+
+        requestAnimationFrame(() => {
+            el.style.opacity = "1";
+            el.style.transform = "translateY(0) scale(1)";
+        });
 
         setTimeout(() => {
-            toast.classList.remove("show");
-        }, 2000);
+            el.style.opacity = "0";
+            el.style.transform = "translateY(10px) scale(0.98)";
+            setTimeout(() => el.remove(), 250);
+        }, 3000);
     }
 
-    // ======================
-    // DELETE USER (double confirm)
-    // ======================
+    // DELETE USER
     document.querySelectorAll(".delete-user-btn").forEach(btn => {
         btn.addEventListener("click", (e) => {
 
-            const confirm1 = confirm("Ar tikrai nori ištrinti vartotoją?");
-            if (!confirm1) return;
+            if (!confirm("Ar tikrai nori ištrinti vartotoją?")) return;
+            if (!confirm("Paskutinis patvirtinimas! Ištrinti?")) return;
 
-            const confirm2 = confirm("Paskutinis patvirtinimas! Ištrinti?");
-            if (!confirm2) return;
+            e.target.closest("tr").remove();
 
-            const row = e.target.closest("tr");
-            row.remove();
-
-            showToast("Vartotojas ištrintas");
+            notify("Vartotojas ištrintas", "success");
         });
     });
 
-    // ======================
-    // ROLE CHANGE (NEW LOGIC)
-    // ======================
+    // ROLE CHANGE
     document.querySelectorAll(".save-role-btn").forEach(btn => {
         btn.addEventListener("click", (e) => {
 
             const row = e.target.closest("tr");
-            const select = row.querySelector(".role-select");
+            const newRole = row.querySelector(".role-select").value;
 
-            const newRole = select.value;
+            if (!confirm(`Ar tikrai pakeisti rolę į "${newRole}"?`)) return;
 
-            const confirmChange = confirm(`Ar tikrai pakeisti rolę į "${newRole}"?`);
-            if (!confirmChange) return;
-
-            showToast(`Rolė pakeista į ${newRole}`);
-
-            // TODO backend call:
-            // fetch('/api/users/role', { method: 'POST', body: JSON.stringify(...) })
+            notify(`Rolė pakeista į ${newRole}`, "info");
         });
     });
 
-    // ======================
     // SHELTER APPROVAL
-    // ======================
     document.querySelectorAll(".approve-shelter-btn").forEach(btn => {
         btn.addEventListener("click", (e) => {
-            const row = e.target.closest("tr");
-            row.remove();
-            showToast("Prieglauda patvirtinta");
+            e.target.closest("tr").remove();
+            notify("Prieglauda patvirtinta", "success");
         });
     });
 
     document.querySelectorAll(".reject-shelter-btn").forEach(btn => {
         btn.addEventListener("click", (e) => {
-            const row = e.target.closest("tr");
-            row.remove();
-            showToast("Prieglauda atmesta");
+            e.target.closest("tr").remove();
+            notify("Prieglauda atmesta", "error");
         });
     });
 
-    // ======================
     // SEARCH
-    // ======================
-    document.getElementById("userSearch").addEventListener("input", (e) => {
+    document.getElementById("userSearch")?.addEventListener("input", (e) => {
         const value = e.target.value.toLowerCase();
 
         document.querySelectorAll("#usersTable tbody tr").forEach(row => {
-            const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(value) ? "" : "none";
+            row.style.display = row.textContent.toLowerCase().includes(value)
+                ? ""
+                : "none";
         });
     });
 

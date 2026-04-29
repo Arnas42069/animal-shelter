@@ -494,14 +494,16 @@
     container = document.createElement("div");
     container.id = containerId;
 
-    container.style.position = "fixed";
-    container.style.bottom = "20px";
-    container.style.right = "20px";
-    container.style.display = "flex";
-    container.style.flexDirection = "column";
-    container.style.gap = "10px";
-    container.style.zIndex = "99999";
-    container.style.maxWidth = "320px";
+    Object.assign(container.style, {
+      position: "fixed",
+      bottom: "20px",
+      right: "20px",
+      display: "flex",
+      flexDirection: "column",
+      gap: "10px",
+      zIndex: "99999",
+      maxWidth: "340px"
+    });
 
     document.body.appendChild(container);
   }
@@ -509,36 +511,47 @@
   const el = document.createElement("div");
   el.textContent = message;
 
-  el.style.padding = "12px 14px";
-  el.style.borderRadius = "10px";
-  el.style.fontSize = "14px";
-  el.style.boxShadow = "0 6px 18px rgba(0,0,0,0.15)";
-  el.style.color = "#fff";
-  el.style.cursor = "default";
-
   const colors = {
-    success: "#2e7d32",
+    success: "#444444",
     error: "#c62828",
     info: "#1565c0",
     warning: "#ef6c00"
   };
 
-  el.style.background = colors[type] || "#333";
+  Object.assign(el.style, {
+    minWidth: "150px",
+    padding: "12px 22px",
+    borderRadius: "999px",
 
-  el.style.opacity = "0";
-  el.style.transform = "translateY(10px)";
-  el.style.transition = "all 0.25s ease";
+    background: colors[type] || "#444444",
+    border: "2px solid #fff",
+
+    color: "#fff",
+    fontFamily: '"Source Sans 3", sans-serif',
+    fontWeight: "700",
+    fontSize: "18px",
+    textAlign: "center",
+
+    display: "inline-block",
+    cursor: "default",
+
+    boxShadow: "0 6px 18px rgba(0,0,0,0.15)",
+
+    opacity: "0",
+    transform: "translateY(10px) scale(0.98)",
+    transition: "transform 0.18s ease, opacity 0.25s ease"
+  });
 
   container.appendChild(el);
 
   requestAnimationFrame(() => {
     el.style.opacity = "1";
-    el.style.transform = "translateY(0)";
+    el.style.transform = "translateY(0) scale(1)";
   });
 
   setTimeout(() => {
     el.style.opacity = "0";
-    el.style.transform = "translateY(10px)";
+    el.style.transform = "translateY(10px) scale(0.98)";
     setTimeout(() => el.remove(), 250);
   }, 3000);
 }
