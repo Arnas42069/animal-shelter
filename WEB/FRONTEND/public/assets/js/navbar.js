@@ -21,6 +21,8 @@ function buildNavbarMarkup(user) {
         <a href="/pages/aukojimas.html" class="nav-link">Parama</a>
         <span class="nav-divider">|</span>
         <a href="/pages/naujienos.html" class="nav-link">Naujienos</a>
+        <span class="nav-divider">|</span>
+        <a href="/pages/laikina-globa.html" class="nav-link">Trumpalaikė globa</a>
       </div>
     </div>
   `;

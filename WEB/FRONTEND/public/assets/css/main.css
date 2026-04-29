@@ -1264,3 +1264,111 @@ section h2 {
   border-radius: 8px;
   cursor: pointer;
 }
+
+.foster-hero,
+.foster-process,
+.foster-requirements,
+.foster-benefits {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+}
+
+.foster-requirements ul {
+    text-align: left;
+    display: inline-block;
+    margin-top: 15px;
+    padding-left: 20px;
+}
+.process-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.process-card {
+    background: #f8f8f8;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.foster-hero .btn {
+    display: inline-block;
+    width: auto;
+}
+
+/*forma*/
+
+
+.selected-animal-section,
+.foster-form-section {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+}
+
+.shelter-contact-section,
+.login-required-section {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+}
+
+
+.selected-animal-card {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    text-align: center;
+}
+
+.animal-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 30px;
+}
+
+.animal-image {
+    width: 100%;
+    max-width: 500px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.animal-info {
+    width: 100%;
+    max-width: 600px;
+    text-align: left;
+}
+
+
+.foster-form-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.foster-form-section input,
+.foster-form-section textarea {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.foster-form-section textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+
+.shelter-btn {
+    display: inline-block;
+    width: auto;
+    margin-top: 15px;
+}
+

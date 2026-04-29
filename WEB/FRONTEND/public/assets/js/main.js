@@ -197,6 +197,7 @@ function renderAnimals() {
 
 // Atidaro pasirinkto gyvūno popup langą
 function openAnimalModal(animal) {
+  localStorage.setItem("selectedFosterAnimal", JSON.stringify(animal));
   const shelterName =
     allShelters.find((shelter) => Number(shelter.id) === Number(animal.shelter_id))?.name || "-";
 
@@ -211,6 +212,7 @@ function openAnimalModal(animal) {
   getEl("animalModalBirthDate").textContent = animal.birth_date || "-";
   getEl("animalModalCode").textContent = animal.code || "-";
   getEl("animalModalDescription").textContent = animal.description || "-";
+   
 
   openModal("animalModalBackdrop");
 }
