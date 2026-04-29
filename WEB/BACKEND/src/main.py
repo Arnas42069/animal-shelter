@@ -51,6 +51,7 @@ from src.schemas import (
     VisitMeResponse,
     ShelterVisitResponse,
     VisitStatusUpdateRequest,
+    VisitUpdateRequest,
 
     NewsBase,
     NewsCreate,
@@ -1707,7 +1708,7 @@ def register_visit(
     # Tikrinam ar tas pats vartotojas neturi persidengiančio aktyvaus vizito
     overlapping_visit = db.query(Visit).filter(
         Visit.user_id == user.id,
-        Visit.status == "pending",
+        Visit.status.in_(["pending", "scheduled"]),
         and_(
             Visit.start_at < data.end_at,
             Visit.end_at > data.start_at
@@ -1752,6 +1753,143 @@ def register_visit(
         )
 
     return visit
+
+
+@app.patch("/visit/{visit_id}", response_model=VisitResponse)
+def update_my_visit(
+    visit_id: int,
+    data: VisitUpdateRequest,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Leisti savanoriui redaguoti savo vizitą tik tada,
+    kai vizito statusas yra pending.
+    """
+
+    if user.role != "volunteer":
+        raise HTTPException(
+            status_code=403,
+            detail="Tik volunteer vartotojas gali redaguoti savo vizitą"
+        )
+
+    visit = db.query(Visit).filter(
+        Visit.id == visit_id,
+        Visit.user_id == user.id
+    ).first()
+
+    if not visit:
+        raise HTTPException(status_code=404, detail="Vizitas nerastas")
+
+    if visit.status != "pending":
+        raise HTTPException(
+            status_code=400,
+            detail="Redaguoti galima tik pending būsenos vizitą"
+        )
+
+    update_data = data.model_dump(exclude_unset=True)
+
+    new_start_at = update_data.get("start_at", visit.start_at)
+    new_end_at = update_data.get("end_at", visit.end_at)
+
+    if new_end_at <= new_start_at:
+        raise HTTPException(
+            status_code=400,
+            detail="Vizito pabaiga turi būti vėliau negu pradžia"
+        )
+
+    overlapping_visit = db.query(Visit).filter(
+        Visit.id != visit.id,
+        Visit.user_id == user.id,
+        Visit.status.in_(["pending", "scheduled"]),
+        and_(
+            Visit.start_at < new_end_at,
+            Visit.end_at > new_start_at
+        )
+    ).first()
+
+    if overlapping_visit:
+        raise HTTPException(
+            status_code=400,
+            detail="Jūs jau turite kitą vizitą, kuris persidengia su pasirinktu laiku"
+        )
+
+    for field, value in update_data.items():
+        setattr(visit, field, value)
+
+    db.commit()
+    db.refresh(visit)
+
+    return visit
+
+
+@app.patch("/visit/{visit_id}/cancel", response_model=VisitResponse)
+def cancel_my_visit(
+    visit_id: int,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Leisti savanoriui atšaukti savo vizitą,
+    jeigu statusas yra pending arba scheduled.
+    """
+
+    if user.role != "volunteer":
+        raise HTTPException(
+            status_code=403,
+            detail="Tik volunteer vartotojas gali atšaukti savo vizitą"
+        )
+
+    visit = db.query(Visit).filter(
+        Visit.id == visit_id,
+        Visit.user_id == user.id
+    ).first()
+
+    if not visit:
+        raise HTTPException(status_code=404, detail="Vizitas nerastas")
+
+    if visit.status not in ["pending", "scheduled"]:
+        raise HTTPException(
+            status_code=400,
+            detail="Atšaukti galima tik pending arba scheduled būsenos vizitą"
+        )
+
+    visit.status = "cancelled"
+
+    db.commit()
+    db.refresh(visit)
+
+    return visit
+
+
+@app.get("/visit/me/social-hours")
+def get_my_social_hours(
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Grąžina prisijungusio savanorio socialinių valandų sumą
+    tik iš completed statuso vizitų.
+    """
+
+    if user.role != "volunteer":
+        raise HTTPException(
+            status_code=403,
+            detail="Tik volunteer vartotojas gali matyti savo socialines valandas"
+        )
+
+    visits = db.query(Visit).filter(
+        Visit.user_id == user.id,
+        Visit.status == "completed"
+    ).all()
+
+    total_social_hours = sum(float(visit.social_hrs) for visit in visits)
+
+    return {
+        "user_id": user.id,
+        "completed_visits_count": len(visits),
+        "total_social_hours": total_social_hours
+    }
 
 
 @app.get("/visit/me", response_model=list[VisitMeResponse])

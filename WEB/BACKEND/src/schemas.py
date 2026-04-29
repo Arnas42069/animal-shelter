@@ -313,6 +313,21 @@ class VisitStatusUpdateRequest(BaseModel):
     status: str = Field(pattern="^(pending|scheduled|cancelled|completed|no_show)$")
 
 
+class VisitUpdateRequest(BaseModel):
+    start_at: Optional[datetime] = None
+    end_at: Optional[datetime] = None
+    is_under_16: Optional[bool] = None
+    social_hrs: Optional[float] = Field(default=None, ge=0)
+    note: Optional[str] = None
+
+    @model_validator(mode="after")
+    def validate_time_range(self):
+        if self.start_at is not None and self.end_at is not None:
+            if self.end_at <= self.start_at:
+                raise ValueError("end_at turi būti vėliau negu start_at")
+        return self
+
+
 # -------------------------------------------------
 # -------------------NEWS--------------------------
 # -------------------------------------------------
