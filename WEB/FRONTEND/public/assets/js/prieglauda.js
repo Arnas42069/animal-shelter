@@ -25,7 +25,8 @@
     fillBreedFilter,
     openModal,
     closeModal,
-    createObjectPreview
+    createObjectPreview,
+    showNotification
   } = window.AppCommon;
 
   function setShelterMessage(text, type = "") {
@@ -233,7 +234,7 @@
       fillShelterForm(currentShelter);
       setShelterEditMode(false);
 
-      setShelterMessage("Prieglaudos informacija atnaujinta", "success");
+    showNotification("Profilio informacija atnaujinta", "success");
     } catch (error) {
       console.error(error);
       setShelterMessage(

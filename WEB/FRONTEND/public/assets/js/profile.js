@@ -4,7 +4,7 @@
 
   // Ar siuo metu ijungtas redagavimo rezimas
   let isEditing = false;
-
+const { showNotification } = window.AppCommon;
   // Patogesne funkcija elemento paemimui pagal id
   function getEl(id) {
     return document.getElementById(id);
@@ -155,7 +155,7 @@
       fillProfileForm(currentUser);
       setInlineEditMode(false);
 
-      setMessage(messageEl, "Profilio informacija atnaujinta", "success");
+      showNotification("Profilio informacija atnaujinta", "success");
 
       window.dispatchEvent(new CustomEvent("auth-changed"));
     } catch (error) {

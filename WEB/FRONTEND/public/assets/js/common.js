@@ -485,6 +485,63 @@
       el?.addEventListener("click", handler);
     });
   }
+  function showNotification(message, type = "success") {
+  const containerId = "appNotifications";
+
+  let container = document.getElementById(containerId);
+
+  if (!container) {
+    container = document.createElement("div");
+    container.id = containerId;
+
+    container.style.position = "fixed";
+    container.style.bottom = "20px";
+    container.style.right = "20px";
+    container.style.display = "flex";
+    container.style.flexDirection = "column";
+    container.style.gap = "10px";
+    container.style.zIndex = "99999";
+    container.style.maxWidth = "320px";
+
+    document.body.appendChild(container);
+  }
+
+  const el = document.createElement("div");
+  el.textContent = message;
+
+  el.style.padding = "12px 14px";
+  el.style.borderRadius = "10px";
+  el.style.fontSize = "14px";
+  el.style.boxShadow = "0 6px 18px rgba(0,0,0,0.15)";
+  el.style.color = "#fff";
+  el.style.cursor = "default";
+
+  const colors = {
+    success: "#2e7d32",
+    error: "#c62828",
+    info: "#1565c0",
+    warning: "#ef6c00"
+  };
+
+  el.style.background = colors[type] || "#333";
+
+  el.style.opacity = "0";
+  el.style.transform = "translateY(10px)";
+  el.style.transition = "all 0.25s ease";
+
+  container.appendChild(el);
+
+  requestAnimationFrame(() => {
+    el.style.opacity = "1";
+    el.style.transform = "translateY(0)";
+  });
+
+  setTimeout(() => {
+    el.style.opacity = "0";
+    el.style.transform = "translateY(10px)";
+    setTimeout(() => el.remove(), 250);
+  }, 3000);
+}
 
   window.AppCommon = {
     shelterLogos,
@@ -534,6 +591,7 @@
 
     createObjectPreview,
     attachChangeListeners,
-    attachClickListeners
+    attachClickListeners,
+    showNotification
   };
 })();
