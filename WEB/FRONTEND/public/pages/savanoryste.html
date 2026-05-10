@@ -1,53 +1,361 @@
 <!DOCTYPE html>
 <html lang="lt">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Savanorystė</title>
-    <link rel="stylesheet" href="/assets/css/main.css" />
-    <link rel="stylesheet" href="/assets/css/navbar.css" />
-    <link rel="stylesheet" href="/assets/css/auth-modals.css" />
-    <link rel="stylesheet" href="/assets/css/footer.css" />
-  </head>
-  <body>
-    <header id="site-navbar"></header>
-    <div id="auth-modals-root"></div>
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Savanorystė</title>
 
-    <div class="container-gaps">
-    <section class="volunteer">
-    <div class="volunteer-container">
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="/assets/css/navbar.css" />
+  <link rel="stylesheet" href="/assets/css/auth-modals.css" />
+  <link rel="stylesheet" href="/assets/css/footer.css" />
+  <link rel="stylesheet" href="/assets/css/savanoryste.css" />
+</head>
 
-    <div class="volunteer-text">
-      <h2>Savanorystė</h2>
-      <p>
-        Savanorystė – tai puiki galimybė padėti gyvūnams ir prisidėti prie jų gerovės.
-        Tapęs savanoriu, tu ne tik suteiksi pagalbą, bet ir įgysi naujų patirčių,
-        susipažinsi su bendraminčiais bei prisidėsi prie prasmingos veiklos.
-      </p>
+<body>
+  <header id="site-navbar"></header>
+  <div id="auth-modals-root"></div>
 
-      <ul class="volunteer-list">
-        <li>Padėsi gyvūnams</li>
-        <li>Įgysi patirties</li>
-        <li>Sutiksi naujų žmonių</li>
-        <li>Prasmingai praleisi laiką</li>
-      </ul>
+  <main class="container-gaps volunteer-page">
+    <section class="volunteer-hero">
+      <div class="volunteer-hero-text">
+        <h1>Savanorystė gyvūnų prieglaudose</h1>
 
-      <button class="btn btn-volunteer">Prisijungti prie savanorystės</button>
-    </div>
+        <p>
+          Savanoriaudamas gali tapti žmogumi, kurio laikas, rūpestis ir dėmesys
+          prieglaudos gyvūnams reiškia labai daug.
+        </p>
 
-    <div class="volunteer-image">
-      <img src="/assets/img/savanoryste.jpg" alt="Savanorystė">
-    </div>
+        <div class="volunteer-benefits">
+          <span>
+            <img src="/assets/svg/paw-outline.svg" alt="" />
+            Padėsi gyvūnams
+          </span>
 
-  </div>
-</section>
-</div>
-    <footer id="site-footer"></footer>
+          <span>
+            <img src="/assets/svg/paw-outline.svg" alt="" />
+            Įgysi patirties
+          </span>
 
-    <script src="/assets/js/auth.js"></script>
-    <script src="/assets/js/navbar.js"></script>
-    <script src="/assets/js/footer.js"></script> 
-    <script src="/assets/js/auth-modals.js"></script>
-  </body>
+          <span>
+            <img src="/assets/svg/paw-outline.svg" alt="" />
+            Sutiksi bendraminčių
+          </span>
+
+          <span>
+            <img src="/assets/svg/paw-outline.svg" alt="" />
+            Kaupsi socialines valandas
+          </span>
+        </div>
+
+        <a href="#volunteerRegistration" class="volunteer-primary-btn">
+          Registruotis savanorystei
+        </a>
+      </div>
+
+      <div class="volunteer-hero-image">
+        <img src="/assets/img/volunteering.jpg" alt="Savanorystė" />
+      </div>
+    </section>
+
+    <section class="volunteer-info-section" aria-labelledby="volunteerInfoTitle">
+      <div class="section-heading">
+        <h2 id="volunteerInfoTitle">Ką svarbu žinoti prieš savanoriaujant?</h2>
+
+        <p>
+          Čia pateikta svarbiausia informacija apie skirtingus savanoriavimo
+          tipus, ko tikėtis atvykus, savanorystę nepilnamečiams ir registraciją
+          didesnėms grupėms.
+        </p>
+      </div>
+
+      <div class="accordion-list">
+        <details class="volunteer-accordion">
+          <summary>
+            <span>Trumpalaikė savanorystė</span>
+            <span class="accordion-icon">+</span>
+          </summary>
+
+          <div class="accordion-content">
+            <p>
+              Trumpalaikė savanorystė tinka tada, kai norite padėti prieglaudai,
+              bet negalite įsipareigoti ilgam laikui. Tokia pagalba dažniausiai
+              apima šunų vedžiojimą, gyvūnų socializaciją ir paprastus kasdienius
+              prieglaudos darbus. Užsiregistruoti galite per mūsų sistemą arba
+              asmeniškai susisiekę su pasirinkta prieglauda.
+            </p>
+
+            <ul class="paw-list">
+              <li>
+                Atvykite patogia apranga ir avalyne, nes savanorystė prieglaudoje
+                dažnai yra aktyvi ir praktiška veikla.
+              </li>
+              <li>
+                Jeigu ateinate ne vieni, registracijoje nurodykite preliminarų
+                žmonių skaičių.
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="volunteer-accordion">
+          <summary>
+            <span>Ilgalaikė savanorystė</span>
+            <span class="accordion-icon">+</span>
+          </summary>
+
+          <div class="accordion-content">
+            <p>
+              Ilgalaikė savanorystė skirta žmonėms, kurie nori reguliariai
+              prisidėti prie prieglaudos veiklos ir tapti pastovesne pagalbos
+              dalimi. Tai yra atsakomybė, todėl prieš registruojantis svarbu
+              įvertinti savo laiką ir galimybes.
+            </p>
+
+            <ul class="paw-list">
+              <li>Ilgalaikei savanorystei registracija yra privaloma.</li>
+              <li>
+                Prieglauda gali pakviesti į supažindinimą, mokymus arba
+                individualiai aptarti savanoriavimo sąlygas.
+              </li>
+              <li>
+                Ilgalaikė savanorystė gali apimti gyvūnų priežiūrą, narvų
+                tvarkymą, vedžiojimą, maitinimą, pagalbą renginiuose ar
+                komunikacijoje.
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="volunteer-accordion">
+          <summary>
+            <span>Socialinės valandos</span>
+            <span class="accordion-icon">+</span>
+          </summary>
+
+          <div class="accordion-content">
+            <p>
+              Moksleiviai gali rinkti socialines valandas prisidėdami prie
+              prieglaudos veiklos. Registracijos formoje pažymėkite, kad norite
+              rinkti socialines valandas.
+            </p>
+
+            <ul class="paw-list">
+              <li>
+                Moksleiviams, renkantiems socialines valandas, rekomenduojame
+                registruotis mūsų sistemoje, nes joje gali būti sekamas
+                savanorystei skirtas laikas.
+              </li>
+              <li>
+                Jeigu nesiregistruojate per sistemą, būtinai atsineškite
+                socialinių valandų lapą arba kortelę.
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="volunteer-accordion">
+          <summary>
+            <span>Nepilnamečiai savanoriai</span>
+            <span class="accordion-icon">+</span>
+          </summary>
+
+          <div class="accordion-content">
+            <p>
+              Skirtingos prieglaudos gali taikyti skirtingas taisykles dėl
+              nepilnamečių savanorių, todėl prieš atvykstant rekomenduojame
+              susisiekti su pasirinkta prieglauda ir pasitikslinti sąlygas.
+              Jeigu nesate tikri, ar jus priims savanoriauti, pirmiausia
+              susisiekite su prieglauda.
+            </p>
+
+            <ul class="paw-list">
+              <li>
+                16–17 metų savanoriams dažniausiai reikalingas raštiškas tėvų
+                sutikimas.
+              </li>
+              <li>
+                Jaunesnius savanorius prieglaudos dažnai kviečia atvykti kartu
+                su vienu iš tėvų arba globėjų.
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="volunteer-accordion">
+          <summary>
+            <span>Svečių grupės</span>
+            <span class="accordion-icon">+</span>
+          </summary>
+
+          <div class="accordion-content">
+            <p>
+              Atvykti su draugais, kolegomis ar artimaisiais galima, tačiau
+              didesnėms grupėms svarbu užsiregistruoti iš anksto. Taip
+              prieglauda gali geriau suplanuoti darbus ir pasiruošti jūsų
+              atvykimui.
+            </p>
+
+            <ul class="paw-list">
+              <li>Didesnėms grupėms registracija yra privaloma.</li>
+              <li>
+                Registracijoje svarbu nurodyti preliminarų žmonių kiekį.
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="volunteer-accordion">
+          <summary>
+            <span>Laikina globa</span>
+            <span class="accordion-icon">+</span>
+          </summary>
+
+          <div class="accordion-content">
+            <p>
+              Laikina globa – dar vienas būdas padėti gyvūnams, kai jiems
+              reikia saugių namų iki tol, kol jie suras nuolatinius šeimininkus.
+            </p>
+
+            <div class="temporary-care-action">
+              <a class="volunteer-secondary-link" href="/pages/laikina-globa.html">
+                Daugiau apie laikiną globą
+              </a>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="volunteerRegistration" class="volunteer-registration-section" aria-labelledby="registrationTitle">
+      <div class="registration-card">
+        <div class="registration-intro">
+          <h2 id="registrationTitle">Registruotis savanorystei</h2>
+
+          <p>
+            Registraciją gali pateikti tik prisijungę vartotojai. Po
+            registracijos pasirinkta prieglauda gaus pranešimą ir galės
+            patvirtinti arba atmesti jūsų vizitą.
+          </p>
+        </div>
+
+        <button type="button" id="showVolunteerFormBtn" class="volunteer-primary-btn">
+          Registruotis savanorystei
+        </button>
+
+        <p id="volunteerPageMessage" class="volunteer-message" aria-live="polite"></p>
+
+        <form id="volunteerVisitForm" class="volunteer-form" hidden>
+          <div class="readonly-grid">
+            <div class="form-field">
+              <label for="volunteerName">Vardas</label>
+              <input type="text" id="volunteerName" readonly />
+            </div>
+
+            <div class="form-field">
+              <label for="volunteerSurname">Pavardė</label>
+              <input type="text" id="volunteerSurname" readonly />
+            </div>
+
+            <div class="form-field">
+              <label for="volunteerEmail">El. paštas</label>
+              <input type="email" id="volunteerEmail" readonly />
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-field shelter-autocomplete shelter-field">
+              <label for="shelterSearch">Prieglauda</label>
+              <input
+                type="text"
+                id="shelterSearch"
+                placeholder="Įveskite prieglaudos pavadinimą"
+                autocomplete="off"
+                required
+              />
+              <input type="hidden" id="shelterSelect" />
+              <div id="shelterDropdown" class="autocomplete-dropdown" hidden></div>
+            </div>
+
+            <div class="form-field">
+              <label for="visitDate">Data</label>
+              <input type="date" id="visitDate" required />
+            </div>
+
+            <div class="form-field">
+              <label for="visitStartTime">Atvykimo laikas</label>
+              <input type="time" id="visitStartTime" required />
+            </div>
+
+            <div class="form-field">
+              <label for="visitHours">Kiek valandų gali skirti savanoriauti?</label>
+              <input type="number" id="visitHours" min="1" max="12" step="1" required />
+            </div>
+
+            <label class="checkbox-card form-field-wide" for="socialHoursCheck">
+              <input type="checkbox" id="socialHoursCheck" />
+              <span>
+                Noriu rinkti socialines valandas
+                <small>
+                  Jeigu norite, kad būtų sekamos jūsų valandos, registruokitės individualiai.
+                </small>
+              </span>
+            </label>
+
+            <label class="checkbox-card form-field-wide" for="groupCheck">
+              <input type="checkbox" id="groupCheck" />
+              <span>
+                Tai yra grupės registracija
+                <small>
+                  Pažymėkite, jeigu savanoriauti atvyks daugiau nei vienas žmogus.
+                </small>
+              </span>
+            </label>
+
+            <div id="groupSizeField" class="form-field form-field-wide" hidden>
+              <label for="groupSize">Preliminarus žmonių skaičius</label>
+              <input type="number" id="groupSize" min="2" step="1" />
+            </div>
+
+            <label class="checkbox-card form-field-wide" for="under16Check">
+              <input type="checkbox" id="under16Check" />
+              <span>
+                Esu jaunesnis nei 16 metų
+                <small id="under16Notice" hidden>
+                  Prieš registruojantis susisiekite su pasirinkta prieglauda.
+                  Nepilnamečiams gali reikėti tėvų sutikimo arba palydos.
+                </small>
+              </span>
+            </label>
+
+            <div class="form-field form-field-wide">
+              <label for="visitNote">Papildoma informacija</label>
+              <textarea
+                id="visitNote"
+                rows="3"
+                placeholder="Pvz. noriu rinkti socialines valandas, atvyksiu su grupe, turiu klausimų..."
+              ></textarea>
+            </div>
+          </div>
+
+          <button type="submit" id="submitVolunteerFormBtn" class="volunteer-primary-btn submit-btn">
+            Pateikti registraciją
+          </button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+  <div id="volunteerToast" class="admin-toast"></div>
+  <script src="/assets/js/common.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/footer.js"></script>
+  <script src="/assets/js/auth-modals.js"></script>
+  <script src="/assets/js/savanoryste.js"></script>
+  
+</body>
+
 </html>

@@ -4,6 +4,7 @@ from datetime import datetime
 from sqlalchemy import (
     Column,
     BigInteger,
+    Integer,
     Text,
     Boolean,
     TIMESTAMP,
@@ -285,6 +286,15 @@ class Visit(Base):
         server_default=func.now(),
         onupdate=func.now()
     )
+
+    is_group = Column(
+        Boolean,
+        nullable=False,
+        default=False,
+        server_default=text("false")
+    )
+
+    group_size = Column(Integer, nullable=True)
 
     shelter = relationship("Shelter")
     user = relationship("AppUser")

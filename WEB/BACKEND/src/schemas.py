@@ -229,15 +229,21 @@ class AnimalFavoriteSimpleResponse(BaseModel):
 class VisitCreateRequest(BaseModel):
     shelter_id: int
     start_at: datetime
-    end_at: datetime
+    duration_hours: int = Field(ge=1, le=12)
     is_under_16: bool = False
+    is_group: bool = False
+    group_size: Optional[int] = Field(default=None, ge=2)
     social_hrs: float = Field(default=0, ge=0)
     note: Optional[str] = None
 
     @model_validator(mode="after")
-    def validate_time_range(self):
-        if self.end_at <= self.start_at:
-            raise ValueError("end_at turi būti vėliau negu start_at")
+    def validate_visit_data(self):
+        if self.is_group and self.group_size is None:
+            raise ValueError("Grupės dydis yra privalomas")
+
+        if not self.is_group:
+            self.group_size = None
+
         return self
 
 
@@ -249,6 +255,8 @@ class VisitResponse(BaseModel):
     end_at: datetime
     status: str
     is_under_16: bool
+    is_group: bool
+    group_size: Optional[int] = None
     social_hrs: float
     note: Optional[str] = None
 
@@ -285,6 +293,8 @@ class VisitMeResponse(BaseModel):
     end_at: datetime
     status: str
     is_under_16: bool
+    is_group: bool
+    group_size: Optional[int] = None
     social_hrs: float
     note: Optional[str] = None
     shelter: VisitShelterInfo
@@ -301,6 +311,8 @@ class ShelterVisitResponse(BaseModel):
     end_at: datetime
     status: str
     is_under_16: bool
+    is_group: bool
+    group_size: Optional[int] = None
     social_hrs: float
     note: Optional[str] = None
     volunteer: VisitVolunteerInfo
@@ -315,18 +327,22 @@ class VisitStatusUpdateRequest(BaseModel):
 
 class VisitUpdateRequest(BaseModel):
     start_at: Optional[datetime] = None
-    end_at: Optional[datetime] = None
+    duration_hours: Optional[int] = Field(default=None, ge=1, le=12)
     is_under_16: Optional[bool] = None
+    is_group: Optional[bool] = None
+    group_size: Optional[int] = Field(default=None, ge=2)
     social_hrs: Optional[float] = Field(default=None, ge=0)
     note: Optional[str] = None
 
     @model_validator(mode="after")
-    def validate_time_range(self):
-        if self.start_at is not None and self.end_at is not None:
-            if self.end_at <= self.start_at:
-                raise ValueError("end_at turi būti vėliau negu start_at")
-        return self
+    def validate_visit_data(self):
+        if self.is_group is False:
+            self.group_size = None
 
+        if self.is_group is True and self.group_size is None:
+            raise ValueError("Grupės dydis yra privalomas")
+
+        return self
 
 # -------------------------------------------------
 # -------------------NEWS--------------------------

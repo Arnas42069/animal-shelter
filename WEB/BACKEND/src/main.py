@@ -1,9 +1,10 @@
 from typing import Optional
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 import shutil
 import uuid
+
 
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, BackgroundTasks
 from sqlalchemy.orm import Session
@@ -1705,12 +1706,14 @@ def register_visit(
             detail="Registracija negalima, nes prieglauda neaktyvi"
         )
 
-    # Tikrinam ar tas pats vartotojas neturi persidengiančio aktyvaus vizito
+    end_at = data.start_at + timedelta(hours=data.duration_hours)
+
+    # Tikrinam ar tas pats vartotojas neturi persidengiancio aktyvaus vizito
     overlapping_visit = db.query(Visit).filter(
         Visit.user_id == user.id,
         Visit.status.in_(["pending", "scheduled"]),
         and_(
-            Visit.start_at < data.end_at,
+            Visit.start_at < end_at,
             Visit.end_at > data.start_at
         )
     ).first()
@@ -1725,9 +1728,11 @@ def register_visit(
         shelter_id=data.shelter_id,
         user_id=user.id,
         start_at=data.start_at,
-        end_at=data.end_at,
+        end_at=end_at,
         is_under_16=data.is_under_16,
-        social_hrs=data.social_hrs,
+        is_group=data.is_group,
+        group_size=data.group_size,
+        social_hrs=0,
         note=data.note
     )
 
@@ -1790,13 +1795,13 @@ def update_my_visit(
     update_data = data.model_dump(exclude_unset=True)
 
     new_start_at = update_data.get("start_at", visit.start_at)
-    new_end_at = update_data.get("end_at", visit.end_at)
 
-    if new_end_at <= new_start_at:
-        raise HTTPException(
-            status_code=400,
-            detail="Vizito pabaiga turi būti vėliau negu pradžia"
-        )
+    if "duration_hours" in update_data:
+        new_end_at = new_start_at + timedelta(hours=update_data["duration_hours"])
+        update_data["end_at"] = new_end_at
+        del update_data["duration_hours"]
+    else:
+        new_end_at = visit.end_at
 
     overlapping_visit = db.query(Visit).filter(
         Visit.id != visit.id,
@@ -1813,6 +1818,9 @@ def update_my_visit(
             status_code=400,
             detail="Jūs jau turite kitą vizitą, kuris persidengia su pasirinktu laiku"
         )
+
+    if "is_group" in update_data and update_data["is_group"] is False:
+        update_data["group_size"] = None
 
     for field, value in update_data.items():
         setattr(visit, field, value)

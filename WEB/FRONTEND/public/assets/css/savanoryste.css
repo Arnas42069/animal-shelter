@@ -1,0 +1,493 @@
+.volunteer-page {
+    --volunteer-bg: #f5efe6;
+    --volunteer-card: #fffaf3;
+    --volunteer-text: #242424;
+    --volunteer-muted: #646464;
+    --volunteer-dark: #444444;
+    --volunteer-border: #e2d8ca;
+    --volunteer-success: #2e7d32;
+    --volunteer-error: #c62828;
+    --volunteer-warning: #ef6c00;
+    --volunteer-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
+
+    background: var(--volunteer-bg);
+    color: var(--volunteer-text);
+}
+
+.volunteer-page [hidden] {
+    display: none !important;
+}
+
+.volunteer-hero,
+.volunteer-info-section,
+.volunteer-registration-section {
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+.volunteer-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(390px, 1fr);
+    gap: 46px;
+    align-items: center;
+    padding: 70px 35px 58px;
+}
+
+.volunteer-hero-text {
+    text-align: center;
+}
+
+.volunteer-hero h1 {
+    max-width: 720px;
+    margin: 0 auto 18px;
+    color: #1f1f1f;
+    font-size: clamp(38px, 5vw, 58px);
+    line-height: 1.05;
+}
+
+.volunteer-hero p {
+    max-width: 680px;
+    margin: 0 auto 24px;
+    color: var(--volunteer-text);
+    font-size: 17px;
+    line-height: 1.65;
+}
+
+.volunteer-benefits {
+    max-width: 640px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 13px 30px;
+    margin: 24px auto 30px;
+    text-align: left;
+}
+
+.volunteer-benefits span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--volunteer-text);
+    font-weight: 800;
+}
+
+.volunteer-benefits img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+}
+
+.volunteer-hero-image {
+    height: 385px;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: var(--volunteer-shadow);
+}
+
+.volunteer-hero-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.volunteer-primary-btn,
+.volunteer-secondary-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 24px;
+    border: 2px solid var(--volunteer-dark);
+    border-radius: 999px;
+    background: var(--volunteer-dark);
+    color: #f5efe6;
+    font-size: 15px;
+    font-weight: 800;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.volunteer-primary-btn:hover,
+.volunteer-secondary-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.14);
+    background: #2f2f35;
+}
+
+.volunteer-primary-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.volunteer-info-section,
+.volunteer-registration-section {
+    padding: 35px;
+}
+
+.section-heading {
+    max-width: 850px;
+    margin: 0 auto 30px;
+    text-align: center;
+}
+
+.section-heading h2,
+.registration-intro h2 {
+    margin: 0 0 14px;
+    color: #111111;
+    font-size: clamp(30px, 4vw, 42px);
+    line-height: 1.1;
+}
+
+.section-heading p,
+.registration-intro p {
+    margin: 0;
+    color: var(--volunteer-text);
+    font-size: 17px;
+    line-height: 1.65;
+}
+
+.accordion-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.volunteer-accordion {
+    border: 1px solid var(--volunteer-border);
+    border-radius: 18px;
+    background: var(--volunteer-card);
+    box-shadow: var(--volunteer-shadow);
+    overflow: hidden;
+}
+
+.volunteer-accordion summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 21px 24px;
+    color: #1f1f1f;
+    font-size: 20px;
+    font-weight: 800;
+    cursor: pointer;
+    list-style: none;
+}
+
+.volunteer-accordion summary::-webkit-details-marker {
+    display: none;
+}
+
+.accordion-icon {
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #e2d8ca;
+    color: #2f2f35;
+    font-size: 22px;
+    line-height: 1;
+    transition: transform 0.18s ease;
+}
+
+.volunteer-accordion[open] .accordion-icon {
+    transform: rotate(45deg);
+}
+
+.accordion-content {
+    padding: 0 28px 26px;
+    border-top: 1px solid #ede5da;
+    text-align: left;
+}
+
+.accordion-content p {
+    max-width: 940px;
+    margin: 20px auto 0;
+    color: var(--volunteer-text);
+    font-size: 16px;
+    line-height: 1.65;
+    text-align: center;
+}
+
+.paw-list {
+    max-width: 840px;
+    display: grid;
+    gap: 12px;
+    margin: 22px auto 0;
+    padding: 0;
+    list-style: none;
+}
+
+.paw-list li {
+    position: relative;
+    min-height: 24px;
+    padding-left: 34px;
+    color: #303030;
+    font-size: 16px;
+    line-height: 1.55;
+    text-align: left;
+}
+
+.paw-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 2px;
+    width: 21px;
+    height: 21px;
+    background: url("/assets/svg/paw-outline.svg") center / contain no-repeat;
+}
+
+.temporary-care-action {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.volunteer-secondary-link {
+    margin: 0;
+}
+
+.registration-card {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 28px 36px 30px;
+    border: 1px solid var(--volunteer-border);
+    border-radius: 22px;
+    background: linear-gradient(180deg, #ffffff 0%, #fbf8f2 100%);
+    box-shadow: var(--volunteer-shadow);
+    text-align: center;
+}
+
+.registration-intro {
+    max-width: 760px;
+    margin: 0 auto 22px;
+}
+
+.volunteer-message {
+    min-height: 22px;
+    margin: 14px 0 0;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.volunteer-message.success {
+    color: var(--volunteer-success);
+}
+
+.volunteer-message.error {
+    color: var(--volunteer-error);
+}
+
+.volunteer-message.warning {
+    color: var(--volunteer-warning);
+}
+
+.volunteer-form {
+    max-width: 980px;
+    margin: 24px auto 0;
+    text-align: left;
+}
+
+.readonly-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.15fr;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.form-field,
+.checkbox-card,
+.readonly-grid > *,
+.form-grid > * {
+    min-width: 0;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-field-wide {
+    grid-column: 1 / -1;
+}
+
+.form-field label,
+.checkbox-card {
+    color: #222222;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
+    padding: 8px 11px;
+    border: 1px solid #d8cec0;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #242424;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.18s ease, box-shadow 0.18s ease;
+    box-sizing: border-box;
+}
+
+.form-field textarea {
+    min-height: 76px;
+    resize: vertical;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+    border-color: var(--volunteer-dark);
+    box-shadow: 0 0 0 3px rgba(68, 68, 68, 0.12);
+}
+
+.form-field input[readonly] {
+    background: #ffffff;
+    color: #242424;
+    cursor: default;
+}
+
+.checkbox-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 2px 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    min-height: auto;
+}
+
+.checkbox-card input {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    accent-color: var(--volunteer-dark);
+    box-shadow: none !important;
+    outline: none !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+.checkbox-card span {
+    display: grid;
+    gap: 3px;
+}
+
+.checkbox-card small {
+    color: var(--volunteer-muted);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.submit-btn {
+    display: flex;
+    width: fit-content;
+    margin: 20px auto 0;
+}
+
+.shelter-autocomplete {
+    position: relative;
+}
+
+.autocomplete-dropdown {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 6px);
+    z-index: 30;
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid #d8cec0;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+.shelter-field {
+    grid-column: span 2;
+}
+
+.autocomplete-option {
+    padding: 10px 12px;
+    font-size: 14px;
+    color: #242424;
+    cursor: pointer;
+}
+
+.autocomplete-option:hover,
+.autocomplete-option.active {
+    background: #f4ede4;
+}
+
+@media (max-width: 900px) {
+    .volunteer-hero {
+        grid-template-columns: 1fr;
+        padding-top: 50px;
+    }
+
+    .volunteer-hero-image {
+        height: 300px;
+    }
+
+    .readonly-grid,
+    .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+
+    .volunteer-hero,
+    .volunteer-info-section,
+    .volunteer-registration-section {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .volunteer-benefits,
+    .readonly-grid,
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .registration-card {
+        max-width: 100%;
+        padding: 24px 20px;
+    }
+
+    .volunteer-form {
+        max-width: 100%;
+    }
+
+    .volunteer-accordion summary {
+        padding: 18px;
+        font-size: 18px;
+    }
+
+    .accordion-content {
+        padding: 0 18px 20px;
+    }
+}

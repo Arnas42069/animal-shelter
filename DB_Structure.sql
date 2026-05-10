@@ -158,7 +158,10 @@ CREATE TABLE IF NOT EXISTS visit (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-    CONSTRAINT visit_time_ok CHECK (end_at > start_at)
+    CONSTRAINT visit_time_ok CHECK (end_at > start_at),
+
+    is_group BOOLEAN NOT NULL DEFAULT FALSE,
+    group_size INTEGER
 );
 
 CREATE INDEX IF NOT EXISTS visit_shelter_idx ON visit(shelter_id);
