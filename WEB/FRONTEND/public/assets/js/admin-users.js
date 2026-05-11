@@ -1,121 +1,202 @@
-document.addEventListener("DOMContentLoaded", () => {
+(function () {
 
-    function notify(message, type = "success") {
-        const containerId = "appNotifications";
+    let users = [];
 
-        let container = document.getElementById(containerId);
+    const API = "/api/admin/users";
 
-        if (!container) {
-            container = document.createElement("div");
-            container.id = containerId;
-
-            Object.assign(container.style, {
-                position: "fixed",
-                bottom: "20px",
-                right: "20px",
-                display: "flex",
-                flexDirection: "column",
-                gap: "10px",
-                zIndex: "99999",
-                maxWidth: "340px"
-            });
-
-            document.body.appendChild(container);
-        }
-
-        const el = document.createElement("div");
-        el.textContent = message;
-
-        const colors = {
-            success: "#444",
-            error: "#444",
-            info: "#444",
-            warning: "##444"
-        };
-
-        Object.assign(el.style, {
-            minWidth: "150px",
-            padding: "12px 22px",
-            borderRadius: "999px",
-            background: colors[type] || "#444",
-            border: "2px solid #fff",
-            color: "#fff",
-            fontFamily: '"Source Sans 3", sans-serif',
-            fontWeight: "700",
-            fontSize: "18px",
-            textAlign: "center",
-            display: "inline-block",
-            cursor: "default",
-            boxShadow: "0 6px 18px rgba(0,0,0,0.15)",
-            opacity: "0",
-            transform: "translateY(10px) scale(0.98)",
-            transition: "transform 0.18s ease, opacity 0.25s ease"
-        });
-
-        container.appendChild(el);
-
-        requestAnimationFrame(() => {
-            el.style.opacity = "1";
-            el.style.transform = "translateY(0) scale(1)";
-        });
-
-        setTimeout(() => {
-            el.style.opacity = "0";
-            el.style.transform = "translateY(10px) scale(0.98)";
-            setTimeout(() => el.remove(), 250);
-        }, 3000);
+    function getEl(id) {
+        return document.getElementById(id);
     }
 
-    // DELETE USER
-    document.querySelectorAll(".delete-user-btn").forEach(btn => {
-        btn.addEventListener("click", (e) => {
+    async function apiRequest(url, options = {}) {
+    const token = authGetToken();
 
-            if (!confirm("Ar tikrai nori ištrinti vartotoją?")) return;
-            if (!confirm("Paskutinis patvirtinimas! Ištrinti?")) return;
-
-            e.target.closest("tr").remove();
-
-            notify("Vartotojas ištrintas", "success");
-        });
+    const response = await fetch(url, {
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {})
+        }
     });
 
-    // ROLE CHANGE
-    document.querySelectorAll(".save-role-btn").forEach(btn => {
-        btn.addEventListener("click", (e) => {
+    const text = await response.text(); // 👈 SVARBIAUSIAS FIX
+
+    let data;
+    try {
+        data = JSON.parse(text);
+    } catch (e) {
+        console.error("NOT JSON RESPONSE:", text);
+        data = null;
+    }
+
+    if (!response.ok) {
+        throw new Error(data?.detail || text || "Request failed");
+    }
+
+    return data;
+}
+
+    // ------------------------
+    // LOAD USERS
+    // ------------------------
+    async function loadUsers() {
+        try {
+            users = await apiRequest(API, { method: "GET" });
+            render(users);
+        } catch (error) {
+            console.error(error);
+
+            if (error.status === 401 || error.status === 403) {
+                alert("Neturi admin teisių arba neprisijungęs");
+                return;
+            }
+
+            alert("Nepavyko gauti duomenų");
+        }
+    }
+
+    // ------------------------
+    // RENDER TABLE
+    // ------------------------
+    function render(data) {
+
+        if (!Array.isArray(data)) {
+            console.error("Backend returned:", data);
+            return;
+        }
+
+        const tbody = getEl("usersTableBody");
+
+        tbody.innerHTML = data.map(u => `
+            <tr data-id="${u.id}">
+                <td>${u.id}</td>
+                <td>${u.name || ""} ${u.surname || ""}</td>
+                <td>${u.username}</td>
+                <td>${u.email}</td>
+
+                <td>
+                    <select class="role-select search-box">
+                        <option value="admin" ${u.role === "admin" ? "selected" : ""}>admin</option>
+                        <option value="shelter" ${u.role === "shelter" ? "selected" : ""}>shelter</option>
+                        <option value="volunteer" ${u.role === "volunteer" ? "selected" : ""}>volunteer</option>
+                    </select>
+                </td>
+
+                <td>${u.is_active ? "Aktyvus" : "Neaktyvus"}</td>
+
+                <td>
+                    <button class="save-role-btn">Saugoti</button>
+                    <button class="toggle-active-btn">
+                        ${u.is_active ? "Deaktyvuoti" : "Aktyvuoti"}
+                    </button>
+                </td>
+            </tr>
+        `).join("");
+    }
+
+    // ------------------------
+    // EVENTS
+    // ------------------------
+    function initEvents() {
+
+        const table = getEl("usersTableBody");
+
+        table?.addEventListener("click", async (e) => {
 
             const row = e.target.closest("tr");
-            const newRole = row.querySelector(".role-select").value;
+            if (!row) return;
 
-            if (!confirm(`Ar tikrai pakeisti rolę į "${newRole}"?`)) return;
+            const id = row.dataset.id;
 
-            notify(`Rolė pakeista į ${newRole}`, "info");
+            // ROLE UPDATE
+            if (e.target.classList.contains("save-role-btn")) {
+
+                const role = row.querySelector(".role-select").value;
+
+                try {
+                    await apiRequest(`/api/admin/users/${id}/role`, {
+                        method: "PATCH",
+                        body: JSON.stringify({ role: role })
+                    });
+
+                    alert("Rolė pakeista");
+                    loadUsers();
+
+                } catch (err) {
+                    alert("Klaida keičiant rolę");
+                }
+            }
+
+            // ACTIVE TOGGLE
+            if (e.target.classList.contains("toggle-active-btn")) {
+
+                const current = row.children[5].textContent.includes("aktyvus");
+
+                try {
+                    await apiRequest(`/api/admin/users/${id}/active`, {
+                        method: "PATCH",
+                        body: JSON.stringify({
+                            is_active: !current
+                        })
+                    });
+
+                    alert("Statusas pakeistas");
+                    loadUsers();
+
+                } catch (err) {
+                    alert("Klaida keičiant statusą");
+                }
+            }
         });
-    });
 
-    // SHELTER APPROVAL
-    document.querySelectorAll(".approve-shelter-btn").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-            e.target.closest("tr").remove();
-            notify("Prieglauda patvirtinta", "success");
+    // ------------------------
+    // FILTER LOGIC (SEARCH + ROLE)
+    // ------------------------
+    function applyFilters() {
+
+        const searchVal = getEl("userSearch")?.value.toLowerCase() || "";
+        const roleVal = getEl("roleFilter")?.value || "all";
+
+        const filtered = users.filter(u => {
+
+            const matchesSearch =
+                (u.name || "").toLowerCase().includes(searchVal) ||
+                (u.surname || "").toLowerCase().includes(searchVal);
+
+            const matchesRole =
+                roleVal === "all" || u.role === roleVal;
+
+            return matchesSearch && matchesRole;
         });
-    });
 
-    document.querySelectorAll(".reject-shelter-btn").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-            e.target.closest("tr").remove();
-            notify("Prieglauda atmesta", "error");
-        });
-    });
+        render(filtered);
+    }
 
-    // SEARCH
-    document.getElementById("userSearch")?.addEventListener("input", (e) => {
-        const value = e.target.value.toLowerCase();
+    // ------------------------
+    // EVENTS FOR FILTERS
+    // ------------------------
+    getEl("userSearch")?.addEventListener("input", applyFilters);
+    getEl("roleFilter")?.addEventListener("change", applyFilters);
+}
+    // ------------------------
+    // INIT PAGE
+    // ------------------------
+    async function initAdminUsersPage() {
 
-        document.querySelectorAll("#usersTable tbody tr").forEach(row => {
-            row.style.display = row.textContent.toLowerCase().includes(value)
-                ? ""
-                : "none";
-        });
-    });
+        const root = getEl("usersTableBody");
+        if (!root) return;
 
-});
+        const authUser = await authFetchCurrentUser();
+
+        if (!authUser || authUser.role !== "admin") {
+            window.location.href = "/index.html";
+            return;
+        }
+
+        initEvents();
+        await loadUsers();
+    }
+
+    document.addEventListener("DOMContentLoaded", initAdminUsersPage);
+
+})();

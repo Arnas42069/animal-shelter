@@ -1177,18 +1177,22 @@ section h2 {
 }
 
 /* Buttons */
-.edit-btn-admin {
-  background: orange;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-}
-
-.delete-btn-admin {
+.toggle-active-btn {
   background: red;
   color: white;
   border: none;
   padding: 8px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.save-role-btn {
+  background: rgb(46, 45, 45);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 20px;
+  cursor: pointer;
 }
 
 .admin-toast {

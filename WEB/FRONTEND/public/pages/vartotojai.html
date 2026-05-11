@@ -24,7 +24,20 @@
 
     
     <div class="search-box">
-      <input type="text" id="userSearch" placeholder="Ieškoti vartotojų...">
+
+      <input
+        type="text"
+        id="userSearch"
+        placeholder="Ieškoti pagal vardą ar prieglaudą..."
+      >
+
+      <select id="roleFilter" class="search-box">
+        <option value="all">Visi</option>
+        <option value="volunteer">Savanoriai</option>
+        <option value="shelter">Prieglaudos</option>
+        <option value="admin">Admin</option>
+      </select>
+
     </div>
 
     
@@ -34,7 +47,8 @@
       <thead>
         <tr>
           <th>ID</th>
-          <th>Vardas</th>
+          <th>Vardas Pavardė</th>
+          <th>Naudotojo vardas</th>
           <th>El. paštas</th>
           <th>Rolė</th>
           <th>Statusas</th>
@@ -42,130 +56,16 @@
         </tr>
       </thead>
 
-      <tbody>
+      <tbody id="usersTableBody"></tbody>
 
-        
-        <tr>
-          <td>001</td>
-          <td>John Doe</td>
-          <td>john@mail.com</td>
-
-          
-          <td>
-            <select class="role-select">
-              <option value="Savanoris" selected>Savanoris</option>
-              <option value="Prieglauda">Prieglauda</option>
-              <option value="Admin">Admin</option>
-            </select>
-          </td>
-
-          <td>Aktyvus</td>
-
-          <td>
-            <button class="save-role-btn">Keisti</button>
-            <button class="delete-user-btn">Ištrinti</button>
-          </td>
-        </tr>
-
-        
-        <tr>
-          <td>002</td>
-          <td>Rimas</td>
-          <td>rimas@mail.com</td>
-
-          <td>
-            <select class="role-select">
-              <option value="Savanoris" selected>Savanoris</option>
-              <option value="Prieglauda">Prieglauda</option>
-              <option value="Admin">Admin</option>
-            </select>
-          </td>
-
-          <td>Aktyvus</td>
-
-          <td>
-            <button class="save-role-btn">Keisti</button>
-            <button class="delete-user-btn">Ištrinti</button>
-          </td>
-        </tr>
-
-        <tr>
-          <td>003</td>
-          <td>Petras</td>
-          <td>petras@mail.com</td>
-
-          <td>
-            <select class="role-select">
-              <option value="Savanoris" selected>Savanoris</option>
-              <option value="Prieglauda">Prieglauda</option>
-              <option value="Admin">Admin</option>
-            </select>
-          </td>
-
-          <td>Aktyvus</td>
-
-          <td>
-            <button class="save-role-btn">Keisti</button>
-            <button class="delete-user-btn">Ištrinti</button>
-          </td>
-        </tr>
-
-        <tr>
-          <td>004</td>
-          <td>Jonas</td>
-          <td>jonas@mail.com</td>
-
-          <td>
-            <select class="role-select">
-              <option value="Savanoris" selected>Savanoris</option>
-              <option value="Prieglauda">Prieglauda</option>
-              <option value="Admin">Admin</option>
-            </select>
-          </td>
-
-          <td>Aktyvus</td>
-
-          <td>
-            <button class="save-role-btn">Keisti</button>
-            <button class="delete-user-btn">Ištrinti</button>
-          </td>
-        </tr>
-
-      </tbody>
-    </table>
-
-    
-    <h2>Laukiantys prieglaudų patvirtinimai</h2>
-
-    <table class="table-admin" id="shelterTable">
-      <thead>
-        <tr>
-          <th>Pavadinimas</th>
-          <th>Email</th>
-          <th>Statusas</th>
-          <th>Veiksmai</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <tr>
-          <td>Penkta Koja</td>
-          <td>shelter@mail.com</td>
-          <td>Laukia</td>
-          <td>
-            <button class="approve-shelter-btn">Patvirtinti</button>
-            <button class="reject-shelter-btn">Atmesti</button>
-          </td>
-        </tr>
-      </tbody>
     </table>
 
   </main>
 
 </div>
 
-
 <div id="admin-toast" class="admin-toast"></div>
+
 
 <footer id="site-footer"></footer>
 
