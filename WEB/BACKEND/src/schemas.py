@@ -417,7 +417,7 @@ class VisitUpdateRequest(BaseModel):
 class NewsBase(BaseModel):
     shelter_id: Optional[int] = None
     title: str
-    description: str
+    web_url: str
     image_url: Optional[str] = None
     is_published: bool = True
 
@@ -429,7 +429,7 @@ class NewsCreate(NewsBase):
 class NewsUpdate(BaseModel):
     shelter_id: Optional[int] = None
     title: Optional[str] = None
-    description: Optional[str] = None
+    web_url: Optional[str] = None
     image_url: Optional[str] = None
     is_published: Optional[bool] = None
 
@@ -439,7 +439,7 @@ class NewsResponse(BaseModel):
     shelter_id: Optional[int]
     user_id: int
     title: str
-    description: str
+    web_url: str
     image_url: Optional[str]
     is_published: bool
     created_at: datetime

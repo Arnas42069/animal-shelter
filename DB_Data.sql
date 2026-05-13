@@ -110,3 +110,83 @@ VALUES
     ((SELECT id FROM shelter WHERE name = 'Safe Haven Shelter'), 'Leo',     'SH009', 'cat', 'Bengal',              'male',   '2021-05-05', 'spotted',     'Very active',            'available'),
     ((SELECT id FROM shelter WHERE name = 'Safe Haven Shelter'), 'Coco',    'SH010', 'cat', 'Mixed',               'female', '2022-08-08', 'black/white', 'Sweet and calm',         'lost')
 ON CONFLICT DO NOTHING;
+
+
+
+-- =========================================
+-- NEWS
+-- =========================================
+
+INSERT INTO news (
+    shelter_id,
+    user_id,
+    title,
+    web_url,
+    image_url,
+    is_published
+)
+VALUES
+
+-- Happy Paws Shelter
+(
+    (SELECT id FROM shelter WHERE name = 'Happy Paws Shelter'),
+    (SELECT id FROM app_user WHERE username = 'shelter1'),
+
+    'Kaip tinkamai pasiruošti šuns adopcijai',
+    'https://www.rspca.org.uk/adviceandwelfare/pets/dogs',
+    'https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=1600&auto=format&fit=crop',
+    TRUE
+),
+
+(
+    (SELECT id FROM shelter WHERE name = 'Happy Paws Shelter'),
+    (SELECT id FROM app_user WHERE username = 'shelter1'),
+
+    'Kodėl svarbu sterilizuoti augintinius',
+    'https://www.humanesociety.org/resources/why-you-should-spayneuter-your-pet',
+    'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=1600&auto=format&fit=crop',
+    TRUE
+),
+
+(
+    (SELECT id FROM shelter WHERE name = 'Happy Paws Shelter'),
+    (SELECT id FROM app_user WHERE username = 'shelter1'),
+
+    'Patarimai pirmoms dienoms su nauju katinu',
+    'https://www.aspca.org/pet-care/cat-care/general-cat-care',
+    'https://images.unsplash.com/photo-1519052537078-e6302a4968d4?q=80&w=1600&auto=format&fit=crop',
+    TRUE
+),
+
+-- Safe Haven Shelter
+(
+    (SELECT id FROM shelter WHERE name = 'Safe Haven Shelter'),
+    (SELECT id FROM app_user WHERE username = 'shelter2'),
+
+    'Kaip atpažinti gyvūno stresą',
+    'https://www.bluecross.org.uk/advice/dog/behaviour-and-training/signs-of-stress-in-dogs',
+    'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=1600&auto=format&fit=crop',
+    TRUE
+),
+
+(
+    (SELECT id FROM shelter WHERE name = 'Safe Haven Shelter'),
+    (SELECT id FROM app_user WHERE username = 'shelter2'),
+
+    'Gyvūnų priežiūra žiemos metu',
+    'https://www.pdsa.org.uk/pet-help-and-advice/pet-health-hub/conditions/caring-for-your-pet-in-winter',
+    'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?q=80&w=1600&auto=format&fit=crop',
+    TRUE
+),
+
+(
+    (SELECT id FROM shelter WHERE name = 'Safe Haven Shelter'),
+    (SELECT id FROM app_user WHERE username = 'shelter2'),
+
+    'Savanorystės nauda gyvūnų prieglaudose',
+    'https://www.petfinder.com/animal-shelters-and-rescues/volunteering-at-animal-shelter/',
+    'https://images.unsplash.com/photo-1525253086316-d0c936c814f8?q=80&w=1600&auto=format&fit=crop',
+    TRUE
+)
+
+ON CONFLICT DO NOTHING;

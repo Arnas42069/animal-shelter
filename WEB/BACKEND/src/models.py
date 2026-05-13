@@ -396,11 +396,16 @@ class News(Base):
     )
 
     title: Mapped[str] = mapped_column(Text, nullable=False)
-    description: Mapped[str] = mapped_column(Text, nullable=False)
+
+    web_url: Mapped[str] = mapped_column(Text, nullable=False)
 
     image_url: Mapped[str | None] = mapped_column(Text, nullable=True)
 
-    is_published: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    is_published: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=True
+    )
 
     created_at: Mapped[DateTime] = mapped_column(
         DateTime(timezone=True),

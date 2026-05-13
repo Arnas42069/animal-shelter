@@ -2301,41 +2301,20 @@ def create_news(
     user: AppUser = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """
-    Sukurti naują naujieną.
-
-    Parametrai:
-    - data: naujienos duomenys
-    - user: prisijungęs vartotojas
-
-    Grąžina:
-    - Sukurtą naujienos objektą
-
-    Klaidos:
-    - 403 jei vartotojas neturi teisės kurti naujienos
-    - 404 jei nurodyta prieglauda nerasta
-    - 403 jei prieglaudos vartotojas bando kurti naujieną ne savo prieglaudai
-
-    Pavyzdys:
-    - POST /news
-    """
     shelter_id = data.shelter_id
 
-    # ADMIN gali kurti bet kuriai prieglaudai arba bendrai naujienai
     if user.role == "admin":
         if shelter_id is not None:
             shelter = db.query(Shelter).filter(Shelter.id == shelter_id).first()
             if not shelter:
                 raise HTTPException(status_code=404, detail="Prieglauda nerasta")
 
-    # SHELTER vartotojas gali kurti tik savo prieglaudai
     elif user.role == "shelter":
         my_shelter = db.query(Shelter).filter(Shelter.created_by == user.id).first()
 
         if not my_shelter:
             raise HTTPException(status_code=404, detail="Jūsų prieglauda nerasta")
 
-        # jei shelter_id nepaduotas, priskiriam automatiškai
         if shelter_id is None:
             shelter_id = my_shelter.id
         elif shelter_id != my_shelter.id:
@@ -2344,7 +2323,6 @@ def create_news(
                 detail="Galite kurti naujienas tik savo prieglaudai"
             )
 
-    # kiti vartotojai negali kurti naujienų
     else:
         raise HTTPException(
             status_code=403,
@@ -2355,7 +2333,7 @@ def create_news(
         shelter_id=shelter_id,
         user_id=user.id,
         title=data.title,
-        description=data.description,
+        web_url=data.web_url,
         image_url=data.image_url,
         is_published=data.is_published
     )
@@ -2365,7 +2343,6 @@ def create_news(
     db.refresh(news)
 
     return news
-
 
 # READ
 @app.get("/news", response_model=list[NewsResponse])
@@ -2525,10 +2502,8 @@ def update_news(
     - 403 jei vartotojas neturi teisės redaguoti šios naujienos
     - 404 jei nurodyta nauja prieglauda nerasta
     - 403 jei prieglaudos vartotojas bando priskirti naujieną kitai prieglaudai
-
-    Pavyzdys:
-    - PATCH /news/1
     """
+
     news = db.query(News).filter(News.id == news_id).first()
 
     if not news:
@@ -2536,17 +2511,34 @@ def update_news(
 
     # ADMIN gali redaguoti viską
     if user.role == "admin":
+
         if data.shelter_id is not None:
-            shelter = db.query(Shelter).filter(Shelter.id == data.shelter_id).first()
+            shelter = (
+                db.query(Shelter)
+                .filter(Shelter.id == data.shelter_id)
+                .first()
+            )
+
             if not shelter:
-                raise HTTPException(status_code=404, detail="Prieglauda nerasta")
+                raise HTTPException(
+                    status_code=404,
+                    detail="Prieglauda nerasta"
+                )
 
     # SHELTER gali redaguoti tik savo prieglaudos naujienas
     elif user.role == "shelter":
-        my_shelter = db.query(Shelter).filter(Shelter.created_by == user.id).first()
+
+        my_shelter = (
+            db.query(Shelter)
+            .filter(Shelter.created_by == user.id)
+            .first()
+        )
 
         if not my_shelter:
-            raise HTTPException(status_code=404, detail="Jūsų prieglauda nerasta")
+            raise HTTPException(
+                status_code=404,
+                detail="Jūsų prieglauda nerasta"
+            )
 
         if news.shelter_id != my_shelter.id:
             raise HTTPException(
@@ -2555,7 +2547,10 @@ def update_news(
             )
 
         # shelter vartotojas negali perkelti naujienos kitai prieglaudai
-        if data.shelter_id is not None and data.shelter_id != my_shelter.id:
+        if (
+            data.shelter_id is not None
+            and data.shelter_id != my_shelter.id
+        ):
             raise HTTPException(
                 status_code=403,
                 detail="Negalite priskirti naujienos kitai prieglaudai"
@@ -2567,7 +2562,7 @@ def update_news(
             detail="Neturite teisės redaguoti naujienų"
         )
 
-    # Atnaujinami tik pateikti laukai
+    # Tik pateikti laukai
     update_data = data.model_dump(exclude_unset=True)
 
     for field, value in update_data.items():
@@ -2577,7 +2572,6 @@ def update_news(
     db.refresh(news)
 
     return news
-
 
 # DELETE
 @app.delete("/news/{news_id}")

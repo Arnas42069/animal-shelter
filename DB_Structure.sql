@@ -238,9 +238,9 @@ CREATE TABLE IF NOT EXISTS news (
     shelter_id BIGINT REFERENCES shelter(id) ON DELETE CASCADE,
     user_id    BIGINT NOT NULL REFERENCES app_user(id),
 
-    title       TEXT NOT NULL,
-    description TEXT NOT NULL,
+    title TEXT NOT NULL,
 
+    web_url TEXT NOT NULL,
     image_url TEXT,
 
     is_published BOOLEAN NOT NULL DEFAULT TRUE,
