@@ -61,6 +61,13 @@ class AppUser(Base):
         cascade="all, delete-orphan"
     )
 
+    fosters = relationship(
+        "AnimalFoster",
+        foreign_keys="AnimalFoster.user_id",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
     news = relationship(
         "News",
         back_populates="user",
@@ -179,6 +186,12 @@ class Animal(Base):
         cascade="all, delete-orphan"
     )
 
+    fosters = relationship(
+        "AnimalFoster",
+        back_populates="animal",
+        cascade="all, delete-orphan",
+    )
+
 
 class AnimalImage(Base):
     __tablename__ = "animal_image"
@@ -229,6 +242,71 @@ class AnimalFavorite(Base):
 
     user = relationship("AppUser", back_populates="favorite_animals")
     animal = relationship("Animal", back_populates="favorited_by")
+
+
+class AnimalFoster(Base):
+    __tablename__ = "animal_foster"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+
+    animal_id = Column(
+        BigInteger,
+        ForeignKey("animal.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+
+    user_id = Column(
+        BigInteger,
+        ForeignKey("app_user.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+
+    name = Column(Text, nullable=False)
+    surname = Column(Text, nullable=False)
+    email = Column(Text, nullable=False)
+    phone = Column(Text, nullable=True)
+
+    start_date = Column(Date, nullable=False)
+    end_date = Column(Date, nullable=True)
+
+    status = Column(Text, nullable=False, default="pending")
+
+    note = Column(Text, nullable=True)
+    admin_note = Column(Text, nullable=True)
+
+    approved_by = Column(
+        BigInteger,
+        ForeignKey("app_user.id"),
+        nullable=True,
+    )
+
+    approved_at = Column(DateTime(timezone=True), nullable=True)
+
+    created_at = Column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+    )
+
+    updated_at = Column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
+    )
+
+    animal = relationship("Animal", back_populates="fosters")
+
+    user = relationship(
+        "AppUser",
+        foreign_keys=[user_id],
+        back_populates="fosters",
+    )
+
+    approver = relationship(
+        "AppUser",
+        foreign_keys=[approved_by],
+    )
 
 
 class Visit(Base):

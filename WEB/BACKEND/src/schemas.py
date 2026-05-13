@@ -222,6 +222,73 @@ class AnimalFavoriteSimpleResponse(BaseModel):
     animal_id: int
     is_favorite: bool
 
+
+# -------------------------------------------------
+# -------------------ANIMAL FOSTER-----------------
+# -------------------------------------------------
+class AnimalFosterBase(BaseModel):
+
+    animal_id: int
+
+    name: str
+    surname: str
+
+    email: EmailStr
+    phone: Optional[str] = None
+
+    start_date: date
+    end_date: Optional[date] = None
+
+    note: Optional[str] = None
+
+
+class AnimalFosterCreate(AnimalFosterBase):
+    pass
+
+
+class AnimalFosterUpdate(BaseModel):
+
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
+
+    phone: Optional[str] = None
+
+    note: Optional[str] = None
+    admin_note: Optional[str] = None
+
+    status: Optional[str] = None
+
+
+class AnimalFosterResponse(BaseModel):
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+
+    animal_id: int
+    user_id: int
+
+    name: str
+    surname: str
+
+    email: EmailStr
+    phone: Optional[str] = None
+
+    start_date: date
+    end_date: Optional[date] = None
+
+    status: str
+
+    note: Optional[str] = None
+    admin_note: Optional[str] = None
+
+    approved_by: Optional[int] = None
+    approved_at: Optional[datetime] = None
+
+    created_at: datetime
+    updated_at: datetime
+
+
 # -------------------------------------------------
 # -------------------VISIT-------------------------
 # -------------------------------------------------

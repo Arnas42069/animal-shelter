@@ -1,5 +1,5 @@
 from typing import Optional
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 import shutil
@@ -18,6 +18,7 @@ from src.models import (
     Animal,
     AnimalImage,
     AnimalFavorite,
+    AnimalFoster,
     Visit,
     News,
     Event,
@@ -46,6 +47,11 @@ from src.schemas import (
     AnimalFavoriteCreate,
     AnimalFavoriteResponse,
     AnimalFavoriteSimpleResponse,
+
+    AnimalFosterBase,
+    AnimalFosterCreate,
+    AnimalFosterResponse,
+    AnimalFosterUpdate,
 
     VisitCreateRequest,
     VisitResponse,
@@ -981,6 +987,32 @@ def get_my_animals(
     return animals
 
 
+@app.get("/animal/{animal_id}", response_model=AnimalResponse)
+def get_animal_by_id(
+    animal_id: int,
+    user: Optional[AppUser] = Depends(get_current_user_optional),
+    db: Session = Depends(get_db)
+):
+    animal = db.query(Animal).filter(Animal.id == animal_id).first()
+
+    if not animal:
+        raise HTTPException(status_code=404, detail="Gyvūnas nerastas")
+
+    if user:
+        favorite = db.query(AnimalFavorite).filter(
+            AnimalFavorite.user_id == user.id,
+            AnimalFavorite.animal_id == animal.id
+        ).first()
+
+        animal.is_favorite = favorite is not None
+    else:
+        animal.is_favorite = False
+
+    attach_primary_image_urls(db, animal)
+
+    return animal
+
+
 @app.get("/animal/by-code/{code}", response_model=AnimalResponse)
 def get_animal_by_code(
     code: str,
@@ -1663,6 +1695,244 @@ def delete_animal_favorite(
     db.commit()
 
     return {"message": "Gyvūnas pašalintas iš patikusių"}
+
+
+
+# -------------------------------------------------
+# ----------------ANIMAL FOSTER--------------------
+# -------------------------------------------------
+
+# CREATE
+@app.post("/animal/foster", response_model=AnimalFosterResponse)
+def create_animal_foster(
+    data: AnimalFosterCreate,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    animal = db.query(Animal).filter(
+        Animal.id == data.animal_id
+    ).first()
+
+    if not animal:
+        raise HTTPException(status_code=404, detail="Gyvūnas nerastas")
+
+    if animal.status not in {"available", "reserved"}:
+        raise HTTPException(
+            status_code=400,
+            detail="Šiam gyvūnui trumpalaikės globos prašymo pateikti negalima"
+        )
+
+    existing_request = db.query(AnimalFoster).filter(
+        AnimalFoster.animal_id == data.animal_id,
+        AnimalFoster.user_id == user.id,
+        AnimalFoster.status.in_(["pending", "approved", "active"])
+    ).first()
+
+    if existing_request:
+        raise HTTPException(
+            status_code=400,
+            detail="Jūs jau turite aktyvų šio gyvūno globos prašymą"
+        )
+
+    foster = AnimalFoster(
+        user_id=user.id,
+        **data.model_dump()
+    )
+
+    db.add(foster)
+    db.commit()
+    db.refresh(foster)
+
+    return foster
+
+
+# READ ALL
+@app.get("/animal/foster", response_model=list[AnimalFosterResponse])
+def get_animal_fosters(
+    status: Optional[str] = None,
+    animal_id: Optional[int] = None,
+    user_id: Optional[int] = None,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    query = db.query(AnimalFoster)
+
+    if user.role == "volunteer":
+        query = query.filter(AnimalFoster.user_id == user.id)
+
+    elif user.role == "shelter":
+        shelter = db.query(Shelter).filter(
+            Shelter.created_by == user.id
+        ).first()
+
+        if not shelter:
+            raise HTTPException(status_code=404, detail="Prieglauda nerasta")
+
+        query = query.join(Animal).filter(
+            Animal.shelter_id == shelter.id
+        )
+
+    elif user.role != "admin":
+        raise HTTPException(status_code=403, detail="Neturite teisės matyti globos prašymų")
+
+    if status:
+        query = query.filter(AnimalFoster.status == status)
+
+    if animal_id:
+        query = query.filter(AnimalFoster.animal_id == animal_id)
+
+    if user_id and user.role == "admin":
+        query = query.filter(AnimalFoster.user_id == user_id)
+
+    return query.order_by(AnimalFoster.created_at.desc()).all()
+
+
+# READ ONE
+@app.get("/animal/foster/{foster_id}", response_model=AnimalFosterResponse)
+def get_animal_foster(
+    foster_id: int,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    foster = db.query(AnimalFoster).filter(
+        AnimalFoster.id == foster_id
+    ).first()
+
+    if not foster:
+        raise HTTPException(status_code=404, detail="Globos prašymas nerastas")
+
+    if user.role == "volunteer" and foster.user_id != user.id:
+        raise HTTPException(status_code=403, detail="Neturite teisės matyti šio prašymo")
+
+    if user.role == "shelter":
+        shelter = db.query(Shelter).filter(
+            Shelter.created_by == user.id
+        ).first()
+
+        if not shelter or foster.animal.shelter_id != shelter.id:
+            raise HTTPException(status_code=403, detail="Neturite teisės matyti šio prašymo")
+
+    return foster
+
+
+# UPDATE
+@app.patch("/animal/foster/{foster_id}", response_model=AnimalFosterResponse)
+def update_animal_foster(
+    foster_id: int,
+    data: AnimalFosterUpdate,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    foster = db.query(AnimalFoster).filter(
+        AnimalFoster.id == foster_id
+    ).first()
+
+    if not foster:
+        raise HTTPException(status_code=404, detail="Globos prašymas nerastas")
+
+    update_data = data.model_dump(exclude_unset=True)
+
+    if user.role == "volunteer":
+        if foster.user_id != user.id:
+            raise HTTPException(status_code=403, detail="Neturite teisės keisti šio prašymo")
+
+        if foster.status != "pending":
+            raise HTTPException(
+                status_code=400,
+                detail="Galima keisti tik laukiantį prašymą"
+            )
+
+        allowed_fields = {"start_date", "end_date", "phone", "note"}
+        update_data = {
+            key: value
+            for key, value in update_data.items()
+            if key in allowed_fields
+        }
+
+    elif user.role == "shelter":
+        shelter = db.query(Shelter).filter(
+            Shelter.created_by == user.id
+        ).first()
+
+        if not shelter or foster.animal.shelter_id != shelter.id:
+            raise HTTPException(status_code=403, detail="Neturite teisės keisti šio prašymo")
+
+        allowed_statuses = {
+            "approved",
+            "rejected",
+            "active",
+            "completed",
+            "cancelled"
+        }
+
+        if "status" in update_data:
+            if update_data["status"] not in allowed_statuses:
+                raise HTTPException(status_code=400, detail="Neleistinas globos statusas")
+
+            if update_data["status"] == "approved":
+                update_data["approved_by"] = user.id
+                update_data["approved_at"] = datetime.now(timezone.utc)
+
+            if update_data["status"] == "active":
+                foster.animal.status = "foster"
+
+            if update_data["status"] in {"completed", "cancelled", "rejected"}:
+                foster.animal.status = "available"
+
+    elif user.role != "admin":
+        raise HTTPException(status_code=403, detail="Neturite teisės keisti šio prašymo")
+
+    for field, value in update_data.items():
+        setattr(foster, field, value)
+
+    db.commit()
+    db.refresh(foster)
+
+    return foster
+
+
+# DELETE
+@app.delete("/animal/foster/{foster_id}")
+def delete_animal_foster(
+    foster_id: int,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    foster = db.query(AnimalFoster).filter(
+        AnimalFoster.id == foster_id
+    ).first()
+
+    if not foster:
+        raise HTTPException(status_code=404, detail="Globos prašymas nerastas")
+
+    if user.role == "volunteer":
+        if foster.user_id != user.id:
+            raise HTTPException(status_code=403, detail="Neturite teisės trinti šio prašymo")
+
+        if foster.status != "pending":
+            raise HTTPException(
+                status_code=400,
+                detail="Galima trinti tik laukiantį prašymą"
+            )
+
+    elif user.role == "shelter":
+        shelter = db.query(Shelter).filter(
+            Shelter.created_by == user.id
+        ).first()
+
+        if not shelter or foster.animal.shelter_id != shelter.id:
+            raise HTTPException(status_code=403, detail="Neturite teisės trinti šio prašymo")
+
+    elif user.role != "admin":
+        raise HTTPException(status_code=403, detail="Neturite teisės trinti šio prašymo")
+
+    db.delete(foster)
+    db.commit()
+
+    return {"message": "Globos prašymas sėkmingai ištrintas"}
+
+
+
 
 # -------------------------------------------------
 # -------------------VISIT-------------------------

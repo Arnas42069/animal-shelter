@@ -21,7 +21,7 @@
         <section class="selected-animal-section">
             <h1>Laikinos globos paraiška</h1>
             <div class="selected-animal-card">
-                <img src="/assets/img/animal_image_unavalible.jpg"/>
+                <img id="selectedAnimalImage" src="/assets/img/animal_image_unavalible.jpg"/>
                 <div class="animal-info">
                 <h2 id="selectedAnimalName">-</h2>
 
@@ -58,17 +58,39 @@
         <!-- APPLICATION FORM -->
         <section class="foster-form-section" id="fosterFormSection">
             <h2>Užpildykite paraišką</h2>
-
             <form id="fosterForm">
-                <input type="text" placeholder="Vardas" required>
-                <input type="text" placeholder="Pavardė" required>
-                <input type="tel" placeholder="Telefono numeris" required>
-                <input type="email" placeholder="El. paštas" required>
+                <input id="fosterName" type="text" placeholder="Vardas" required>
+                <input id="fosterSurname" type="text" placeholder="Pavardė" required>
+                <input id="fosterPhone" type="tel" placeholder="Telefono numeris">
+                <input id="fosterEmail" type="email" placeholder="El. paštas" required>
+
+                <label for="fosterStartDate">
+                    Pageidaujama globos pradžia
+                </label>
+
+                <input
+                    id="fosterStartDate"
+                    type="date"
+                    required
+                >
+
+                <label for="fosterEndDate">
+                    Pageidaujama globos pabaiga (nebūtina)
+                </label>
+
+                <input
+                    id="fosterEndDate"
+                    type="date"
+                >
+
                 <textarea 
+                    id="fosterNote"
                     placeholder="Papildoma informacija (nebūtina)"
                 ></textarea>
 
-                <button type="submit" class="btn">
+                <p id="fosterFormMessage"></p>
+
+                <button id="fosterSubmitBtn" type="submit" class="btn">
                     Pateikti paraišką
                 </button>
             </form>

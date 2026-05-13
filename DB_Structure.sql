@@ -134,6 +134,64 @@ CREATE INDEX idx_animal_favorite_animal_id
 
 
 -- =========================================
+-- ANIMAL_FOSTER
+-- Trumpalaikė gyvūno globa
+-- =========================================
+CREATE TABLE IF NOT EXISTS animal_foster (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+    animal_id BIGINT NOT NULL
+        REFERENCES animal(id) ON DELETE CASCADE,
+
+    user_id BIGINT NOT NULL
+        REFERENCES app_user(id) ON DELETE CASCADE,
+
+    -- kontaktiniai duomenys tuo metu, kai pateikiamas prašymas
+    name TEXT NOT NULL,
+    surname TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT,
+
+    start_date DATE,
+    end_date DATE,
+
+    status TEXT NOT NULL DEFAULT 'pending'
+        CHECK (status IN (
+            'pending',
+            'approved',
+            'rejected',
+            'active',
+            'completed',
+            'cancelled'
+        )),
+
+    note TEXT,
+    admin_note TEXT,
+
+    approved_by BIGINT REFERENCES app_user(id),
+    approved_at TIMESTAMPTZ,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+    CONSTRAINT animal_foster_date_ok
+        CHECK (end_date IS NULL OR end_date >= start_date)
+);
+
+CREATE INDEX IF NOT EXISTS animal_foster_animal_idx
+    ON animal_foster(animal_id);
+
+CREATE INDEX IF NOT EXISTS animal_foster_user_idx
+    ON animal_foster(user_id);
+
+CREATE INDEX IF NOT EXISTS animal_foster_status_idx
+    ON animal_foster(status);
+
+CREATE INDEX IF NOT EXISTS animal_foster_start_date_idx
+    ON animal_foster(start_date);
+
+
+-- =========================================
 -- VISIT
 -- =========================================
 CREATE TABLE IF NOT EXISTS visit (

@@ -198,8 +198,11 @@ function renderAnimals() {
 // Atidaro pasirinkto gyvūno popup langą
 function openAnimalModal(animal) {
   localStorage.setItem("selectedFosterAnimal", JSON.stringify(animal));
+
   const shelterName =
-    allShelters.find((shelter) => Number(shelter.id) === Number(animal.shelter_id))?.name || "-";
+    allShelters.find(
+      (shelter) => Number(shelter.id) === Number(animal.shelter_id)
+    )?.name || "-";
 
   getEl("animalModalImage").src = getAnimalImage(animal);
   getEl("animalModalName").textContent = animal.name || "Be vardo";
@@ -212,7 +215,29 @@ function openAnimalModal(animal) {
   getEl("animalModalBirthDate").textContent = animal.birth_date || "-";
   getEl("animalModalCode").textContent = animal.code || "-";
   getEl("animalModalDescription").textContent = animal.description || "-";
-   
+
+  const fosterBtn = getEl("fosterLinkBtn");
+
+  if (fosterBtn) {
+
+    const canUseFoster =
+      currentUser &&
+      currentUser.role === "volunteer";
+
+    fosterBtn.style.display = canUseFoster
+      ? "inline-flex"
+      : "none";
+
+    fosterBtn.onclick = (event) => {
+      event.preventDefault();
+
+      if (!canUseFoster) {
+        return;
+      }
+
+      window.location.href = "/pages/laikina-globa-forma.html";
+    };
+  }
 
   openModal("animalModalBackdrop");
 }
