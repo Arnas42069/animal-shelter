@@ -5,6 +5,7 @@
     <title>Gyvūnų prieglaudos</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/css/main.css" />
+    <link rel="stylesheet" href="/assets/css/home.css" />
     <link rel="stylesheet" href="/assets/css/navbar.css" />
     <link rel="stylesheet" href="/assets/css/auth-modals.css" />
     <link rel="stylesheet" href="/assets/css/footer.css" />
@@ -49,30 +50,36 @@
         <h2 id="gyvunai">Gyvūnai</h2>
 
         <div class="animals-toolbar">
+          <input
+            id="animalSearchInput"
+            class="animal-search-input"
+            type="search"
+            placeholder="Ieškoti pagal vardą arba veislę"
+          />
+
           <select id="animalShelterFilter">
             <option value="">Visos prieglaudos</option>
           </select>
 
           <select id="animalSpeciesFilter">
-            <option value="">Visos rūšys</option>
+            <option value="">Rūšis</option>
             <option value="dog">Šuo</option>
             <option value="cat">Katė</option>
           </select>
 
           <select id="animalGenderFilter">
-            <option value="">Visos lytys</option>
+            <option value="">Lytis</option>
             <option value="male">Patinas</option>
             <option value="female">Patelė</option>
           </select>
 
           <select id="animalStatusFilter">
-            <option value="">Visi statusai</option>
-            <option value="available">Available</option>
-            <option value="reserved">Reserved</option>
-            <option value="adopted">Adopted</option>
-            <option value="foster">Foster</option>
-            <option value="medical_hold">Medical hold</option>
-            <option value="lost">Lost</option>
+            <option value="">Statusas</option>
+            <option value="available">Ieško namų</option>
+            <option value="reserved">Rezervuotas</option>
+            <option value="adopted">Surado namus</option>
+            <option value="foster">Laikinoje globoje</option>
+            <option value="medical_hold">Gydomas</option>
           </select>
 
           <select id="animalSortOrder">
@@ -121,8 +128,8 @@
           <p id="animalModalDescription">-</p>
         </div>
         <a href="/pages/laikina-globa-forma.html" class="btn" id="fosterLinkBtn">
-    Pateikti paraišką trumpalaikei globai
-</a>
+          Priglausti trumpalaikei globai
+        </a>
       </div>
     </div>
 
