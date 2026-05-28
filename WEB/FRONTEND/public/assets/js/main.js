@@ -17,6 +17,9 @@ const visibleShelterCount = 4;
 let currentAnimalPage = 1;
 const animalsPerPage = 8;
 
+let animalSearchQuery = "";
+let animalSearchTimeout = null;
+
 const {
   getEl,
   fetchJson,
@@ -65,6 +68,7 @@ async function loadAnimals(page = 1) {
   if (filters.species) params.append("species", filters.species);
   if (filters.sex) params.append("sex", filters.sex);
   if (filters.status) params.append("status", filters.status);
+  if (animalSearchQuery) params.append("search", animalSearchQuery);
 
   const data = await fetchJson(`/api/animal?${params.toString()}`);
 
@@ -345,6 +349,7 @@ function bindMainPageEvents() {
   const genderFilter = getEl("animalGenderFilter");
   const statusFilter = getEl("animalStatusFilter");
   const sortOrderFilter = getEl("animalSortOrder");
+  const searchInput = getEl("animalSearchInput");
   const modalCloseBtn = getEl("animalModalCloseBtn");
   const modalBackdrop = getEl("animalModalBackdrop");
 
@@ -370,6 +375,15 @@ function bindMainPageEvents() {
     filter?.addEventListener("change", () => {
       loadAnimals(1);
     });
+  });
+
+  searchInput?.addEventListener("input", () => {
+    clearTimeout(animalSearchTimeout);
+
+    animalSearchTimeout = setTimeout(() => {
+      animalSearchQuery = searchInput.value.trim();
+      loadAnimals(1);
+    }, 250);
   });
 
   modalCloseBtn?.addEventListener("click", closeAnimalModal);

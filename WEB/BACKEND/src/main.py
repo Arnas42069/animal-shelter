@@ -809,6 +809,7 @@ def get_animals(
     status: Optional[str] = None,
     species: Optional[str] = None,
     breed: Optional[str] = None,
+    search: Optional[str] = None,
     sex: Optional[str] = None,
     birth_date_from: Optional[date] = None,
     birth_date_to: Optional[date] = None,
@@ -845,6 +846,15 @@ def get_animals(
 
     if breed:
         query = query.filter(Animal.breed == breed)
+
+    if search:
+        search_value = f"%{search.strip()}%"
+        query = query.filter(
+            or_(
+                Animal.name.ilike(search_value),
+                Animal.breed.ilike(search_value)
+            )
+        )
 
     if sex:
         query = query.filter(Animal.sex == sex)

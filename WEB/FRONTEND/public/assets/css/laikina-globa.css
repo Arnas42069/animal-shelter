@@ -1,0 +1,254 @@
+.foster-page {
+    padding-bottom: 48px;
+}
+
+/* Hero */
+.foster-hero {
+    position: relative;
+    width: calc(100% + 60px);
+    min-height: 520px;
+    margin: 0 -30px 58px;
+    overflow: hidden;
+}
+
+.foster-hero-img {
+    width: 100%;
+    height: 520px;
+    display: block;
+    object-fit: cover;
+
+    /* Change this to adjust image crop */
+    object-position: center center;
+}
+
+.foster-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.56) 0%,
+        rgba(0, 0, 0, 0.40) 30%,
+        rgba(0, 0, 0, 0.16) 58%,
+        rgba(0, 0, 0, 0) 100%
+    );
+}
+
+.foster-hero-content {
+    position: absolute;
+    top: 50%;
+    left: 70px;
+    transform: translateY(-50%);
+    z-index: 2;
+    max-width: 620px;
+    color: #ffffff;
+    text-align: center;
+}
+
+.foster-hero-content h1 {
+    margin: 0 0 18px;
+    color: #ffffff;
+    font-size: clamp(42px, 5vw, 66px);
+    font-weight: 600;
+    line-height: 1.05;
+    text-shadow: 0 4px 18px rgba(0, 0, 0, 0.28);
+}
+
+.foster-hero-content p {
+    max-width: 580px;
+    margin: 0 auto 28px;
+    color: #ffffff;
+    font-size: 18px;
+    line-height: 1.65;
+    text-shadow: 0 3px 12px rgba(0, 0, 0, 0.28);
+}
+
+/* Sections */
+.selected-animal-section,
+.shelter-contact-section,
+.foster-form-section,
+.login-required-section {
+    max-width: 1120px;
+    margin: 0 auto 36px;
+    padding: 32px 36px;
+    border: 1px solid var(--border-soft);
+    border-radius: 22px;
+    background: var(--color-surface-light);
+    box-shadow: var(--shadow-soft);
+    text-align: center;
+}
+
+.selected-animal-section h1,
+.shelter-contact-section h2,
+.foster-form-section h2,
+.login-required-section h2 {
+    margin: 0 0 22px;
+    color: var(--color-text);
+    font-size: clamp(26px, 3vw, 34px);
+    font-weight: 500;
+    line-height: 1.15;
+}
+
+/* Selected animal */
+.selected-animal-card {
+    max-width: 920px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 28px;
+    align-items: center;
+    text-align: left;
+}
+
+.selected-animal-card img {
+    width: 100%;
+    height: 280px;
+    border-radius: 18px;
+    background: #faf8f4;
+    object-fit: cover;
+}
+
+.animal-info {
+    width: 100%;
+}
+
+.animal-info h2 {
+    margin: 0 0 16px;
+    color: var(--color-text);
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.animal-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 24px;
+}
+
+.animal-details-grid p {
+    margin: 0;
+    color: var(--color-text);
+    font-size: 15px;
+    line-height: 1.55;
+}
+
+/* Shelter contacts */
+.shelter-contact-section p {
+    margin: 8px auto;
+    color: var(--color-text);
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.shelter-contact-section .btn {
+    margin-top: 18px;
+}
+
+/* Form */
+.foster-form-section form {
+    max-width: 760px;
+    margin: 0 auto;
+    display: grid;
+    gap: 14px;
+    text-align: left;
+}
+
+.foster-form-section label {
+    margin-top: 4px;
+    color: var(--color-text);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.foster-form-section input,
+.foster-form-section textarea {
+    width: 100%;
+    min-height: 42px;
+    padding: 10px 12px;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    background: #ffffff;
+    color: var(--color-text);
+    font-family: "Source Sans 3", sans-serif;
+    font-size: 15px;
+    outline: none;
+    box-sizing: border-box;
+    transition: border 0.18s ease, box-shadow 0.18s ease;
+}
+
+.foster-form-section textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.foster-form-section input:focus,
+.foster-form-section textarea:focus {
+    border-color: var(--accent-dark);
+    box-shadow: 0 0 0 3px rgba(63, 63, 70, 0.12);
+}
+
+#fosterFormMessage {
+    min-height: 22px;
+    margin: 4px 0 0;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+#fosterSubmitBtn {
+    width: fit-content;
+    margin: 8px auto 0;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .foster-hero {
+        width: calc(100% + 48px);
+        min-height: 420px;
+        margin-left: -24px;
+        margin-right: -24px;
+    }
+
+    .foster-hero-img {
+        height: 420px;
+    }
+
+    .foster-hero-content {
+        left: 28px;
+        right: 28px;
+        max-width: none;
+    }
+
+    .selected-animal-card {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .animal-details-grid {
+        grid-template-columns: 1fr;
+        text-align: left;
+    }
+}
+
+@media (max-width: 650px) {
+    .foster-hero {
+        width: calc(100% + 32px);
+        min-height: 380px;
+        margin-left: -16px;
+        margin-right: -16px;
+    }
+
+    .foster-hero-img {
+        height: 380px;
+    }
+
+    .foster-hero-content h1 {
+        font-size: 34px;
+    }
+
+    .selected-animal-section,
+    .shelter-contact-section,
+    .foster-form-section,
+    .login-required-section {
+        padding: 26px 20px;
+    }
+}
