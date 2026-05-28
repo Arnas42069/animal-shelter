@@ -49,6 +49,9 @@ function fillAnimalShelterFilter() {
 async function loadFavoriteAnimals() {
   favoriteAnimals = [];
 
+  const localFavorites =
+    JSON.parse(localStorage.getItem("favoriteAnimals")) || [];
+
   const pageSize = 100;
   let page = 1;
   let total = 0;
@@ -66,7 +69,12 @@ async function loadFavoriteAnimals() {
     total = Number(data?.total || 0);
 
     favoriteAnimals.push(
-      ...items.filter((animal) => animal.is_favorite === true)
+      ...items.filter((animal) => {
+        return (
+          animal.is_favorite === true ||
+          localFavorites.includes(Number(animal.id))
+        );
+      })
     );
 
     page += 1;
@@ -74,7 +82,6 @@ async function loadFavoriteAnimals() {
 
   applyFiltersAndRender();
 }
-
 function getFilteredFavoriteAnimals() {
   const filters = readAnimalFilters({
     shelterId: "animalShelterFilter",
@@ -141,21 +148,6 @@ function renderAnimals() {
 
   container.innerHTML = "";
 
-  if (!currentUser) {
-    container.innerHTML = `
-      <p>Norint matyti mėgstamus gyvūnus, reikia prisijungti.</p>
-    `;
-    renderAnimalsPagination(0);
-    return;
-  }
-
-  if (currentUser.role !== "volunteer") {
-    container.innerHTML = `
-      <p>Mėgstamų gyvūnų sąrašas skirtas tik savanoriams.</p>
-    `;
-    renderAnimalsPagination(0);
-    return;
-  }
 
   if (!filteredFavoriteAnimals.length) {
     container.innerHTML = `
@@ -248,43 +240,53 @@ async function removeAnimalFavorite(animalId) {
     localStorage.getItem("access_token") ||
     localStorage.getItem("token");
 
-  if (!token || currentUser?.role !== "volunteer") {
-    return;
+  // 1. Pašalinam iš localStorage
+  let localFavorites =
+    JSON.parse(localStorage.getItem("favoriteAnimals")) || [];
+
+  localFavorites = localFavorites.filter(
+    (id) => Number(id) !== Number(animalId)
+  );
+
+  localStorage.setItem(
+    "favoriteAnimals",
+    JSON.stringify(localFavorites)
+  );
+
+  // 2. Jei yra token -> bandome šalinti backend
+  if (token) {
+    try {
+      await fetch(`/api/animal/favorite/${animalId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  try {
-    const response = await fetch(`/api/animal/favorite/${animalId}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+  // 3. Pašalinam iš masyvų
+  favoriteAnimals = favoriteAnimals.filter(
+    (animal) => Number(animal.id) !== Number(animalId)
+  );
 
-    if (!response.ok) {
-      throw new Error(`Nepavyko pašalinti favorite būsenos: ${response.status}`);
-    }
+  filteredFavoriteAnimals = filteredFavoriteAnimals.filter(
+    (animal) => Number(animal.id) !== Number(animalId)
+  );
 
-    favoriteAnimals = favoriteAnimals.filter(
-      (animal) => Number(animal.id) !== Number(animalId)
-    );
+  // 4. Renderinam iš naujo
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredFavoriteAnimals.length / animalsPerPage)
+  );
 
-    filteredFavoriteAnimals = filteredFavoriteAnimals.filter(
-      (animal) => Number(animal.id) !== Number(animalId)
-    );
-
-    const totalPages = Math.max(
-      1,
-      Math.ceil(filteredFavoriteAnimals.length / animalsPerPage)
-    );
-
-    if (currentAnimalPage > totalPages) {
-      currentAnimalPage = totalPages;
-    }
-
-    renderAnimals();
-  } catch (error) {
-    console.error("Klaida šalinant gyvūną iš mėgstamų:", error);
+  if (currentAnimalPage > totalPages) {
+    currentAnimalPage = totalPages;
   }
+
+  renderAnimals();
 }
 
 function bindPageEvents() {

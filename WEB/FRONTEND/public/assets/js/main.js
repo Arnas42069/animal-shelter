@@ -68,7 +68,16 @@ async function loadAnimals(page = 1) {
 
   const data = await fetchJson(`/api/animal?${params.toString()}`);
 
-  animals = Array.isArray(data?.items) ? data.items : [];
+animals = Array.isArray(data?.items) ? data.items : [];
+
+const localFavorites =
+  JSON.parse(localStorage.getItem("favoriteAnimals")) || [];
+
+animals.forEach((animal) => {
+  if (localFavorites.includes(Number(animal.id))) {
+    animal.is_favorite = true;
+  }
+});
   totalAnimalCount = Number(data?.total || 0);
   currentAnimalPage = page;
 
@@ -144,7 +153,7 @@ function renderAnimals() {
     return;
   }
 
-  const canShowFavorite = currentUser?.role === "volunteer";
+ const canShowFavorite = true;
 
   animals.forEach((animal) => {
     const shelterName =
@@ -258,7 +267,33 @@ async function toggleAnimalFavorite(animalId, isFavorite) {
     localStorage.getItem("access_token") ||
     localStorage.getItem("token");
 
+  // Jei neprisijungęs arba ne volunteer -> localStorage
   if (!token || currentUser?.role !== "volunteer") {
+    let favorites =
+      JSON.parse(localStorage.getItem("favoriteAnimals")) || [];
+
+    if (isFavorite) {
+      favorites = favorites.filter(
+        (id) => Number(id) !== Number(animalId)
+      );
+    } else {
+      favorites.push(Number(animalId));
+    }
+
+    localStorage.setItem(
+      "favoriteAnimals",
+      JSON.stringify(favorites)
+    );
+
+    const animal = animals.find(
+      (item) => Number(item.id) === Number(animalId)
+    );
+
+    if (animal) {
+      animal.is_favorite = !isFavorite;
+    }
+
+    renderAnimals();
     return;
   }
 

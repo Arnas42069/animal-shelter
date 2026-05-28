@@ -55,7 +55,7 @@ VALUES
     ),
     (
         'Safe Haven Shelter',
-        'Rescue and adoption center for abandoned animals',
+        
         'info@safehaven.lt',
         '+37060000002',
         'https://safehaven.lt',
