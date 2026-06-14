@@ -17,7 +17,16 @@ VALUES
     ('Shelter',   'One',       'shelter1',    'shelter1@test.com',    '$argon2id$v=19$m=65536,t=3,p=4$//OMCf7VHis7MgTbDiCklg$9j1rYzK+Y3WSC78JN4IXEv+//rZF6oXfUtGUc6/LMR4', 'shelter',   TRUE, now()),
     ('Shelter',   'Two',       'shelter2',    'shelter2@test.com',    '$argon2id$v=19$m=65536,t=3,p=4$//OMCf7VHis7MgTbDiCklg$9j1rYzK+Y3WSC78JN4IXEv+//rZF6oXfUtGUc6/LMR4', 'shelter',   TRUE, NULL),
     ('Volunteer', 'One',       'volunteer1',  'volunteer1@test.com',  '$argon2id$v=19$m=65536,t=3,p=4$//OMCf7VHis7MgTbDiCklg$9j1rYzK+Y3WSC78JN4IXEv+//rZF6oXfUtGUc6/LMR4', 'volunteer', TRUE, now()),
-    ('Volunteer', 'Two',       'volunteer2',  'volunteer2@test.com',  '$argon2id$v=19$m=65536,t=3,p=4$//OMCf7VHis7MgTbDiCklg$9j1rYzK+Y3WSC78JN4IXEv+//rZF6oXfUtGUc6/LMR4', 'volunteer', TRUE, NULL)
+    ('Volunteer', 'Two',       'volunteer2',  'volunteer2@test.com',  '$argon2id$v=19$m=65536,t=3,p=4$//OMCf7VHis7MgTbDiCklg$9j1rYzK+Y3WSC78JN4IXEv+//rZF6oXfUtGUc6/LMR4', 'volunteer', TRUE, NULL),
+
+    ('lese',       'lese',      'lese',        'lese@gmail.com',       '$argon2id$v=19$m=65536,t=3,p=4$IgTAGGMM4Xxv7d3b27uXkg$8SqrZZFYXtZVRiJQZZit/A/DY+pXZUfYRfcdmzf61uE', 'volunteer', TRUE, NULL),
+    ('shelter3',   'shelter3',  'shelter3',    'shelter3@gmail.com',   '$argon2id$v=19$m=65536,t=3,p=4$s5Zyzrl3DmEshVCKMUbI+Q$6tazXBr0EklnUfg7fWwQfm7wMxcoCMPgEy1SbXtubD4', 'volunteer', TRUE, NULL),
+    ('shelter4',   'shelter4',  'shelter4',    'shelter4@test.lt',     '$argon2id$v=19$m=65536,t=3,p=4$j7GWci4lZKw1hrB2LuUcww$Tsxc/ilAgJIq/fQJQelk5/+8oE4fD4dvFTulhAJiGWc', 'shelter',   TRUE, NULL),
+    ('shelter5',   'shelter5',  'shelter5',    'shelter5@test.lt',     '$argon2id$v=19$m=65536,t=3,p=4$/9+7N2asNeYcQ8jZm5Myxg$BC0zBgk7y/reSQ6Wzy+A4DXlcpgizfzdHuN7dX7X3js', 'shelter',   TRUE, NULL),
+    ('shelter6',   'shelter6',  'shelter6',    'shelter6@test.lt',     '$argon2id$v=19$m=65536,t=3,p=4$9R7D+B8jpLT2HkMoRWjtvQ$d9yQgfz9lAFuXnCyInjsLOZdKVmjVJzI/BEQzdkcckY', 'shelter',   TRUE, NULL),
+    ('shelter7',   'shelter7',  'shelter7',    'shelter7@test.lt',     '$argon2id$v=19$m=65536,t=3,p=4$UMrZe++dc06pdU4JQYhxDg$OVvuCE0/Ys4eiskaax7wKziH7beMvww9FNCuKz4f93o', 'shelter',   TRUE, NULL),
+    ('shelter8',   'shelter8',  'shelter8',    'shelter8@test.lt',     '$argon2id$v=19$m=65536,t=3,p=4$aw3hPEdICcHYe++ds7Z2jg$xHYmqFrqsL0IkCrSlaoCESsJmNB6eq2sDw1n8aJHBd0', 'shelter',   TRUE, NULL),
+    ('volunteer3', 'lastname',  'volunteer3',  'volunteer3@gmail.com', '$argon2id$v=19$m=65536,t=3,p=4$iRGiNOZ8rzXGOIdwrnVuTQ$yG0yne0aQsTyiSEst5jULzrWeKm/SViakWKQBbr+faI', 'volunteer', TRUE, NULL)
 ON CONFLICT DO NOTHING;
 
 
@@ -39,34 +48,13 @@ INSERT INTO shelter (
     created_by
 )
 VALUES
-    (
-        'Happy Paws Shelter',
-        'A friendly shelter for dogs and cats',
-        'contact@happypaws.lt',
-        '+37060000001',
-        'https://happypaws.lt',
-        'Gedimino pr. 1',
-        'Vilnius',
-        '01103',
-        'Lithuania',
-        TRUE,
-        TRUE,
-        (SELECT id FROM app_user WHERE username = 'shelter1')
-    ),
-    (
-        'Safe Haven Shelter',
-        'A safe shelter for rescued animals',
-        'info@safehaven.lt',
-        '+37060000002',
-        'https://safehaven.lt',
-        'Laisvės al. 10',
-        'Kaunas',
-        '44240',
-        'Lithuania',
-        TRUE,
-        TRUE,
-        (SELECT id FROM app_user WHERE username = 'shelter2')
-    )
+    ('Lesė', 'Nuoširdžiai tikime, kad visi be globos likę keturkojai nusipelno antro šanso, todėl jais rūpinamės, gydome ir dedame visas jėgas svajonių namų paieškai. Gyvūnų globos organizacija „Lesė“ buvo įkurta 2007 metais, šiuo metu turime du padalinius: Vilniuje ir Kaune. Mūsų tikslas yra visiems globotiniams rasti namus, tad jie prieglaudoje gyvena tol, kol randa naujus šeimininkus arba miršta nuo senatvės. Organizacijos pagrindą sudaro žmonės, kurie dirba prieglaudoje savanoriškai.', 'info@lese.lt', '+370 605 33452', 'https://lese.lt/', 'Savanorių pr. 33-91', 'Vilnius', 'LT-03128', 'Lietuva', TRUE, TRUE, (SELECT id FROM app_user WHERE username = 'shelter1')),
+    ('Penkta Koja', 'VšĮ PENKTA KOJA – 2010 metais įkurta savanoriška pagalba beglobiams gyvūnams ir privati gyvūnų prieglauda. Mūsų misija – mažinti beglobių gyvūnų skaičių humaniškomis priemonėmis, t.y. gyvūnų sterilizacija/kastracija, atsakingas dovanojimas ir visuomenės švietimas. Mūsų vizija – sumažėjęs beglobių gyvūnų skaičius, retesni žiauraus elgesio su gyvūnais atvejai, atsakingas augintinio rinkimasis, auginimas ir priežiūra.', 'info@penktakoja.lt', '+370 685 20133', 'https://penktakoja.lt/', 'Liepų g. 2, Linksmakalnis, Kauno raj.', 'Kaunas', '53290', 'Lietuva', TRUE, TRUE, (SELECT id FROM app_user WHERE username = 'shelter2')),
+    ('SOS gyvūnai', '„SOS gyvūnų“ misija ir pagrindinis tikslas – teikti visapusišką pagalbą beglobiams ir benamiams gyvūnams: užtikrinti veterinarinę priežiūrą, aprūpinimą maistu bei prieglobsčiu, kol bus surasti nauji šeimininkai. Nuo veiklos pradžios 2008-aisiais jau išgelbėjome daugiau nei 8000 gyvūnų, įkūrėme priglaudą, kurioje nuolat rūpinamės daugiau nei 140 gyvūnų. Savo veikloje siekiame mažinti beglobių gyvūnų skaičių, skatiname visuomenę tinkamai rūpintis savo augintiniais, gelbėjame, gydome ir rūpinamės namų netekusiais gyvūnais, aktyviai ieškome jiems saugių ir mylinčių namų.', 'info@sos-gyvunai.lt', '+37068339826', 'https://sos-gyvunai.lt/', 'Eglinės g. 17', 'Vilnius', '02241', 'Lietuva', TRUE, TRUE, (SELECT id FROM app_user WHERE username = 'shelter4')),
+    ('Gyvūnų Namai Kaunas', 'Moderni gyvūnų prieglauda Kaune, skirta beglobių gyvūnų gelbėjimui, gydymui ir naujų namų paieškai', 'info@gyvununamai.lt', '+37060011223', 'https://www.gyvununamai.lt', 'Raudondvario pl. 101', 'Kaunas', '47184', 'Lithuania', TRUE, TRUE, (SELECT id FROM app_user WHERE username = 'shelter5')),
+    ('Kauno Gyvūnų Globos Centras', 'Moderni gyvūnų prieglauda Kaune, teikianti pagalbą beglobiams gyvūnams, jų gydymą ir naujų namų paiešką', 'info@kgc.lt', '+37061200999', 'https://www.kgc.lt', 'Pramonės pr. 8', 'Kaunas', '51285', 'Lietuva', TRUE, TRUE, (SELECT id FROM app_user WHERE username = 'shelter6')),
+    ('Vilniaus Gyvūnų Namai', 'Šiuolaikiška gyvūnų prieglauda Vilniuje, rūpinanti beglobiais gyvūnais, jų sveikata ir naujų namų paieška', 'info@vilniausgyvunainamai.lt', '+37061233445', 'https://www.vilniausgyvunainamai.lt', 'Kalvarijų g. 143', 'Vilnius', '08221', 'Lithuania', TRUE, TRUE, (SELECT id FROM app_user WHERE username = 'shelter7')),
+    ('Klaipėdos Gyvūnų Prieglauda', 'Prieglauda Klaipėdoje, teikianti pagalbą beglobiams gyvūnams, jų gydymą ir atsakingą įvaikinimą', 'info@klaipedosprieglauda.lt', '+37061277889', 'https://www.klaipedosprieglauda.lt', 'Jūrininkų pr. 38', 'Klaipėda', '94231', 'Lietuva', TRUE, TRUE, (SELECT id FROM app_user WHERE username = 'shelter8'))
 ON CONFLICT DO NOTHING;
 
 
@@ -86,31 +74,104 @@ INSERT INTO animal (
     status
 )
 VALUES
-    -- Shelter 1
-    ((SELECT id FROM shelter WHERE name = 'Happy Paws Shelter'), 'Max',     'HP001', 'dog', 'Labrador',            'male',   '2020-05-10', 'brown',       'Friendly and energetic', 'available'),
-    ((SELECT id FROM shelter WHERE name = 'Happy Paws Shelter'), 'Bella',   'HP002', 'dog', 'Beagle',              'female', '2019-08-15', 'tricolor',    'Loves attention',        'available'),
-    ((SELECT id FROM shelter WHERE name = 'Happy Paws Shelter'), 'Luna',    'HP003', 'cat', 'Siamese',             'female', '2021-03-20', 'cream',       'Calm and quiet',         'reserved'),
-    ((SELECT id FROM shelter WHERE name = 'Happy Paws Shelter'), 'Charlie', 'HP004', 'dog', 'Poodle',              'male',   '2018-11-01', 'white',       'Very smart',             'adopted'),
-    ((SELECT id FROM shelter WHERE name = 'Happy Paws Shelter'), 'Lucy',    'HP005', 'cat', 'British Shorthair',   'female', '2022-01-12', 'gray',        'Playful kitten',         'available'),
-    ((SELECT id FROM shelter WHERE name = 'Happy Paws Shelter'), 'Rocky',   'HP006', 'dog', 'Bulldog',             'male',   '2017-06-30', 'brindle',     'Lazy but lovable',       'foster'),
-    ((SELECT id FROM shelter WHERE name = 'Happy Paws Shelter'), 'Milo',    'HP007', 'cat', 'Maine Coon',          'male',   '2020-09-05', 'brown',       'Big and fluffy',         'available'),
-    ((SELECT id FROM shelter WHERE name = 'Happy Paws Shelter'), 'Daisy',   'HP008', 'dog', 'Cocker Spaniel',      'female', '2019-12-25', 'golden',      'Very friendly',          'medical_hold'),
-    ((SELECT id FROM shelter WHERE name = 'Happy Paws Shelter'), 'Simba',   'HP009', 'cat', 'Mixed',               'male',   '2021-07-18', 'orange',      'Curious and active',     'available'),
-    ((SELECT id FROM shelter WHERE name = 'Happy Paws Shelter'), 'Nala',    'HP010', 'cat', 'Mixed',               'female', '2022-04-10', 'black',       'Shy at first',           'available'),
-
-    -- Shelter 2
-    ((SELECT id FROM shelter WHERE name = 'Safe Haven Shelter'), 'Buddy',   'SH001', 'dog', 'Golden Retriever',    'male',   '2018-02-14', 'golden',      'Loyal companion',        'available'),
-    ((SELECT id FROM shelter WHERE name = 'Safe Haven Shelter'), 'Molly',   'SH002', 'dog', 'Border Collie',       'female', '2020-06-22', 'black/white', 'Very active',            'reserved'),
-    ((SELECT id FROM shelter WHERE name = 'Safe Haven Shelter'), 'Oliver',  'SH003', 'cat', 'Persian',             'male',   '2019-09-30', 'white',       'Needs grooming',         'available'),
-    ((SELECT id FROM shelter WHERE name = 'Safe Haven Shelter'), 'Chloe',   'SH004', 'cat', 'Ragdoll',             'female', '2021-11-11', 'cream',       'Very calm',              'adopted'),
-    ((SELECT id FROM shelter WHERE name = 'Safe Haven Shelter'), 'Jack',    'SH005', 'dog', 'Mixed',               'male',   '2017-03-05', 'brown',       'Rescued stray',          'available'),
-    ((SELECT id FROM shelter WHERE name = 'Safe Haven Shelter'), 'Lily',    'SH006', 'cat', 'Mixed',               'female', '2022-02-02', 'gray',        'Playful',                'available'),
-    ((SELECT id FROM shelter WHERE name = 'Safe Haven Shelter'), 'Oscar',   'SH007', 'dog', 'Dachshund',           'male',   '2020-10-10', 'black/tan',   'Funny personality',      'foster'),
-    ((SELECT id FROM shelter WHERE name = 'Safe Haven Shelter'), 'Ruby',    'SH008', 'dog', 'Husky',               'female', '2019-01-19', 'white/gray',  'Needs space',            'medical_hold'),
-    ((SELECT id FROM shelter WHERE name = 'Safe Haven Shelter'), 'Leo',     'SH009', 'cat', 'Bengal',              'male',   '2021-05-05', 'spotted',     'Very active',            'available'),
-    ((SELECT id FROM shelter WHERE name = 'Safe Haven Shelter'), 'Coco',    'SH010', 'cat', 'Mixed',               'female', '2022-08-08', 'black/white', 'Sweet and calm',         'lost')
+    ((SELECT id FROM shelter WHERE name = 'Lesė'), 'Maja', 'HP003', 'dog', NULL, 'female', '2021-03-20', NULL, 'Draugiškas, reikalauja daug dėmesio, žaismingas', 'reserved'),
+    ((SELECT id FROM shelter WHERE name = 'Lesė'), 'Debesėlis', 'HP004', 'other', NULL, 'male', '2018-11-01', NULL, 'Debesėlio šeimininkas išvyksta atlikti privalomosios karo tarnybos, todėl, deja, nebegalės juo rūpintis. Debesėlis dar jaunas, labai draugiškas ir mielas triušiukas, mėgstantis žmogaus dėmesį ir bendravimą.🐰Galbūt kažkas ieško drąsaus ir smalsaus draugo? O gal jūsų triušiui trūksta kompanijos ir naujo bičiulio?💝', 'adopted'),
+    ((SELECT id FROM shelter WHERE name = 'Lesė'), 'Panama', 'HP005', 'cat', NULL, 'female', '2022-01-12', NULL, 'Panama yra vos vienerių metų katytė, rasta Vilniaus g. Žmonės pasakojo, kad jos ten niekada anksčiau nebuvo – vieną dieną kažkas tiesiog paliko visą kačių šeimą gatvėje. Tai draugiška, jauki ir labai žmogaus dėmesį vertinanti katytė, pasiruošusi naujam gyvenimo etapui.😙', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Lesė'), 'Barbarisas', 'HP006', 'cat', NULL, 'male', '2017-06-30', NULL, 'Barbarisas atiduotas iš namų, nes šeimininkai nebegalėjo juo pasirūpinti. Jis draugiškas, meilus ir dar visai jaunas – kupinas energijos, noro bendrauti ir mylėti.💖', 'foster'),
+    ((SELECT id FROM shelter WHERE name = 'Lesė'), 'Kiparisas', 'HP007', 'cat', NULL, 'male', '2020-09-05', NULL, 'Kiparisas pateko pas mus, nes šeimininkai juo nesirūpino. Jis nepaprastai draugiškas ir meilus , o jo išskirtinis snukutis ir švelnus žvilgsnis iš karto pavergia širdį – Kiparisas tikrai turi kažką ypatingo, ko neįmanoma nepastebėti.💘', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Lesė'), 'Marlboras', 'HP008', 'dog', NULL, 'male', '2019-12-25', NULL, 'Marlboras pas mus atkeliavo po to, kai mirė jo šeimininkas. Iš karto buvo jaučiamas cigarečių kvapas, todėl jis gavo tokį vardą. Marlboras yra kurčias, bet tikimės, kad tai nesutrukdys ieškant naujų namų, nes jis labai draugiškas ir meilus.', 'medical_hold'),
+    ((SELECT id FROM shelter WHERE name = 'Lesė'), 'Lyva', 'HP009', 'dog', NULL, 'female', '2021-07-18', NULL, 'Lyva pas mus atkeliavo iš šeimos, kuri teigė, kad ji agresyvi ir nebegali jos daugiau laikyti. Mūsų globoje jokios agresijos nepasireiškė – Lyva yra draugiška, miela ir aktyvi šunytė.', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Lesė'), 'Berlynas', 'HP010', 'cat', NULL, 'male', '2022-04-10', NULL, 'Draugiškas, neišauklėtas, reikalauja daug dėmesio, žaismingas', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Penkta Koja'), 'Amsis', 'SH001', 'dog', NULL, 'male', '2018-02-14', NULL, 'Amsis rekordininkas! Tik labai jau nesmagūs tokie rekordai 🙄 Šis vos 6 kg. sveriantis iš išorės eilinis „kaimietukas”, o viduje – tikras narsuolis riteris, kuris svetimam žmogui kimba į kulną prieš tai nė vardo nepaklausęs 😃 Bet svetimas jam būni iki pirmo kąsniuko, nuo jo – Jūs jau draugai ir Jūsų kulnai saugūs 😄 Ir jau turit draugą, kuris su jumis į pasaulio kraštą keliauti galėtų! Be šito kvailo „įpročio” segti į kulną, jis fainas ir draugiškas šuo. Tik pirmam susipažinimui reikalingi skaniukai 😃 O kaip kitaip išsiprašysi ko nori, kai esi vos kelis kg. tesveriantis šuniukas 🙃 Aprašymas gal ir skamba baisokai, bet jis ir su mūsų vedžiotojais eina pasivaikščioti ir visi su kulnais grįžta atgal 😃 Tad Amsis smarkiai labai lauks skambučio, nes 1354 dieno prieglaudoj yra smarkiai perdaug…', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Penkta Koja'), 'Montis', 'SH002', 'dog', NULL, 'male', '2020-06-22', NULL, 'Dienas leisti prieglaudoje – ne pyragai. Paremkite penktakoją, o mes kiek galėdami padovanosime jam jaukesnes dienas. Daugiau informacijos tel. 8 685 20133', 'reserved'),
+    ((SELECT id FROM shelter WHERE name = 'Penkta Koja'), 'Goja', 'SH003', 'dog', NULL, 'female', '2019-09-30', NULL, '2026 02 23 buvo tūkstantoji Gojos diena prieglaudoje 🤯 Ir ja iki šiol niekas ir niekada nesidomėjo ir dėmesio neatkreipė 😒 Ir tai greičiausiai dėl jos kukloko būdo, nes ji nepuola nepažįstamiems žmonėms į glėbį, o pradžiai nori atsargiai susipažinti, užsitarnauti pasitikėjimą. Nors su vedžiotojais ji visada mielai eina pasivaikščioti, tačiau ji tuo metu labiau vaikšto „su savimi”, nei žmonėmis. Bet! Jeigu ji susipažįsta su žmogui, pradeda pasitikėti – atsiveria visai kitas šuo – žaismingas ir energingas, miela ir draugiška, norinti dėmesio ir meilės. Neretai už drovių šunų slepiasi labai meilūs ir mieli „perliukai”, tik jiems gerokai reikia ilgiau išlaukti tų, kurie norės su ja susipažinti ir turės tam kantrybės. Labai smarkiai norėtųsi, kad tai įvyktų jau kuo greičiau, nes 1000 dienų nelaisvėje yra smarkiai perdaug, ji tiek tikrai neverta. Gojai yra apie 6-7 metus. Ir ji laaaaabai smarkiai laukia Tavo skambučio. Arba bent jau skelbimo pasidalinimo, kad šita informacija pasiektų tuos kurie bus jos naujieji namai! ❤️', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Penkta Koja'), 'Kurmis', 'SH004', 'dog', NULL, 'male', '2021-11-11', NULL, 'Dienas leisti prieglaudoje – ne pyragai. Paremkite penktakoją, o mes kiek galėdami padovanosime jam jaukesnes dienas. Daugiau informacijos tel. 8 685 20133', 'adopted'),
+    ((SELECT id FROM shelter WHERE name = 'Penkta Koja'), 'Vernas', 'SH005', 'dog', NULL, 'male', '2017-03-05', NULL, 'Dienas leisti prieglaudoje – ne pyragai. Paremkite penktakoją, o mes kiek galėdami padovanosime jam jaukesnes dienas. Daugiau informacijos tel. 8 685 20133', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Penkta Koja'), 'Lapė', 'SH006', 'cat', NULL, 'female', '2022-02-02', NULL, 'Dienas leisti prieglaudoje – ne pyragai. Paremkite penktakoją, o mes kiek galėdami padovanosime jam jaukesnes dienas. Daugiau informacijos tel. 8 685 20133', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Penkta Koja'), 'Shy', 'SH007', 'dog', NULL, 'female', '2020-10-10', NULL, 'SHY, ne Jessica, bet SHY! 😁 Ir jai jau tikrai pats laikas būtų keliauti namo! Ji yra faina, žaisminga ir labai meili, mėgsta ilgus pasivaikščiojimus ir… savo žmones. Akivaizdu, kad ji turi kaukazo aviganio kraujo, o jie yra teritoriniai šunys, kurie saugo savo teritoriją. Tą daro ir Shy, tad iš pirmo su nauju šeimininku galimai kontaktas neįvyks toks, kad ji imtu „čia ir dabar” važiuotų namo. Galimai teks atvažiuot porą kart į „pasimatymą”. Su visais vedžiotojais, kurie ją vedžiodavo nuo pirmų, pas mus, dienų ji kuo puikiausiai sutaria. Belieka susirasti tą vieną vieninintelį „vedžiotoją” 😊 Apibrendinant, Shy tikrai geras šuo, bet naujieji šeimininkai turėtų pas ją atvykti keletą kartų, kad taptų savi žmonės ir ponia Shy sutiktų keliauti namo, nes kiek gi galima prieglaudoj sedėti ir ją saugoti, mes kaip nors pačios apsisaugosim, o Shy linkim kuo geriausių namų, kuriuos ji mylėtų ir saugotų, tai kaip mus ❤️', 'foster'),
+    ((SELECT id FROM shelter WHERE name = 'Penkta Koja'), 'Žvirblis', 'SH008', 'dog', NULL, 'female', '2019-01-19', NULL, 'Žvirblį paliko šeimininkas šioje žemėje, nes pats iškeliavo ten, kur aukščiau. Dar kurį laiką prižiūrėjo kaimynai, bet kiek gali privaikščioti. Dienas leisti prieglaudoje – ne pyragai. Paremkite penktakoją, o mes kiek galėdami padovanosime jam jaukesnes dienas. Daugiau informacijos tel. 8 685 20133', 'medical_hold'),
+    ((SELECT id FROM shelter WHERE name = 'Penkta Koja'), 'Pipiras', 'SH009', 'dog', NULL, 'male', '2021-05-05', NULL, 'Daugiau informacijos tel. 8 685 20133', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Penkta Koja'), 'Piper', 'SH010', 'dog', NULL, 'female', '2022-08-08', NULL, 'Gudri ir smalsi kaip lapė. Apsimetusi laukiniu šunimi vamzdyje su savo vaikais įsitaisiusi. Piper mus vedžiojo už nosies lygiai dvi savaitės, kol nustojome aklai ją gaudyti rankomis. Panaudojom įvairiausias strategijas, kad apgauti šunį, kuris tuo metu buvo gudresnis už mūsų komandą, gaisrininkus ir žmones, kurie rado visą šeimą vamzdyje. Piper yra draugiška, vidutinio dydžio, norinti dėmesio ir meilės, ištikima ir prisirišanti. Gyvenime mačius, tiek gero, tiek blogo nusipelnė gauti namus 😊 Dienas leisti prieglaudoje – ne pyragai. Paremkite penktakoją, o mes kiek galėdami padovanosime jam jaukesnes dienas. Daugiau informacijos tel. 8 685 20133', 'lost'),
+    ((SELECT id FROM shelter WHERE name = 'Lesė'), 'Lola', 'HP011', 'dog', NULL, 'female', '2025-07-08', NULL, 'Draugiškas, reikalauja daug dėmesio, žaismingas', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Lesė'), 'Kleo', 'HP025', 'other', NULL, 'female', '2026-01-21', NULL, 'Kleo pas mus atkeliavo po to, kai buvę šeimininkai dėl alergijos nebegalėjo jos auginti. Ji labai smalsi, mėgsta dėmesį, paglostymus ir net atsisaukia į savo vardą. Į naujus namus Kleo keliaus kartu su Aura.🩷', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Lesė'), 'Micius', 'HP068', 'cat', NULL, 'male', '2019-01-28', NULL, 'Micius net 10 metų gyveno biure. Dar būdamas mažas kačiukas jis priklydo prie įmonės durų, o darbuotojai pradėjo juo rūpintis – šėrė, glostė ir taip jis tapo tikru kolektyvo nariu. Deja, įmonei užsidarius, Micius liko be savo vietos. Darbuotojai bandė surasti jam namus, tačiau norinčių priimti katiną neatsirado. Taip jis atsidūrė prieglaudoje. Micius – labai draugiškas, smalsus ir meilus katinas. Puikiai sutaria su žmonėmis ir kitais gyvūnais. O kadangi daug metų „dirbo“ ofise, labai mėgsta įsitaisyti šalia žmogaus – ypač prie kompiuterio, tarsi padėdamas tvarkyti visus svarbiausius reikalus.', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Lesė'), 'Benedetas', 'HP069', 'cat', NULL, 'male', '2026-05-14', NULL, 'Benedetas gyveno kaime, kartu su daugybe kačių. Gavus pranešimą apie blogas gyvenimo sąlygas, jis pateko pas mus. Tai labai meilus, draugiškas ir švelnus katinas', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Lesė'), 'Ardas', 'HP058', 'dog', NULL, 'male', '2026-05-08', NULL, 'Ardas pas mus atvyko su savo broliu Zoriu iš Panevėžio rajono. Jis jaunas, aktyvus ir labai draugiškas šuo.', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Lesė'), 'Pilė', 'HP088', 'dog', NULL, 'female', '2026-04-30', NULL, 'Papūgėlės atvežtos policijos', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Lesė'), 'Manila', 'HP066', 'dog', NULL, 'female', '2026-05-06', NULL, 'Manila –vienerių metų katytė, rasta Vilniaus g. Pasak aplinkinių, jos ten niekada nebuvo – kažkas tiesiog atvežė ir išmetė visą šeimą. Tai labai draugiška, švelni ir žmogų mylinti katytė, kuri nusipelnė tik saugumo ir meilės.', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'SOS gyvūnai'), 'Giria', 'SO001', 'cat', NULL, 'female', NULL, NULL, 'Katytė Giria pateko pas mus netikėtai – maždaug prieš mėnesį atvykusios į prieglaudą prie vartelių radome dėžę, o joje katę su 6 paaugusiais kačiukais… Vėliau išaiškėjo, kad šeimyna į prieglaudą atnešė marą, laimei, šiai dienai situacija yra stabilizuota, pačiai mamai jokie simptomai nepasireiškė. Deja katytė atvyko labai baili ir nepasitikinti žmogumi. Pradžioje leidome jai apsiprasti su nauja vieta, vėliau – atsigauti po sterilizacijos. Tada pradėjome kurti su ja draugystę. Kiekvieną dieną skiriame laiko, kad pabūti šalia jos, švelniai pakalbinti, parodyti, kad kai esame nieko blogo nevyksta, anaiptol, bliudelyje atsiranda maisto, o dar papildomai vis pavyksta paskanauti konservų ☺️', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'SOS gyvūnai'), 'Alyta', 'SO666', 'dog', NULL, 'female', '2013-05-19', NULL, 'Ši kurčia ir beveik akla bobutė buvo rasta 07.09 Onuškyje, Miško g., klaidžiojanti kaime. Ji buvo nuvežta į Alytuje esančią prieglaudą „Keturkojo viltis”. Ten buvo patikrintas mikročipas. Informacija parodė, kad šunytės šeimininkė mirusi, o ji imta iš mūsų prieglaudos prieš 8 metus. Prieglauda kėlė skelbimą, bet niekas nesikreipė dėl jos. Labai gaila, kad kol kas niekas neieško šios senutės.', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'SOS gyvūnai'), 'Fedia', 'SO233', 'cat', NULL, 'male', '2026-05-01', NULL, 'Ilgą laiką jis valkatavo po balkonais šeškinės mikrorajone…. Labai rimto ir apgaulingai “grumpy” veido, bet iš tikro jis mielas meškutis 🥰. Tik skirkite jam laiko, pažinsite ir labai greitai pamilsite 🤞. Fedia mėgsta pasėdėti ant kelių, mėgsta prisiglausti ir pasiglostyti, bet viskas vyksta jo sąlygomis 🤭. Ir tai tikrai nereiškia, kad jis piktas. Fedia klasiškas katinas turintis savo tvirtą nuomonę ir laukiantis rimto šeimininko 👑. 🤎Apie 8m. amžiaus. 🤎 Kastruotas, skiepytas, ženklintas. 🤎 Turi FIV virusą, todėl gali gyventi su kitomis FIV turinčiomis katėmis. Žmonėms ir kitiems gyvūnams apart kačių šis virusas neperduodamas. 🤎 Priprato ir prieglaudoje gyvena su kitomis katėmis.', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'SOS gyvūnai'), 'Katytė', 'SO256', 'cat', NULL, 'female', '2000-05-06', NULL, 'Atiduota iš namų gimus vaikui. Katė naminė, su charakteriu, mėgsta ramybę, nenori būti glostoma. Virš 10 metų, sterilizuota, skiepyta, ženklinta, pašalinti visi dantukai.', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'SOS gyvūnai'), 'Viada', 'SO667', 'cat', NULL, 'female', '2018-05-04', NULL, 'Buvo padovanota 2019m. iš Akropolio namelio, bet dabar grąžinta atgal į prieglaudą, nes puola vaiką ir ženklina vaiko daiktus 🙁 Viada yra charakteringa katė ir greitai parodo jei jai kažkas nepatinka. Drąsi, eina prie žmonių, bet nemėgsta daug prisilietimų.', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'SOS gyvūnai'), 'Diuma', 'SO455', 'cat', NULL, 'female', '2009-05-08', NULL, 'Viena katytė taip ir liko prieglaudoje iš penketuko bailiukų. Pasaulis didelis ir baisus, o svetimi žmonės primena baubus iš siaubo filmų … todėl ji šnypščia, gūžiasi ir traukiasi į atokiausią kambario kampą Ar atsiras kas suteiks mums šansą? Ar dar yra kantrių, švelnių ir mylinčių žmonių?', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'SOS gyvūnai'), 'Leticija', 'SO259', 'cat', NULL, 'female', '2020-05-05', NULL, 'Ši jauna ir labai draugiška katė atvyko iš lauko, gyveno daugiabučio kieme Vilniaus rajone. Katytė labai draugiška, ieško žmogaus, nori dėmesio todėl tiesiog palikti ją lauke atrodė neteisinga. Tačiau sterilizacijos metu sužinojome, kad Leticija turi FIV (kačių imudeficito virusą). Todėl ji negali gyventi su kitomis sveikomis ir šio viruso neturinčiomis katėmis.', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'SOS gyvūnai'), 'Moneta', 'SO452', 'cat', NULL, 'female', '2010-05-05', NULL, 'Laukinukų kambariuko gyventoja. Katė baili, neprisleidžia žmogaus.', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'SOS gyvūnai'), 'Bahama', 'SO251', 'dog', NULL, 'female', '2010-05-04', NULL, 'Visada besišypsanti Bahama ieško namų 🏡 😎 Ji gyveno prirakinta prie būdos ir daugiau niekur nebuvo, tik tiek kiek siekė jos grandinė… Atvykus į mūsų prieglaudą, prasidėjo naujas jos gyvenimo etapas ir mes jai pažadėjome, kad jis bus nuostabus. 🤞 Tad ieškome Bahamai nuostabios šeimos, kuri parodys koks puikus yra pasaulis. 🥰 Bahama yra stipri, aktyvi ir žaisminga. Ji visada sėdėjo prie būdos, tad dabar labai mėgsta ilgus pasivaikščiojimus ir tyrinėti aplinką. 🥹', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'SOS gyvūnai'), 'Reta', 'SO525', 'cat', NULL, 'female', '2020-05-02', NULL, 'Laukinukų kambariuko gyventoja. Katė baili, neprisleidžia žmogaus.', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'SOS gyvūnai'), 'Zahra', 'SO521', 'dog', NULL, 'female', '2025-02-05', NULL, 'Tiems, kas puikiai žino belgų aviganių charakterį ir juos dievina, senjorė Zahra būtų puikia kompanione. Zahra buvo tiesiog pririšta mums prie tvoros, bet nuo pirmos pažinties akimirkos ji nerodė mums jokios agresijos. Ji be galo miela, norinti žmogaus artumo ir paglostymų. Zahra labai linksma, žaisminga ir aktyvi. Moka kelias komandas.', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Gyvūnų Namai Kaunas'), 'Astra', 'GNK001', 'dog', 'Mišrūnas', 'female', '2021-05-14', 'auksinė', 'Labai draugiška ir aktyvi kalytė, mėgsta vaikus', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Gyvūnų Namai Kaunas'), 'Rokis', 'GNK002', 'dog', 'Mišrūnas', 'male', '2019-09-02', 'juoda/ruda', 'Sargus, protingas, tinkamas patyrusiems šeimininkams', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Gyvūnų Namai Kaunas'), 'Mėta', 'GNK003', 'cat', 'Mišrūnas', 'female', '2022-03-11', 'pilka', 'Rami, meili katė, mėgsta šilumą ir dėmesį', 'reserved'),
+    ((SELECT id FROM shelter WHERE name = 'Gyvūnų Namai Kaunas'), 'Tigras', 'GNK004', 'cat', 'Mišrūnas', 'male', '2020-07-25', 'oranžinė dryžuota', 'Smalsus ir žaismingas katinas', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Gyvūnų Namai Kaunas'), 'Luna', 'GNK005', 'dog', 'Mišrūnas', 'female', '2020-12-30', 'trispalvė', 'Energinga, draugiška, mėgsta pasivaikščiojimus', 'foster'),
+    ((SELECT id FROM shelter WHERE name = 'Gyvūnų Namai Kaunas'), 'Bela', 'GNK006', 'dog', 'Mišrūnas', 'female', '2021-06-10', 'auksinė', 'Labai meili, mėgsta žmonių draugiją', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Gyvūnų Namai Kaunas'), 'Simba', 'GNK007', 'cat', 'Mišrūnas', 'male', '2020-02-18', 'ruda', 'Didelis, ramus ir draugiškas katinas', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Gyvūnų Namai Kaunas'), 'Kira', 'GNK008', 'dog', 'Mišrūnas', 'female', '2019-11-05', 'pilkai balta', 'Labai aktyvi, mėgsta bėgioti', 'reserved'),
+    ((SELECT id FROM shelter WHERE name = 'Gyvūnų Namai Kaunas'), 'Mikis', 'GNK009', 'cat', 'Mišrūnas', 'male', '2022-08-14', 'juoda', 'Smalsus jaunas katinas', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Gyvūnų Namai Kaunas'), 'Dora', 'GNK010', 'dog', 'Mišrūnas', 'female', '2020-04-22', 'ruda', 'Rami ir labai prisirišanti prie žmonių', 'foster'),
+    ((SELECT id FROM shelter WHERE name = 'Gyvūnų Namai Kaunas'), 'Pūkis', 'GNK011', 'cat', 'Mišrūnas', 'male', '2018-09-09', 'balta', 'Senjoras katinas, labai ramus', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Gyvūnų Namai Kaunas'), 'Rūta', 'GNK012', 'dog', 'Mišrūnas', 'female', '2021-01-15', 'trispalvė', 'Energinga ir draugiška', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Gyvūnų Namai Kaunas'), 'Aris', 'GNK013', 'cat', 'Mišrūnas', 'male', '2020-06-30', 'pilka dryžuota', 'Labai žaismingas katinas', 'adopted'),
+    ((SELECT id FROM shelter WHERE name = 'Gyvūnų Namai Kaunas'), 'Lota', 'GNK014', 'dog', 'Mišrūnas', 'female', '2019-03-12', 'juoda', 'Rami ir ištikima kalytė', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Gyvūnų Namai Kaunas'), 'Fanta', 'GNK015', 'cat', 'Mišrūnas', 'female', '2022-10-01', 'ryža', 'Meili ir žaisminga katė', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Kauno Gyvūnų Globos Centras'), 'Auris', 'LT001', 'dog', 'Mišrūnas', 'male', '2020-03-10', 'rudas', 'Draugiškas ir aktyvus šuo, mėgsta žmones', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Kauno Gyvūnų Globos Centras'), 'Luna', 'LT002', 'cat', 'Mišrūnas', 'female', '2021-06-14', 'pilka', 'Rami ir meili katė, mėgsta glostymus', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Kauno Gyvūnų Globos Centras'), 'Rokis', 'LT003', 'dog', 'Mišrūnas', 'male', '2019-11-02', 'juoda su ruda', 'Sargus, protingas ir budrus šuo', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Kauno Gyvūnų Globos Centras'), 'Mira', 'LT004', 'cat', 'Mišrūnas', 'female', '2022-02-20', 'balta', 'Smalsi jauna katė, labai žaisminga', 'reserved'),
+    ((SELECT id FROM shelter WHERE name = 'Kauno Gyvūnų Globos Centras'), 'Toras', 'LT005', 'dog', 'Mišrūnas', 'male', '2018-08-18', 'pilkai ruda', 'Stiprus ir ramus šuo, tinka patyrusiems šeimininkams', 'foster'),
+    ((SELECT id FROM shelter WHERE name = 'Kauno Gyvūnų Globos Centras'), 'Bela', 'LT006', 'dog', 'Mišrūnas', 'female', '2021-01-12', 'auksinė', 'Labai meili ir draugiška kalytė', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Kauno Gyvūnų Globos Centras'), 'Simba', 'LT007', 'cat', 'Mišrūnas', 'male', '2020-05-05', 'oranžinė', 'Žaismingas ir smalsus katinas', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Kauno Gyvūnų Globos Centras'), 'Nora', 'LT008', 'cat', 'Mišrūnas', 'female', '2019-09-09', 'juoda', 'Rami ir atsargi, mėgsta tylą', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Kauno Gyvūnų Globos Centras'), 'Aras', 'LT009', 'dog', 'Mišrūnas', 'male', '2020-12-01', 'rudas', 'Energingas ir labai ištikimas šuo', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Kauno Gyvūnų Globos Centras'), 'Lota', 'LT010', 'cat', 'Mišrūnas', 'female', '2022-07-07', 'pilka', 'Labai meili katė, mėgsta šilumą', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Kauno Gyvūnų Globos Centras'), 'Mikis', 'LT011', 'cat', 'Mišrūnas', 'male', '2021-03-03', 'juoda', 'Smalsus ir aktyvus katinas', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Kauno Gyvūnų Globos Centras'), 'Dora', 'LT012', 'dog', 'Mišrūnas', 'female', '2019-10-10', 'balta su ruda', 'Rami ir labai prisirišanti kalytė', 'foster'),
+    ((SELECT id FROM shelter WHERE name = 'Kauno Gyvūnų Globos Centras'), 'Pūkis', 'LT013', 'cat', 'Mišrūnas', 'male', '2018-04-04', 'pilka', 'Senjoras katinas, labai ramus ir švelnus', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Kauno Gyvūnų Globos Centras'), 'Kira', 'LT014', 'dog', 'Mišrūnas', 'female', '2020-06-06', 'juoda', 'Aktyvi ir žaisminga kalytė', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Kauno Gyvūnų Globos Centras'), 'Lukas', 'LT015', 'dog', 'Mišrūnas', 'male', '2021-08-08', 'rudas', 'Draugiškas ir socialus šuo', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Kauno Gyvūnų Globos Centras'), 'Tigras', 'LT017', 'cat', 'Mišrūnas', 'male', '2020-07-07', 'oranžinė dryžuota', 'Labai žaismingas katinas', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Vilniaus Gyvūnų Namai'), 'Aika', 'VGN001', 'dog', 'mišrūnas', 'female', '2021-05-12', 'auksinė', 'Labai draugiška ir aktyvi kalytė', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Vilniaus Gyvūnų Namai'), 'Boris', 'VGN002', 'dog', 'mišrūnas', 'male', '2019-03-08', 'rudas', 'Sargus ir ramus šuo', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Vilniaus Gyvūnų Namai'), 'Cira', 'VGN003', 'cat', 'mišrūnas', 'female', '2022-07-21', 'pilka', 'Smalsi ir žaisminga katė', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Vilniaus Gyvūnų Namai'), 'Džekas', 'VGN004', 'dog', 'mišrūnas', 'male', '2020-11-11', 'juoda/balta', 'Energingas ir socialus šuo', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Vilniaus Gyvūnų Namai'), 'Ema', 'VGN005', 'cat', 'mišrūnas', 'female', '2021-01-01', 'balta', 'Rami ir švelni katė', 'reserved'),
+    ((SELECT id FROM shelter WHERE name = 'Vilniaus Gyvūnų Namai'), 'Foksas', 'VGN006', 'dog', 'mišrūnas', 'male', '2018-09-09', 'raudonai rudas', 'Protingas ir budrus šuo', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Vilniaus Gyvūnų Namai'), 'Gaja', 'VGN007', 'cat', 'mišrūnas', 'female', '2020-02-02', 'juoda', 'Tylus ir atsargus katinas', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Vilniaus Gyvūnų Namai'), 'Haris', 'VGN008', 'dog', 'mišrūnas', 'male', '2019-06-06', 'pilkai rudas', 'Ištikimas ir ramus šuo', 'foster'),
+    ((SELECT id FROM shelter WHERE name = 'Vilniaus Gyvūnų Namai'), 'Iva', 'VGN009', 'cat', 'mišrūnas', 'female', '2022-10-10', 'ryža', 'Žaisminga ir smalsi katė', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Vilniaus Gyvūnų Namai'), 'Joris', 'VGN010', 'dog', 'mišrūnas', 'male', '2021-08-08', 'juoda', 'Aktyvus ir draugiškas šuo', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Vilniaus Gyvūnų Namai'), 'Lukas', 'VGN012', 'dog', 'mišrūnas', 'male', '2017-12-12', 'rudas', 'Vyresnis, bet labai ramus šuo', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Vilniaus Gyvūnų Namai'), 'Puma', 'VGN016', 'cat', 'mišrūnas', 'female', '2022-01-20', 'pilka', 'Greita ir smalsi katė', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Vilniaus Gyvūnų Namai'), 'Tadas', 'VGN019', 'dog', 'mišrūnas', 'male', '2021-11-11', 'pilkai rudas', 'Energingas jaunas šuo', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Klaipėdos Gyvūnų Prieglauda'), 'Astra', 'KLP001', 'cat', 'mišrūnas', 'female', '2021-04-14', 'pilka', 'Rami ir švelni katė, mėgsta ramybę', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Klaipėdos Gyvūnų Prieglauda'), 'Brutas', 'KLP002', 'dog', 'mišrūnas', 'male', '2019-02-10', 'juoda/ruda', 'Stiprus, bet draugiškas šuo', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Klaipėdos Gyvūnų Prieglauda'), 'Coco', 'KLP003', 'cat', 'mišrūnas', 'female', '2022-08-08', 'ryža', 'Žaisminga ir smalsi katė', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Klaipėdos Gyvūnų Prieglauda'), 'Dingo', 'KLP004', 'dog', 'mišrūnas', 'male', '2020-01-15', 'rudas', 'Energingas ir aktyvus šuo', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Klaipėdos Gyvūnų Prieglauda'), 'Elza', 'KLP005', 'cat', 'mišrūnas', 'female', '2021-11-11', 'balta', 'Švelni ir rami katė', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Klaipėdos Gyvūnų Prieglauda'), 'Fredis', 'KLP006', 'cat', 'mišrūnas', 'male', '2018-07-07', 'pilkas', 'Vyresnis, ramus šuo', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Klaipėdos Gyvūnų Prieglauda'), 'Gigi', 'KLP007', 'cat', 'mišrūnas', 'female', '2020-10-10', 'juoda', 'Atsargi, bet meili katė', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Klaipėdos Gyvūnų Prieglauda'), 'Hugo', 'KLP008', 'dog', 'mišrūnas', 'male', '2019-09-09', 'rudas/juodas', 'Ištikimas ir ramus šuo', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Klaipėdos Gyvūnų Prieglauda'), 'Iris', 'KLP009', 'cat', 'mišrūnas', 'female', '2022-02-02', 'pilka/balta', 'Labai žaisminga katė', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Klaipėdos Gyvūnų Prieglauda'), 'Juno', 'KLP010', 'dog', 'mišrūnas', 'female', '2021-06-06', 'juoda', 'Energinga ir draugiška kalytė', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Klaipėdos Gyvūnų Prieglauda'), 'Koda', 'KLP011', 'cat', 'mišrūnas', 'male', '2020-03-03', 'raina', 'Smalsus ir aktyvus katinas', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Klaipėdos Gyvūnų Prieglauda'), 'Lara', 'KLP012', 'dog', 'mišrūnas', 'female', '2019-12-12', 'auksinė', 'Meili ir rami kalytė', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Klaipėdos Gyvūnų Prieglauda'), 'Maksas', 'KLP013', 'dog', 'mišrūnas', 'male', '2020-05-05', 'rudas', 'Draugiškas ir socialus šuo', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Klaipėdos Gyvūnų Prieglauda'), 'Nika', 'KLP014', 'cat', 'mišrūnas', 'female', '2021-09-09', 'juoda/balta', 'Rami ir prisirišanti katė', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Klaipėdos Gyvūnų Prieglauda'), 'Odis', 'KLP015', 'dog', 'mišrūnas', 'male', '2018-11-11', 'pilkai rudas', 'Vyresnis, bet labai ištikimas šuo', 'available'),
+    ((SELECT id FROM shelter WHERE name = 'Penkta Koja'), 'Ambraziejus', '34328758', 'dog', 'mišrūnas', 'male', NULL, 'Juodas su rudu', 'Sargus ir ištikimas augintinis', 'reserved'),
+    ((SELECT id FROM shelter WHERE name = 'Lesė'), 'Naujas', '123456', 'dog', 'Šuo', 'unknown', '2026-06-05', 'Juoda', 'aa', 'available')
 ON CONFLICT DO NOTHING;
-
 
 
 -- =========================================
@@ -126,67 +187,10 @@ INSERT INTO news (
     is_published
 )
 VALUES
-
--- Happy Paws Shelter
-(
-    (SELECT id FROM shelter WHERE name = 'Happy Paws Shelter'),
-    (SELECT id FROM app_user WHERE username = 'shelter1'),
-
-    'Kaip tinkamai pasiruošti šuns adopcijai',
-    'https://www.rspca.org.uk/adviceandwelfare/pets/dogs',
-    'https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=1600&auto=format&fit=crop',
-    TRUE
-),
-
-(
-    (SELECT id FROM shelter WHERE name = 'Happy Paws Shelter'),
-    (SELECT id FROM app_user WHERE username = 'shelter1'),
-
-    'Kodėl svarbu sterilizuoti augintinius',
-    'https://www.humanesociety.org/resources/why-you-should-spayneuter-your-pet',
-    'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=1600&auto=format&fit=crop',
-    TRUE
-),
-
-(
-    (SELECT id FROM shelter WHERE name = 'Happy Paws Shelter'),
-    (SELECT id FROM app_user WHERE username = 'shelter1'),
-
-    'Patarimai pirmoms dienoms su nauju katinu',
-    'https://www.aspca.org/pet-care/cat-care/general-cat-care',
-    'https://images.unsplash.com/photo-1519052537078-e6302a4968d4?q=80&w=1600&auto=format&fit=crop',
-    TRUE
-),
-
--- Safe Haven Shelter
-(
-    (SELECT id FROM shelter WHERE name = 'Safe Haven Shelter'),
-    (SELECT id FROM app_user WHERE username = 'shelter2'),
-
-    'Kaip atpažinti gyvūno stresą',
-    'https://www.bluecross.org.uk/advice/dog/behaviour-and-training/signs-of-stress-in-dogs',
-    'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=1600&auto=format&fit=crop',
-    TRUE
-),
-
-(
-    (SELECT id FROM shelter WHERE name = 'Safe Haven Shelter'),
-    (SELECT id FROM app_user WHERE username = 'shelter2'),
-
-    'Gyvūnų priežiūra žiemos metu',
-    'https://www.pdsa.org.uk/pet-help-and-advice/pet-health-hub/conditions/caring-for-your-pet-in-winter',
-    'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?q=80&w=1600&auto=format&fit=crop',
-    TRUE
-),
-
-(
-    (SELECT id FROM shelter WHERE name = 'Safe Haven Shelter'),
-    (SELECT id FROM app_user WHERE username = 'shelter2'),
-
-    'Savanorystės nauda gyvūnų prieglaudose',
-    'https://www.petfinder.com/animal-shelters-and-rescues/volunteering-at-animal-shelter/',
-    'https://images.unsplash.com/photo-1525253086316-d0c936c814f8?q=80&w=1600&auto=format&fit=crop',
-    TRUE
-)
-
+    ((SELECT id FROM shelter WHERE name = 'Lesė'), (SELECT id FROM app_user WHERE username = 'shelter1'), 'Kaip tinkamai pasiruošti šuns adopcijai', 'https://www.rspca.org.uk/adviceandwelfare/pets/dogs', 'https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=1600&auto=format&fit=crop', TRUE),
+    ((SELECT id FROM shelter WHERE name = 'Lesė'), (SELECT id FROM app_user WHERE username = 'shelter1'), 'Kodėl svarbu sterilizuoti augintinius', 'https://www.humanesociety.org/resources/why-you-should-spayneuter-your-pet', 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=1600&auto=format&fit=crop', TRUE),
+    ((SELECT id FROM shelter WHERE name = 'Lesė'), (SELECT id FROM app_user WHERE username = 'shelter1'), 'Patarimai pirmoms dienoms su nauju katinu', 'https://www.aspca.org/pet-care/cat-care/general-cat-care', 'https://images.unsplash.com/photo-1519052537078-e6302a4968d4?q=80&w=1600&auto=format&fit=crop', TRUE),
+    ((SELECT id FROM shelter WHERE name = 'Penkta Koja'), (SELECT id FROM app_user WHERE username = 'shelter2'), 'Kaip atpažinti gyvūno stresą', 'https://www.bluecross.org.uk/advice/dog/behaviour-and-training/signs-of-stress-in-dogs', 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=1600&auto=format&fit=crop', TRUE),
+    ((SELECT id FROM shelter WHERE name = 'Penkta Koja'), (SELECT id FROM app_user WHERE username = 'shelter2'), 'Gyvūnų priežiūra žiemos metu', 'https://www.pdsa.org.uk/pet-help-and-advice/pet-health-hub/conditions/caring-for-your-pet-in-winter', 'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?q=80&w=1600&auto=format&fit=crop', TRUE),
+    ((SELECT id FROM shelter WHERE name = 'Penkta Koja'), (SELECT id FROM app_user WHERE username = 'shelter2'), 'Savanorystės nauda gyvūnų prieglaudose', 'https://www.petfinder.com/animal-shelters-and-rescues/volunteering-at-animal-shelter/', 'https://images.unsplash.com/photo-1525253086316-d0c936c814f8?q=80&w=1600&auto=format&fit=crop', TRUE)
 ON CONFLICT DO NOTHING;
