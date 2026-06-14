@@ -11,6 +11,8 @@ let currentUser = null;
 
 let currentAnimalPage = 1;
 const animalsPerPage = 8;
+let animalSearchQuery = "";
+let animalSearchTimeout = null;
 
 const {
   getEl,
@@ -92,6 +94,17 @@ function getFilteredFavoriteAnimals() {
   });
 
   let result = [...favoriteAnimals];
+
+  if (animalSearchQuery) {
+  const query = animalSearchQuery.toLowerCase();
+
+  result = result.filter((animal) => {
+    const name = String(animal.name || "").toLowerCase();
+    const breed = String(animal.breed || "").toLowerCase();
+
+    return name.includes(query) || breed.includes(query);
+  });
+}
 
   if (filters.shelter_id) {
     result = result.filter(
@@ -295,6 +308,7 @@ function bindPageEvents() {
   const genderFilter = getEl("animalGenderFilter");
   const statusFilter = getEl("animalStatusFilter");
   const sortOrderFilter = getEl("animalSortOrder");
+  const searchInput = getEl("animalSearchInput");
   const modalCloseBtn = getEl("animalModalCloseBtn");
   const modalBackdrop = getEl("animalModalBackdrop");
 
@@ -303,6 +317,16 @@ function bindPageEvents() {
       currentAnimalPage = 1;
       applyFiltersAndRender();
     });
+  });
+
+  searchInput?.addEventListener("input", () => {
+    clearTimeout(animalSearchTimeout);
+
+    animalSearchTimeout = setTimeout(() => {
+      animalSearchQuery = searchInput.value.trim();
+      currentAnimalPage = 1;
+      applyFiltersAndRender();
+    }, 250);
   });
 
   modalCloseBtn?.addEventListener("click", closeAnimalModal);

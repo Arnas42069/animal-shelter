@@ -245,28 +245,24 @@
   }
 
   function getSortParams() {
-    const value = getEl("sortAnimals")?.value || "created_at_desc";
+    const sortOrder = getEl("animalSortOrder")?.value || "desc";
 
-    if (value === "name_asc") return { sort_by: "name", sort_order: "asc" };
-    if (value === "name_desc") return { sort_by: "name", sort_order: "desc" };
-    if (value === "breed_asc") return { sort_by: "breed", sort_order: "asc" };
-    if (value === "breed_desc") return { sort_by: "breed", sort_order: "desc" };
-    if (value === "birth_date_asc") return { sort_by: "birth_date", sort_order: "asc" };
-    if (value === "birth_date_desc") return { sort_by: "birth_date", sort_order: "desc" };
-
-    return { sort_by: "", sort_order: "desc" };
+    return {
+      sort_by: "created_at",
+      sort_order: sortOrder
+    };
   }
 
   function buildAnimalQuery() {
     const params = new URLSearchParams();
 
-    const species = getEl("filterSpecies")?.value || "";
-    const breed = getEl("filterBreed")?.value || "";
-    const sex = getEl("filterSex")?.value || "";
-    const status = getEl("filterStatus")?.value || "";
+    const search = getEl("animalSearchInput")?.value.trim() || "";
+    const species = getEl("animalSpeciesFilter")?.value || "";
+    const sex = getEl("animalGenderFilter")?.value || "";
+    const status = getEl("animalStatusFilter")?.value || "";
 
+    if (search) params.set("search", search);
     if (species) params.set("species", species);
-    if (breed) params.set("breed", breed);
     if (sex) params.set("sex", sex);
     if (status) params.set("status", status);
 
@@ -385,7 +381,6 @@
       const total = Number(result?.total || 0);
       const totalPages = Math.ceil(total / 8);
 
-      fillBreedFilter(getEl("filterBreed"), animals, "Visos veislės");
       renderAnimals(animals);
       renderAnimalsPagination(totalPages, page);
     } catch (error) {
@@ -721,8 +716,14 @@
       closeAnimalModal();
     });
 
-    ["filterSpecies", "filterBreed", "filterSex", "filterStatus", "sortAnimals"].forEach((id) => {
+    ["animalSpeciesFilter", "animalGenderFilter", "animalStatusFilter", "animalSortOrder"].forEach((id) => {
       getEl(id)?.addEventListener("change", () => loadAnimals(1));
+    });
+
+    let animalSearchTimeout = null;
+    getEl("animalSearchInput")?.addEventListener("input", () => {
+      clearTimeout(animalSearchTimeout);
+      animalSearchTimeout = setTimeout(() => loadAnimals(1), 250);
     });
 
     bindAnimalImagePreview();

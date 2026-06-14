@@ -23,30 +23,36 @@
       <main>
         <section class="animals">
           <div class="animals-toolbar">
+            <input
+              id="animalSearchInput"
+              class="animal-search-input"
+              type="search"
+              placeholder="Ieškoti pagal vardą arba veislę"
+            />
+
             <select id="animalShelterFilter">
               <option value="">Visos prieglaudos</option>
             </select>
 
             <select id="animalSpeciesFilter">
-              <option value="">Visos rūšys</option>
+              <option value="">Rūšis</option>
               <option value="dog">Šuo</option>
               <option value="cat">Katė</option>
             </select>
 
             <select id="animalGenderFilter">
-              <option value="">Visos lytys</option>
+              <option value="">Lytis</option>
               <option value="male">Patinas</option>
               <option value="female">Patelė</option>
             </select>
 
             <select id="animalStatusFilter">
-              <option value="">Visi statusai</option>
-              <option value="available">Available</option>
-              <option value="reserved">Reserved</option>
-              <option value="adopted">Adopted</option>
-              <option value="foster">Foster</option>
-              <option value="medical_hold">Medical hold</option>
-              <option value="lost">Lost</option>
+              <option value="">Statusas</option>
+              <option value="available">Ieško namų</option>
+              <option value="reserved">Rezervuotas</option>
+              <option value="adopted">Surado namus</option>
+              <option value="foster">Laikinoje globoje</option>
+              <option value="medical_hold">Gydomas</option>
             </select>
 
             <select id="animalSortOrder">

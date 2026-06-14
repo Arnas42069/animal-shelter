@@ -413,6 +413,10 @@ section h2,
     gap: 12px;
 }
 
+.animals-toolbar--no-shelter {
+    grid-template-columns: 2.7fr 0.5fr 0.5fr 0.8fr 1fr;
+}
+
 .animals-toolbar label {
     font-size: 18px;
     font-weight: 600;

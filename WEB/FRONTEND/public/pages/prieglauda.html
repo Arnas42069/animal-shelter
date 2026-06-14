@@ -5,6 +5,9 @@
     <title>Prieglauda</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+      <!-- Bendri stiliai -->
+    <link rel="stylesheet" href="/assets/css/main.css" />
+
     <!-- Prieglaudos puslapio stiliai -->
     <link rel="stylesheet" href="/assets/css/prieglauda.css" />
 
@@ -12,7 +15,6 @@
     <link rel="stylesheet" href="/assets/css/navbar.css" />
     <link rel="stylesheet" href="/assets/css/auth-modals.css" />
     <link rel="stylesheet" href="/assets/css/footer.css" />
-    <link rel="stylesheet" href="/assets/css/main.css" />
   </head>
 
   <body>
@@ -202,57 +204,43 @@
         </div>
 
         <!-- Filtrai ir rikiavimas -->
-        <div class="animals-toolbar">
-          <div class="animals-filters">
-            <!-- Filtras pagal rusi -->
-            <select id="filterSpecies">
-              <option value="">Visos rūšys</option>
-              <option value="dog">Šuo</option>
-              <option value="cat">Katė</option>
-              <option value="other">Kitas</option>
-            </select>
 
-            <!-- Filtras pagal veisle -->
-            <select id="filterBreed">
-              <option value="">Visos veislės</option>
-            </select>
+        <div class="animals-toolbar animals-toolbar--no-shelter">
+          <input
+            id="animalSearchInput"
+            class="animal-search-input"
+            type="search"
+            placeholder="Ieškoti pagal vardą arba veislę"
+          />
 
-            <!-- Filtras pagal lyti -->
-            <select id="filterSex">
-              <option value="">Visos lytys</option>
-              <option value="male">Patinas</option>
-              <option value="female">Patelė</option>
-              <option value="unknown">Nežinoma</option>
-            </select>
+          <select id="animalSpeciesFilter">
+            <option value="">Rūšis</option>
+            <option value="dog">Šuo</option>
+            <option value="cat">Katė</option>
+          </select>
 
-            <!-- Filtras pagal statusa -->
-            <select id="filterStatus">
-              <option value="">Visi statusai</option>
-              <option value="available">Available</option>
-              <option value="reserved">Reserved</option>
-              <option value="adopted">Adopted</option>
-              <option value="foster">Foster</option>
-              <option value="medical_hold">Medical hold</option>
-              <option value="lost">Lost</option>
-            </select>
-          </div>
+          <select id="animalGenderFilter">
+            <option value="">Lytis</option>
+            <option value="male">Patinas</option>
+            <option value="female">Patelė</option>
+          </select>
 
-          <div class="animals-sort">
-            <!-- Rikiavimas -->
-            <select id="sortAnimals">
-              <option value="created_at_desc">Naujausi pirmiau</option>
-              <option value="name_asc">Vardas A–Ž</option>
-              <option value="name_desc">Vardas Ž–A</option>
-              <option value="breed_asc">Veislė A–Ž</option>
-              <option value="breed_desc">Veislė Ž–A</option>
-              <option value="birth_date_asc">Gimimo data ↑</option>
-              <option value="birth_date_desc">Gimimo data ↓</option>
-            </select>
-          </div>
+          <select id="animalStatusFilter">
+            <option value="">Statusas</option>
+            <option value="available">Ieško namų</option>
+            <option value="reserved">Rezervuotas</option>
+            <option value="adopted">Surado namus</option>
+            <option value="foster">Laikinoje globoje</option>
+            <option value="medical_hold">Gydomas</option>
+          </select>
+
+          <select id="animalSortOrder">
+            <option value="desc">Naujausi pirmiau</option>
+            <option value="asc">Seniausi pirmiau</option>
+          </select>
         </div>
 
-        <!-- Zinute gyvunu veiksmams -->
-        <p id="animalsMessage" class="shelter-message"></p>
+        
 
         <!-- Dinaminis gyvunu grid -->
         <div class="cards-animal" id="animalsGrid"></div>
