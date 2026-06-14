@@ -115,7 +115,7 @@ CREATE INDEX IF NOT EXISTS animal_image_animal_idx ON animal_image(animal_id);
 -- =========================================
 -- ANIMAL_FAVORITE
 -- =========================================
-CREATE TABLE animal_favorite (
+CREATE TABLE IF NOT EXISTS animal_favorite (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
     user_id BIGINT NOT NULL REFERENCES app_user(id) ON DELETE CASCADE,
@@ -249,15 +249,15 @@ CREATE TABLE IF NOT EXISTS news (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_news_shelter_id ON news(shelter_id);
-CREATE INDEX idx_news_created_at ON news(created_at DESC);
-CREATE INDEX idx_news_is_published ON news(is_published);
+CREATE INDEX IF NOT EXISTS idx_news_shelter_id ON news(shelter_id);
+CREATE INDEX IF NOT EXISTS idx_news_created_at ON news(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_news_is_published ON news(is_published);
 
 
 -- =========================================
 -- EVENTS
 -- =========================================
-CREATE TABLE event (
+CREATE TABLE IF NOT EXISTS event (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
     shelter_id BIGINT REFERENCES shelter(id) ON DELETE CASCADE,

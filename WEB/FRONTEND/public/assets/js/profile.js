@@ -4,7 +4,7 @@
 
   // Ar siuo metu ijungtas redagavimo rezimas
   let isEditing = false;
-const { showNotification } = window.AppCommon;
+
   // Patogesne funkcija elemento paemimui pagal id
   function getEl(id) {
     return document.getElementById(id);
@@ -16,6 +16,20 @@ const { showNotification } = window.AppCommon;
 
     el.textContent = text || "";
     el.className = `profile-message ${type}`.trim();
+  }
+
+  // Saugus notification wrapperis
+  // Jei window.AppCommon neegzistuoja, rodome zinute paciame profilio puslapyje
+  function showProfileNotification(text, type = "") {
+    if (
+      window.AppCommon &&
+      typeof window.AppCommon.showNotification === "function"
+    ) {
+      window.AppCommon.showNotification(text, type);
+      return;
+    }
+
+    setMessage(getEl("profileMessage"), text, type);
   }
 
   // Bendras request i backend su token
@@ -44,7 +58,7 @@ const { showNotification } = window.AppCommon;
   }
 
   // Uzpildo vartotojo laukus
-  function fillProfileForm(user) {
+  function fillProfileForm(user = {}) {
     getEl("editName").value = user.name || "";
     getEl("editSurname").value = user.surname || "";
     getEl("editEmail").value = user.email || "";
@@ -155,11 +169,12 @@ const { showNotification } = window.AppCommon;
       fillProfileForm(currentUser);
       setInlineEditMode(false);
 
-      showNotification("Profilio informacija atnaujinta", "success");
+      showProfileNotification("Profilio informacija atnaujinta", "success");
 
       window.dispatchEvent(new CustomEvent("auth-changed"));
     } catch (error) {
       console.error(error);
+
       setMessage(
         messageEl,
         error.message || "Nepavyko atnaujinti profilio",
@@ -201,6 +216,7 @@ const { showNotification } = window.AppCommon;
       getEl("newPassword").value = "";
       getEl("repeatPassword").value = "";
       getEl("showPasswords").checked = false;
+
       togglePasswordVisibility(false);
 
       getEl("passwordSection").hidden = true;
@@ -208,6 +224,7 @@ const { showNotification } = window.AppCommon;
       setMessage(messageEl, "Slaptažodis pakeistas", "success");
     } catch (error) {
       console.error(error);
+
       setMessage(
         messageEl,
         error.message || "Nepavyko pakeisti slaptažodžio",
@@ -232,6 +249,7 @@ const { showNotification } = window.AppCommon;
       authLogout();
     } catch (error) {
       console.error(error);
+
       setMessage(
         getEl("profileMessage"),
         error.message || "Nepavyko ištrinti paskyros",
@@ -252,7 +270,6 @@ const { showNotification } = window.AppCommon;
       return;
     }
 
-    // Svarbus pakeitimas
     // I sita puslapi dabar leidziam ir volunteer ir shelter rolei
     // nes shelter naudotojas cia keicia prisijungimo duomenis
     if (authUser.role !== "volunteer" && authUser.role !== "shelter") {
@@ -262,12 +279,12 @@ const { showNotification } = window.AppCommon;
 
     getEl("toggleEditBtn")?.addEventListener("click", () => {
       if (!isEditing) {
-        fillProfileForm(currentUser);
+        fillProfileForm(currentUser || {});
         setInlineEditMode(true);
         return;
       }
 
-      fillProfileForm(currentUser);
+      fillProfileForm(currentUser || {});
       setInlineEditMode(false);
     });
 

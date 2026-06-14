@@ -55,7 +55,7 @@ VALUES
     ),
     (
         'Safe Haven Shelter',
-        
+        'A safe shelter for rescued animals',
         'info@safehaven.lt',
         '+37060000002',
         'https://safehaven.lt',
