@@ -133,7 +133,7 @@
     border: 2px solid var(--accent-dark);
     border-radius: 999px;
     background: var(--accent-dark);
-    color: #ffffff;
+    color: #F5EFE6;
     font-family: "Source Sans 3", sans-serif;
     font-size: 16px;
     font-weight: 600;
@@ -174,9 +174,9 @@
 .section-heading h2,
 .registration-intro h2 {
     margin: 0 0 14px;
-    color: var(--volunteer-text);
-    font-weight: 500;
-    font-size: clamp(26px, 3vw, 34px);
+    color: #444444;
+    font-weight: 550;
+    font-size: clamp(26px, 3vw, 36px);
     line-height: 1.1;
 }
 
@@ -238,18 +238,6 @@
     margin: 14px 0 0;
     font-size: 15px;
     font-weight: 800;
-}
-
-.volunteer-message.success {
-    color: var(--volunteer-success);
-}
-
-.volunteer-message.error {
-    color: var(--volunteer-error);
-}
-
-.volunteer-message.warning {
-    color: var(--volunteer-warning);
 }
 
 .volunteer-form {

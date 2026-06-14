@@ -52,6 +52,13 @@ async function authFetchCurrentUser() {
 
 /* Atsijungia ir grazina i pagrindini puslapi */
 function authLogout() {
+  sessionStorage.setItem(
+    "app_pending_notification",
+    JSON.stringify({
+      message: "Sėkmingai atsijungėte",
+      type: "success"
+    })
+  );
   authClearToken();
   window.location.href = "/index.html";
 }

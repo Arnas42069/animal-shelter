@@ -32,6 +32,7 @@ from src.schemas import (
 
     ShelterRegisterRequest,
     ShelterResponse,
+    ShelterMonthlyVolunteerStatsResponse,
     ShelterUpdateRequest,
     ShelterActiveUpdateRequest,
 
@@ -58,6 +59,7 @@ from src.schemas import (
     VisitMeResponse,
     ShelterVisitResponse,
     VisitStatusUpdateRequest,
+    VisitSocialHoursAddRequest,
     VisitUpdateRequest,
 
     NewsBase,
@@ -505,6 +507,54 @@ def get_my_shelter(
         raise HTTPException(status_code=404, detail="Prieglauda nerasta")
 
     return shelter
+
+
+@app.get("/shelter/{shelter_id}/monthly-volunteers", response_model=ShelterMonthlyVolunteerStatsResponse)
+def get_shelter_monthly_volunteers(
+    shelter_id: int,
+    db: Session = Depends(get_db)
+):
+    shelter = db.query(Shelter).filter(Shelter.id == shelter_id).first()
+
+    if not shelter:
+        raise HTTPException(status_code=404, detail="Prieglauda nerasta")
+
+    now = datetime.now(timezone.utc)
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    if month_start.month == 12:
+        next_month_start = month_start.replace(
+            year=month_start.year + 1,
+            month=1
+        )
+    else:
+        next_month_start = month_start.replace(month=month_start.month + 1)
+
+    visits = db.query(Visit).filter(
+        Visit.shelter_id == shelter_id,
+        Visit.status.in_(["scheduled", "completed"]),
+        Visit.approved_at >= month_start,
+        Visit.approved_at < next_month_start
+    ).all()
+
+    monthly_volunteers_count = sum(
+        visit.group_size if visit.is_group and visit.group_size else 1
+        for visit in visits
+    )
+
+    foster_volunteers_count = db.query(AnimalFoster).join(Animal).filter(
+        Animal.shelter_id == shelter_id,
+        AnimalFoster.status.in_(["approved", "active", "completed"]),
+        AnimalFoster.approved_at >= month_start,
+        AnimalFoster.approved_at < next_month_start
+    ).count()
+
+    return {
+        "shelter_id": shelter_id,
+        "monthly_volunteers_count": monthly_volunteers_count + foster_volunteers_count,
+        "month_start": month_start,
+        "next_month_start": next_month_start
+    }
 
 
 # UPDATE
@@ -1713,6 +1763,7 @@ def delete_animal_favorite(
 # -------------------------------------------------
 
 # CREATE
+@app.post("/foster", response_model=AnimalFosterResponse)
 @app.post("/animal/foster", response_model=AnimalFosterResponse)
 def create_animal_foster(
     data: AnimalFosterCreate,
@@ -1757,6 +1808,7 @@ def create_animal_foster(
 
 
 # READ ALL
+@app.get("/foster", response_model=list[AnimalFosterResponse])
 @app.get("/animal/foster", response_model=list[AnimalFosterResponse])
 def get_animal_fosters(
     status: Optional[str] = None,
@@ -1798,6 +1850,7 @@ def get_animal_fosters(
 
 
 # READ ONE
+@app.get("/foster/{foster_id}", response_model=AnimalFosterResponse)
 @app.get("/animal/foster/{foster_id}", response_model=AnimalFosterResponse)
 def get_animal_foster(
     foster_id: int,
@@ -1826,6 +1879,7 @@ def get_animal_foster(
 
 
 # UPDATE
+@app.patch("/foster/{foster_id}", response_model=AnimalFosterResponse)
 @app.patch("/animal/foster/{foster_id}", response_model=AnimalFosterResponse)
 def update_animal_foster(
     foster_id: int,
@@ -1902,6 +1956,7 @@ def update_animal_foster(
 
 
 # DELETE
+@app.delete("/foster/{foster_id}")
 @app.delete("/animal/foster/{foster_id}")
 def delete_animal_foster(
     foster_id: int,
@@ -2012,6 +2067,7 @@ def register_visit(
         is_under_16=data.is_under_16,
         is_group=data.is_group,
         group_size=data.group_size,
+        wants_social_hours=data.wants_social_hours,
         social_hrs=0,
         note=data.note
     )
@@ -2206,6 +2262,9 @@ def get_my_visits(
             "end_at": visit.end_at,
             "status": visit.status,
             "is_under_16": visit.is_under_16,
+            "is_group": visit.is_group,
+            "group_size": visit.group_size,
+            "wants_social_hours": visit.wants_social_hours,
             "social_hrs": float(visit.social_hrs),
             "note": visit.note,
             "shelter": {
@@ -2250,6 +2309,9 @@ def get_shelter_visits(
             "end_at": visit.end_at,
             "status": visit.status,
             "is_under_16": visit.is_under_16,
+            "is_group": visit.is_group,
+            "group_size": visit.group_size,
+            "wants_social_hours": visit.wants_social_hours,
             "social_hrs": float(visit.social_hrs),
             "note": visit.note,
             "volunteer": {
@@ -2295,10 +2357,90 @@ def update_visit_status(
 
     visit.status = data.status
 
+    if data.status in {"scheduled", "completed"} and not visit.approved_at:
+        visit.approved_at = datetime.now(timezone.utc)
+
     db.commit()
     db.refresh(visit)
 
     return visit
+
+
+@app.patch("/visit/{visit_id}/social-hours/add", response_model=VisitResponse)
+def add_visit_social_hours(
+    visit_id: int,
+    data: VisitSocialHoursAddRequest,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if user.role != "shelter":
+        raise HTTPException(
+            status_code=403,
+            detail="Tik shelter vartotojas gali pridėti socialines valandas"
+        )
+
+    shelter = db.query(Shelter).filter(Shelter.created_by == user.id).first()
+
+    if not shelter:
+        raise HTTPException(status_code=404, detail="Prieglauda nerasta")
+
+    visit = db.query(Visit).filter(
+        Visit.id == visit_id,
+        Visit.shelter_id == shelter.id
+    ).first()
+
+    if not visit:
+        raise HTTPException(
+            status_code=404,
+            detail="Vizitas nerastas arba nepriklauso jūsų prieglaudai"
+        )
+
+    if not visit.wants_social_hours:
+        raise HTTPException(
+            status_code=400,
+            detail="Šis savanoris nekaupia socialinių valandų"
+        )
+
+    visit.social_hrs = float(visit.social_hrs) + data.hours
+
+    db.commit()
+    db.refresh(visit)
+
+    return visit
+
+
+@app.delete("/visit/{visit_id}")
+def delete_shelter_visit(
+    visit_id: int,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if user.role != "shelter":
+        raise HTTPException(
+            status_code=403,
+            detail="Tik shelter vartotojas gali pašalinti savanorystės registraciją"
+        )
+
+    shelter = db.query(Shelter).filter(Shelter.created_by == user.id).first()
+
+    if not shelter:
+        raise HTTPException(status_code=404, detail="Prieglauda nerasta")
+
+    visit = db.query(Visit).filter(
+        Visit.id == visit_id,
+        Visit.shelter_id == shelter.id
+    ).first()
+
+    if not visit:
+        raise HTTPException(
+            status_code=404,
+            detail="Vizitas nerastas arba nepriklauso jūsų prieglaudai"
+        )
+
+    db.delete(visit)
+    db.commit()
+
+    return {"message": "Savanorystės registracija pašalinta"}
 
 # -------------------------------------------------
 # -------------------NEWS--------------------------

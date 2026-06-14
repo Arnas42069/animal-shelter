@@ -336,7 +336,16 @@ class Visit(Base):
         server_default=text("'pending'")
     )
 
+    approved_at = Column(TIMESTAMP(timezone=True), nullable=True)
+
     is_under_16 = Column(
+        Boolean,
+        nullable=False,
+        default=False,
+        server_default=text("false")
+    )
+
+    wants_social_hours = Column(
         Boolean,
         nullable=False,
         default=False,

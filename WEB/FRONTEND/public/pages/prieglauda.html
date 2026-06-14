@@ -115,54 +115,68 @@
 
         <!-- Edit rezimas -->
         <div id="shelterContactsEdit" class="edit-form" hidden>
-          <label for="editShelterCity" class="edit-label">Miestas:</label>
-          <input
-            type="text"
-            id="editShelterCity"
-            placeholder="Miestas"
-          />
+          <div class="edit-field">
+            <label for="editShelterCity" class="edit-label">Miestas:</label>
+            <input
+              type="text"
+              id="editShelterCity"
+              placeholder="Miestas"
+            />
+          </div>
 
-          <label for="editShelterContactAddress" class="edit-label">Adresas:</label>
-          <input
-            type="text"
-            id="editShelterContactAddress"
-            placeholder="Adresas"
-          />
+          <div class="edit-field edit-field-wide">
+            <label for="editShelterContactAddress" class="edit-label">Adresas:</label>
+            <input
+              type="text"
+              id="editShelterContactAddress"
+              placeholder="Adresas"
+            />
+          </div>
 
-          <label for="editShelterPhone" class="edit-label">Telefono numeris:</label>
-          <input
-            type="text"
-            id="editShelterPhone"
-            placeholder="Telefono numeris"
-          />
+          <div class="edit-field">
+            <label for="editShelterPhone" class="edit-label">Telefono numeris:</label>
+            <input
+              type="text"
+              id="editShelterPhone"
+              placeholder="Telefono numeris"
+            />
+          </div>
 
-          <label for="editShelterEmail" class="edit-label">El. paštas:</label>
-          <input
-            type="email"
-            id="editShelterEmail"
-            placeholder="El. paštas"
-          />
+          <div class="edit-field edit-field-wide">
+            <label for="editShelterEmail" class="edit-label">El. paštas:</label>
+            <input
+              type="email"
+              id="editShelterEmail"
+              placeholder="El. paštas"
+            />
+          </div>
 
-          <label for="editShelterWebsite" class="edit-label">Svetainė:</label>
-          <input
-            type="text"
-            id="editShelterWebsite"
-            placeholder="Svetainė"
-          />
+          <div class="edit-field edit-field-wide">
+            <label for="editShelterWebsite" class="edit-label">Svetainė:</label>
+            <input
+              type="text"
+              id="editShelterWebsite"
+              placeholder="Svetainė"
+            />
+          </div>
 
-          <label for="editShelterPostalCode" class="edit-label">Pašto kodas:</label>
-          <input
-            type="text"
-            id="editShelterPostalCode"
-            placeholder="Pašto kodas"
-          />
+          <div class="edit-field">
+            <label for="editShelterPostalCode" class="edit-label">Pašto kodas:</label>
+            <input
+              type="text"
+              id="editShelterPostalCode"
+              placeholder="Pašto kodas"
+            />
+          </div>
 
-          <label for="editShelterCountry" class="edit-label">Šalis:</label>
-          <input
-            type="text"
-            id="editShelterCountry"
-            placeholder="Šalis"
-          />
+          <div class="edit-field">
+            <label for="editShelterCountry" class="edit-label">Šalis:</label>
+            <input
+              type="text"
+              id="editShelterCountry"
+              placeholder="Šalis"
+            />
+          </div>
         </div>
 
         <!-- Zinute po shelter veiksmais -->
@@ -186,8 +200,8 @@
 
           <div class="stat-card">
             <img src="/assets/svg/paw-outline.svg" alt="Pėdutės" class="paw-hover-icon" />
-            <p>Savanoriai:</p>
-            <strong>??</strong>
+            <p>Šio mėnesio savanoriai:</p>
+            <strong id="monthlyVolunteersCount">0</strong>
           </div>
         </div>
       </section>
@@ -273,7 +287,17 @@
           <!-- Popup antraste -->
           <div class="animal-modal-header">
             <div class="animal-modal-title-wrap">
-              <h2 id="animalModalTitle">Gyvūnas</h2>
+              <h2 class="animal-modal-title-row">
+                <span id="animalModalTitle">Gyvūnas</span>
+                <button
+                  class="favorite-btn animal-modal-favorite"
+                  id="animalModalFavorite"
+                  type="button"
+                  title="Mėgstamas"
+                >
+                  🤍
+                </button>
+              </h2>
               <p id="animalModalSubtitle" class="animal-modal-subtitle">-</p>
             </div>
 
@@ -306,9 +330,8 @@
                 <p><strong>Veislė:</strong> <span id="animalViewBreed">-</span></p>
                 <p><strong>Lytis:</strong> <span id="animalViewSex">-</span></p>
                 <p><strong>Statusas:</strong> <span id="animalViewStatus">-</span></p>
-                <p><strong>Gimimo data:</strong> <span id="animalViewBirthDate">-</span></p>
+                <p><strong>Amžius:</strong> <span id="animalViewBirthDate">-</span></p>
                 <p><strong>Spalva:</strong> <span id="animalViewColor">-</span></p>
-                <p><strong>Kodas:</strong> <span id="animalViewCode">-</span></p>
               </div>
 
               <div class="animal-description-block">
@@ -319,64 +342,74 @@
 
             <!-- Redagavimo ir kurimo forma -->
             <form id="animalForm" class="edit-form" hidden>
-              <!-- Gyvuno vardas -->
-              <label class="edit-label" for="animalNameInput">Vardas:</label>
-              <input type="text" id="animalNameInput" />
+              <div class="edit-field">
+                <label class="edit-label" for="animalNameInput">Vardas</label>
+                <input type="text" id="animalNameInput" />
+              </div>
 
-              <!-- Unikalus kodas -->
-              <label class="edit-label" for="animalCodeInput">Kodas:</label>
-              <input type="text" id="animalCodeInput" />
+              <div class="edit-field">
+                <label class="edit-label" for="animalCodeInput">Kodas</label>
+                <input type="text" id="animalCodeInput" />
+              </div>
 
-              <!-- Rusis -->
-              <label class="edit-label" for="animalSpeciesInput">Rūšis:</label>
-              <select id="animalSpeciesInput">
-                <option value="dog">Šuo</option>
-                <option value="cat">Katė</option>
-                <option value="other">Kitas</option>
-              </select>
+              <div class="edit-field">
+                <label class="edit-label" for="animalSpeciesInput">Rūšis</label>
+                <select id="animalSpeciesInput">
+                  <option value="dog">Šuo</option>
+                  <option value="cat">Katė</option>
+                  <option value="other">Kitas</option>
+                </select>
+              </div>
 
-              <!-- Veisle -->
-              <label class="edit-label" for="animalBreedInput">Veislė:</label>
-              <input type="text" id="animalBreedInput" />
+              <div class="edit-field">
+                <label class="edit-label" for="animalBreedInput">Veislė</label>
+                <input type="text" id="animalBreedInput" />
+              </div>
 
-              <!-- Lytis -->
-              <label class="edit-label" for="animalSexInput">Lytis:</label>
-              <select id="animalSexInput">
-                <option value="male">Patinas</option>
-                <option value="female">Patelė</option>
-                <option value="unknown">Nežinoma</option>
-              </select>
+              <div class="edit-field">
+                <label class="edit-label" for="animalSexInput">Lytis</label>
+                <select id="animalSexInput">
+                  <option value="male">Patinas</option>
+                  <option value="female">Patelė</option>
+                  <option value="unknown">Nežinoma</option>
+                </select>
+              </div>
 
-              <!-- Statusas -->
-              <label class="edit-label" for="animalStatusInput">Statusas:</label>
-              <select id="animalStatusInput">
-                <option value="available">Available</option>
-                <option value="reserved">Reserved</option>
-                <option value="adopted">Adopted</option>
-                <option value="foster">Foster</option>
-                <option value="medical_hold">Medical hold</option>
-                <option value="lost">Lost</option>
-              </select>
+              <div class="edit-field">
+                <label class="edit-label" for="animalStatusInput">Statusas</label>
+                <select id="animalStatusInput">
+                  <option value="available">Available</option>
+                  <option value="reserved">Reserved</option>
+                  <option value="adopted">Adopted</option>
+                  <option value="foster">Foster</option>
+                  <option value="medical_hold">Medical hold</option>
+                  <option value="lost">Lost</option>
+                </select>
+              </div>
 
-              <!-- Gimimo data -->
-              <label class="edit-label" for="animalBirthDateInput">Gimimo data:</label>
-              <input type="date" id="animalBirthDateInput" />
+              <div class="edit-field">
+                <label class="edit-label" for="animalBirthDateInput">Gimimo data</label>
+                <input type="date" id="animalBirthDateInput" />
+              </div>
 
-              <!-- Spalva -->
-              <label class="edit-label" for="animalColorInput">Spalva:</label>
-              <input type="text" id="animalColorInput" />
+              <div class="edit-field">
+                <label class="edit-label" for="animalColorInput">Spalva</label>
+                <input type="text" id="animalColorInput" />
+              </div>
 
-              <!-- Gyvuno nuotrauka -->
-              <label class="edit-label" for="animalImageInput">Nuotrauka:</label>
-              <input type="file" id="animalImageInput" accept="image/*" />
+              <div class="edit-field edit-field-wide">
+                <label class="edit-label" for="animalDescriptionInput">Aprašymas</label>
+                <textarea
+                  id="animalDescriptionInput"
+                  class="edit-textarea"
+                  rows="5"
+                ></textarea>
+              </div>
 
-              <!-- Aprasymas -->
-              <label class="edit-label" for="animalDescriptionInput">Aprašymas:</label>
-              <textarea
-                id="animalDescriptionInput"
-                class="edit-textarea"
-                rows="5"
-              ></textarea>
+              <div class="edit-field edit-field-wide">
+                <label class="edit-label" for="animalImageInput">Nuotrauka</label>
+                <input type="file" id="animalImageInput" accept="image/*" />
+              </div>
             </form>
 
             <!-- Zinute popup veiksmams -->

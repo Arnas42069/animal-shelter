@@ -31,17 +31,41 @@
           <img src="/assets/img/profile.png" alt="Profilio nuotrauka" />
         </div>
 
-        <!-- Puslapio pavadinimas -->
-        <h1 class="profile-title">Mano profilis</h1>
-
         <!--
           Inline profilio forma
           Tie patys laukai naudojami ir perziurai ir redagavimui
         -->
         <form id="profileInlineForm" class="profile-inline-form">
-          <div class="profile-info-list">
-            <!-- Vardo laukas -->
-            <div class="profile-row">
+          <div class="profile-identity-view">
+            <h1 class="profile-title" id="profileFullName">Mano profilis</h1>
+            <div class="profile-email-line">
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                class="profile-email-icon"
+              >
+                <path
+                  d="M4 6h16v12H4z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="m4.5 7 7.5 6 7.5-6"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <span id="profileEmailText">-</span>
+            </div>
+          </div>
+
+          <div class="profile-info-list" id="profileEditFields" hidden>
+            <label class="profile-row">
               <span class="profile-label">Vardas</span>
               <input
                 type="text"
@@ -49,10 +73,9 @@
                 class="profile-inline-input"
                 readonly
               />
-            </div>
+            </label>
 
-            <!-- Pavardes laukas -->
-            <div class="profile-row">
+            <label class="profile-row">
               <span class="profile-label">Pavardė</span>
               <input
                 type="text"
@@ -60,10 +83,9 @@
                 class="profile-inline-input"
                 readonly
               />
-            </div>
+            </label>
 
-            <!-- El pasto laukas -->
-            <div class="profile-row">
+            <label class="profile-row">
               <span class="profile-label">El. paštas</span>
               <input
                 type="email"
@@ -71,7 +93,7 @@
                 class="profile-inline-input"
                 readonly
               />
-            </div>
+            </label>
           </div>
 
           <!-- Pagrindiniai veiksmai -->
@@ -90,18 +112,68 @@
             <button type="button" class="btn btn-secondary" id="togglePasswordBtn">
               Keisti slaptažodį
             </button>
+
+            <button type="button" class="btn btn-delete-inline" id="deleteAccountBtn">
+              Ištrinti paskyrą
+            </button>
           </div>
         </form>
 
         <!-- Klaidu arba sekmes zinutes -->
         <p id="profileMessage" class="profile-message"></p>
+      </section>
 
-        <!-- Slaptazodzio keitimo sekcija -->
-        <section class="profile-edit-section" id="passwordSection" hidden>
+      <!-- Tik savanorio rolei rodoma socialiniu valandu ir istorijos sekcija -->
+      <section class="volunteer-history-section" id="volunteerHistorySection" hidden>
+        <div class="volunteer-history-header">
+          <h2 class="section-title">Savanoriavimo istorija</h2>
+          <div class="history-meta">
+            <span id="completedVisitsCount" class="history-count">0 registracijų</span>
+            <span class="history-count history-hours-count">
+              <span>Sukaupta</span>
+              <strong id="totalSocialHours">0 val.</strong>
+            </span>
+          </div>
+        </div>
+
+        <div class="volunteer-history-controls">
+          <input
+            type="search"
+            id="volunteerHistorySearch"
+            class="history-search-input"
+            placeholder="Ieškoti pagal prieglaudos pavadinimą"
+          />
+
+          <select id="volunteerHistorySort" class="history-sort-select">
+            <option value="date-desc">Naujausi pirmiau</option>
+            <option value="date-asc">Seniausi pirmiau</option>
+          </select>
+        </div>
+
+        <div id="volunteerHistoryList" class="volunteer-history-list"></div>
+      </section>
+
+      <!-- Slaptazodzio keitimo modalas -->
+      <section
+        class="password-modal"
+        id="passwordSection"
+        aria-modal="true"
+        role="dialog"
+        hidden
+      >
+        <div class="password-modal-card">
+          <button
+            type="button"
+            class="modal-close-btn"
+            id="closePasswordBtn"
+            aria-label="Uždaryti slaptažodžio keitimą"
+          >
+            ×
+          </button>
+
           <h2 class="section-title">Slaptažodžio keitimas</h2>
 
           <form id="passwordForm" class="profile-form">
-            <!-- Naujas slaptazodis -->
             <input
               type="password"
               id="newPassword"
@@ -110,7 +182,6 @@
               required
             />
 
-            <!-- Pakartotas naujas slaptazodis -->
             <input
               type="password"
               id="repeatPassword"
@@ -119,7 +190,6 @@
               required
             />
 
-            <!-- Rodyti arba slepti slaptazodi -->
             <label class="checkbox-row">
               <input type="checkbox" id="showPasswords" />
               <span>Rodyti slaptažodį</span>
@@ -129,15 +199,7 @@
               <button type="submit" class="btn">Pakeisti slaptažodį</button>
             </div>
           </form>
-        </section>
-
-        <!-- Paskyros istrynimo zona -->
-        <section class="danger-zone">
-          <h2 class="section-title danger-title">Paskyros šalinimas</h2>
-          <button type="button" class="btn btn-danger" id="deleteAccountBtn">
-            Ištrinti paskyrą
-          </button>
-        </section>
+        </div>
       </section>
     </main>
 
@@ -146,6 +208,7 @@
 
     <!-- Bendri scriptai -->
     <script src="/assets/js/auth.js"></script>
+    <script src="/assets/js/common.js"></script>
     <script src="/assets/js/navbar.js"></script>
     <script src="/assets/js/footer.js"></script>
 

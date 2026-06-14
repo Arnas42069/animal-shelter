@@ -29,6 +29,8 @@ const {
   translateSpecies,
   translateGender,
   translateStatus,
+  formatAnimalAge,
+  formatAnimalAgeDetailed,
   fillShelterFilter,
   readAnimalFilters,
   renderPagination,
@@ -162,30 +164,32 @@ function renderAnimals() {
   animals.forEach((animal) => {
     const shelterName =
       allShelters.find((shelter) => Number(shelter.id) === Number(animal.shelter_id))?.name || "-";
+    const age = formatAnimalAge(animal.birth_date);
 
     const card = document.createElement("div");
     card.className = "card-animal";
 
     card.innerHTML = `
       <h3 class="animal-title">
-        ${
-          canShowFavorite
-            ? `
-              <span class="favorite-btn ${animal.is_favorite ? "active" : ""}" data-id="${animal.id}" title="Mėgstamas">
-                ${animal.is_favorite ? "❤️" : "🤍"}
-              </span>
-            `
-            : ""
-        }
-        ${animal.name || "Be vardo"}
+        <span class="animal-title-main">
+          ${
+            canShowFavorite
+              ? `
+                <span class="favorite-btn ${animal.is_favorite ? "active" : ""}" data-id="${animal.id}" title="Mėgstamas">
+                  ${animal.is_favorite ? "❤️" : "🤍"}
+                </span>
+              `
+              : ""
+          }
+          <span>${animal.name || "Be vardo"}</span>
+          ${age ? `<span class="animal-age">${age}</span>` : ""}
+        </span>
       </h3>
 
       <img src="${getAnimalImage(animal)}" alt="Gyvūnas" />
 
-      <p><strong>Rūšis:</strong> ${translateSpecies(animal.species)}</p>
-      <p><strong>Veislė:</strong> ${animal.breed || "-"}</p>
       <p><strong>Prieglauda:</strong> ${shelterName}</p>
-      <p><strong>Statusas:</strong> ${translateStatus(animal.status)}</p>
+      <p><strong>Lytis:</strong> ${translateGender(animal.sex)}</p>
     `;
 
     card.addEventListener("click", () => {
@@ -219,15 +223,37 @@ function openAnimalModal(animal) {
 
   getEl("animalModalImage").src = getAnimalImage(animal);
   getEl("animalModalName").textContent = animal.name || "Be vardo";
+  const modalAge = getEl("animalModalAge");
+  if (modalAge) {
+    const age = formatAnimalAge(animal.birth_date);
+    modalAge.textContent = age || "";
+    modalAge.hidden = !age;
+  }
   getEl("animalModalShelter").textContent = shelterName;
   getEl("animalModalSpecies").textContent = translateSpecies(animal.species);
   getEl("animalModalBreed").textContent = animal.breed || "-";
   getEl("animalModalGender").textContent = translateGender(animal.sex);
   getEl("animalModalStatus").textContent = translateStatus(animal.status);
   getEl("animalModalColor").textContent = animal.color || "-";
-  getEl("animalModalBirthDate").textContent = animal.birth_date || "-";
-  getEl("animalModalCode").textContent = animal.code || "-";
+  getEl("animalModalBirthDate").textContent =
+    formatAnimalAgeDetailed(animal.birth_date) || "-";
   getEl("animalModalDescription").textContent = animal.description || "-";
+
+  const modalFavoriteBtn = getEl("animalModalFavorite");
+
+  if (modalFavoriteBtn) {
+    modalFavoriteBtn.className = `favorite-btn animal-modal-favorite ${
+      animal.is_favorite ? "active" : ""
+    }`;
+    modalFavoriteBtn.dataset.id = animal.id;
+    modalFavoriteBtn.textContent = animal.is_favorite ? "❤️" : "🤍";
+    modalFavoriteBtn.onclick = async (event) => {
+      event.stopPropagation();
+      await toggleAnimalFavorite(animal.id, animal.is_favorite);
+      modalFavoriteBtn.classList.toggle("active", Boolean(animal.is_favorite));
+      modalFavoriteBtn.textContent = animal.is_favorite ? "❤️" : "🤍";
+    };
+  }
 
   const fosterBtn = getEl("fosterLinkBtn");
 

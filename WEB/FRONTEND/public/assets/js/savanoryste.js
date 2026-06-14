@@ -50,21 +50,39 @@
   }
 
   function setMessage(text, type = "") {
-    if (!els.message) return;
+    if (
+      text &&
+      ["success", "error", "warning"].includes(type) &&
+      window.AppCommon?.showNotification
+    ) {
+      window.AppCommon.showNotification(text, type);
+      if (els.message) {
+        els.message.textContent = "";
+        els.message.className = "volunteer-message";
+      }
+      return;
+    }
 
-    els.message.textContent = text || "";
-    els.message.className = `volunteer-message ${type}`.trim();
+    if (els.message) {
+      els.message.textContent = text || "";
+      els.message.className = `volunteer-message ${type}`.trim();
+    }
   }
   
-  function showToast(text) {
-    if (!els.toast) return;
+  function showToast(text, type = "error") {
+    if (window.AppCommon?.showNotification) {
+      window.AppCommon.showNotification(text, type);
+      return;
+    }
 
-    els.toast.textContent = text;
-    els.toast.classList.add("show");
+    if (els.toast) {
+      els.toast.textContent = text;
+      els.toast.classList.add("show");
 
-    setTimeout(() => {
-      els.toast.classList.remove("show");
-    }, 3000);
+      setTimeout(() => {
+        els.toast.classList.remove("show");
+      }, 3000);
+    }
   }
   function toLocalDateTime(dateValue, timeValue) {
     return `${dateValue}T${timeValue}:00`;
@@ -291,6 +309,7 @@
       is_under_16: Boolean(els.under16Check.checked),
       is_group: isGroup,
       group_size: isGroup ? Number(els.groupSize.value) : null,
+      wants_social_hours: Boolean(els.socialHoursCheck?.checked),
       social_hrs: 0,
       note: els.visitNote.value.trim() || null
     };
@@ -303,7 +322,7 @@
         body: JSON.stringify(payload)
       });
 
-      showToast("Registracija pateikta sėkmingai. Prieglauda gaus pranešimą.");
+      showToast("Registracija pateikta sėkmingai. Prieglauda gaus pranešimą.", "success");
       setMessage("");
 
       els.form.reset();

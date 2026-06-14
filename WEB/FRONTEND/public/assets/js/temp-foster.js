@@ -38,10 +38,25 @@ function setText(id, value) {
 
 function setMessage(text, type = "") {
     const el = getEl("fosterFormMessage");
-    if (!el) return;
 
-    el.textContent = text || "";
-    el.className = type;
+    if (
+        text &&
+        ["success", "error", "warning"].includes(type) &&
+        window.AppCommon &&
+        typeof window.AppCommon.showNotification === "function"
+    ) {
+        window.AppCommon.showNotification(text, type);
+        if (el) {
+            el.textContent = "";
+            el.className = "";
+        }
+        return;
+    }
+
+    if (el) {
+        el.textContent = text || "";
+        el.className = type;
+    }
 }
 
 function renderAnimal(animal) {
@@ -93,7 +108,7 @@ async function submitFosterForm(event, animal) {
     }
 
     try {
-        const response = await fetch("/api/animal/foster", {
+        const response = await fetch("/api/foster", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

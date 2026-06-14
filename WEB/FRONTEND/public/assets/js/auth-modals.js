@@ -150,6 +150,26 @@ function closeAuthModal(modalId) {
   modal.classList.remove("active");
 }
 
+function setAuthMessage(messageEl, text, type = "") {
+  if (
+    text &&
+    ["success", "error", "warning"].includes(type) &&
+    window.AppCommon?.showNotification
+  ) {
+    window.AppCommon.showNotification(text, type);
+    if (messageEl) {
+      messageEl.textContent = "";
+      messageEl.style.color = "";
+    }
+    return;
+  }
+
+  if (messageEl) {
+    messageEl.textContent = text || "";
+    messageEl.style.color = "";
+  }
+}
+
 function closeAllAuthModals() {
   document.querySelectorAll(".auth-modal-overlay").forEach((modal) => {
     modal.classList.remove("active");
@@ -204,8 +224,7 @@ function bindLoginSubmit() {
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    messageEl.textContent = "";
-    messageEl.style.color = "";
+    setAuthMessage(messageEl, "");
 
     const data = {
       email: document.getElementById("login_email").value.trim(),
@@ -224,15 +243,17 @@ function bindLoginSubmit() {
       const result = await response.json().catch(() => null);
 
       if (!response.ok) {
-        messageEl.textContent = translateError(result?.detail || `Prisijungti nepavyko (${response.status}).`);
-        messageEl.style.color = "red";
+        setAuthMessage(
+          messageEl,
+          translateError(result?.detail || `Prisijungti nepavyko (${response.status}).`),
+          "error"
+        );
         return;
       }
 ;
       authStoreToken(result.access_token);
 
-      messageEl.textContent = "Prisijungimas sėkmingas.";
-      messageEl.style.color = "green";
+      setAuthMessage(messageEl, "Prisijungimas sėkmingas.", "success");
 
       setTimeout(() => {
         closeAllAuthModals();
@@ -240,8 +261,7 @@ function bindLoginSubmit() {
         window.location.reload();
       }, 500);
     } catch (error) {
-      messageEl.textContent = "Nepavyko prisijungti prie serverio.";
-      messageEl.style.color = "red";
+      setAuthMessage(messageEl, "Nepavyko prisijungti prie serverio.", "error");
       console.error(error);
     }
   });
@@ -258,8 +278,7 @@ function bindVolunteerRegisterSubmit() {
   volunteerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    messageEl.textContent = "";
-    messageEl.style.color = "";
+    setAuthMessage(messageEl, "");
 
     const data = {
       name: document.getElementById("v_name").value.trim(),
@@ -281,27 +300,21 @@ function bindVolunteerRegisterSubmit() {
       const result = await response.json().catch(() => null);
 
       if (!response.ok) {
-  if (Array.isArray(result?.detail)) {
-    messageEl.textContent = result.detail
-      .map(err => translateError(err.msg))
-      .join(", ");
-  } else {
-    messageEl.textContent = translateError(result?.detail);
-  }
+  const text = Array.isArray(result?.detail)
+    ? result.detail.map(err => translateError(err.msg)).join(", ")
+    : translateError(result?.detail);
 
-  messageEl.style.color = "red";
+  setAuthMessage(messageEl, text, "error");
   return;
 }
-      messageEl.textContent = "Registracija sėkminga. Dabar galite prisijungti.";
-      messageEl.style.color = "green";
+      setAuthMessage(messageEl, "Registracija sėkminga. Dabar galite prisijungti.", "success");
 
       setTimeout(() => {
         closeAuthModal("registerModal");
         openAuthModal("loginModal");
       }, 700);
     } catch (error) {
-      messageEl.textContent = "Nepavyko prisijungti prie serverio.";
-      messageEl.style.color = "red";
+      setAuthMessage(messageEl, "Nepavyko prisijungti prie serverio.", "error");
       console.error(error);
     }
   });
@@ -318,14 +331,12 @@ function bindShelterRegisterSubmit() {
   shelterForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    messageEl.textContent = "";
-    messageEl.style.color = "";
+    setAuthMessage(messageEl, "");
 
     const token = authGetToken();
 
     if (!token) {
-      messageEl.textContent = "Pirmiausia turite prisijungti.";
-      messageEl.style.color = "red";
+      setAuthMessage(messageEl, "Pirmiausia turite prisijungti.", "error");
       return;
     }
 
@@ -349,18 +360,19 @@ function bindShelterRegisterSubmit() {
       const result = await response.json().catch(() => null);
 
       if (!response.ok) {
+        let text = "";
+
         if (Array.isArray(result?.detail)) {
-          messageEl.textContent = result.detail.map((err) => err.msg).join(", ");
+          text = result.detail.map((err) => err.msg).join(", ");
         } else {
-          messageEl.textContent = result?.detail || `Prieglaudos registracija nepavyko (${response.status}).`;
+          text = result?.detail || `Prieglaudos registracija nepavyko (${response.status}).`;
         }
 
-        messageEl.style.color = "red";
+        setAuthMessage(messageEl, text, "error");
         return;
       }
 
-      messageEl.textContent = "Prieglauda sėkmingai užregistruota.";
-      messageEl.style.color = "green";
+      setAuthMessage(messageEl, "Prieglauda sėkmingai užregistruota.", "success");
 
       setTimeout(() => {
         closeAuthModal("shelterRegistrationModal");
@@ -368,8 +380,7 @@ function bindShelterRegisterSubmit() {
         window.location.reload();
       }, 700);
     } catch (error) {
-      messageEl.textContent = "Nepavyko prisijungti prie serverio.";
-      messageEl.style.color = "red";
+      setAuthMessage(messageEl, "Nepavyko prisijungti prie serverio.", "error");
       console.error(error);
     }
   });

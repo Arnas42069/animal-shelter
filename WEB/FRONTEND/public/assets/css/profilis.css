@@ -7,7 +7,7 @@ body{
     background:#afaba4;
     font-family: "Source Sans 3", sans-serif;
     margin:0;
-    color:#2f3d4a;
+    color:#444444;
     min-height:100vh;
     display:flex;
     flex-direction:column;
@@ -16,9 +16,9 @@ body{
 /* Vidinio sviesaus puslapio bloko stilius*/
 .container-gaps{
     width:100%;
-    max-width:1500px;
-    margin:0 auto 40px auto;
-    padding:0 40px;
+    max-width:1300px;
+    margin:0 auto;
+    padding:0 30px;
     background:#F5EFE6;
     box-sizing:border-box;
 }
@@ -26,12 +26,14 @@ body{
 /* Pagrindinio puslapio konteinerio pozicija*/
 .profile-page{
     min-height:calc(100vh - 220px);
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    padding:48px 20px 72px;
+    display:block;
+    padding:34px 30px 30px;
     box-sizing:border-box;
     flex:1;
+}
+
+.profile-page [hidden]{
+    display:none !important;
 }
 
 /* Jei HTML faile liko profile-shell wrapperis
@@ -53,12 +55,12 @@ body{
 /* mygtuko stilius*/
 .btn{
     min-width:112px;
-    height:42px;
-    padding:0px 16px;
+    min-height:42px;
+    padding:10px 16px;
     background:#444444;
     border:2px solid #444444;
     border-radius:21px;
-    color:#EAE0D5;
+    color:#F5EFE6;
     font-family:"Source Sans 3", sans-serif;
     font-weight:600;
     font-size:16px;
@@ -74,6 +76,7 @@ body{
 /* mygtuko hover efektas*/
 .btn:hover{
     opacity:0.92;
+    transform:translateY(-2px);
 }
 
 /* Antro mygtuko stilius*/
@@ -86,7 +89,7 @@ body{
 .btn-danger{
     background:#8d3b3b;
     border:2px solid #8d3b3b;
-    color:#ffffff;
+    color:#F5EFE6;
 }
 
 /* Paslepiam Issaugoti mygtuka kol neijungtas edit rezimas */
@@ -103,29 +106,29 @@ body{
 .profile-container,
 .profile-card{
     width:100%;
-    max-width:860px;
-    margin:auto;
-    background:#fbf7f0;
+    max-width:820px;
+    margin:18px auto 0;
+    background:linear-gradient(180deg, #ffffff 0%, #fbf8f2 100%);
     border:1px solid #ddd2c4;
-    border-radius:28px;
-    padding:40px 48px;
+    border-radius:22px;
+    padding:28px 36px 22px;
     box-sizing:border-box;
-    box-shadow:0 6px 18px rgba(0, 0, 0, 0.05);
+    box-shadow:0 12px 24px rgba(0, 0, 0, 0.08);
 }
 
 /* Profilio nuotraukos pozicija*/
 .profile-picture{
     display:flex;
     justify-content:center;
-    margin-bottom:24px;
+    margin-bottom:10px;
 }
 
 /* Profilio nuotraukos stilius*/
 .profile-picture img{
-    width:170px;
-    height:170px;
+    width:108px;
+    height:108px;
     border-radius:50%;
-    border:10px solid #e6e6e6;
+    border:7px solid #e6e6e6;
     background:#b7c4cc;
     object-fit:cover;
 }
@@ -133,10 +136,30 @@ body{
 /* Profilio pavadinimo stilius*/
 .profile-title{
     text-align:center;
-    margin:0 0 28px;
-    font-size:32px;
+    margin:0;
+    font-size:30px;
     font-weight:700;
-    color:#2f3d4a;
+    color:#444444;
+}
+
+.profile-identity-view{
+    text-align:center;
+}
+
+.profile-email-line{
+    margin-top:7px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    color:#6f6a63;
+    font-size:15px;
+}
+
+.profile-email-icon{
+    width:18px;
+    height:18px;
+    flex:0 0 auto;
 }
 
 /* Inline profilio formos stilius*/
@@ -148,11 +171,15 @@ body{
    Padaryta platesne */
 .profile-info-list{
     width:100%;
-    max-width:720px;
-    margin:0 auto;
+    max-width:520px;
+    margin:18px auto 0;
     display:flex;
     flex-direction:column;
-    gap:16px;
+    gap:8px;
+}
+
+#profileEditFields[hidden]{
+    display:none !important;
 }
 
 /* Vienos eilutes su profilio informacija stilius*/
@@ -160,32 +187,33 @@ body{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    gap:18px;
-    padding:16px 18px;
-    background:#f5efe6;
-    border:1px solid #ddd2c4;
-    border-radius:16px;
-    min-height:64px;
+    gap:12px;
+    padding:0;
+    background:transparent;
+    border:none;
+    border-radius:0;
+    min-height:38px;
     box-sizing:border-box;
 }
 
 /* Profilio lauko pavadinimo stilius*/
 .profile-label{
-    font-size:18px;
+    font-size:15px;
     font-weight:700;
-    color:#2f3d4a;
+    color:#444444;
 }
 
 /* Redaguojamo lauko stilius
    Is karto duodam padding ir border vieta
    kad paspaudus Redaguoti forma nesokinetu */
 .profile-inline-input{
-    width:360px;
-    padding:8px 12px;
-    border:1px solid transparent;
-    border-radius:10px;
-    background:transparent;
-    font-size:18px;
+    width:320px;
+    max-width:64%;
+    padding:8px 11px;
+    border:1px solid #cfc4b5;
+    border-radius:9px;
+    background:#ffffff;
+    font-size:15px;
     color:#444444;
     text-align:right;
     font-family:"Source Sans 3", sans-serif;
@@ -208,7 +236,7 @@ body{
 /* Aktyvaus inline lauko stilius*/
 .profile-inline-input:focus{
     outline:none;
-    border-color:#2f3d4a;
+    border-color:#444444;
 }
 
 /* Profilio veiksmu mygtuku pozicija*/
@@ -218,26 +246,201 @@ body{
     gap:14px;
     flex-wrap:wrap;
     justify-content:center;
-    margin-top:26px;
+    margin-top:20px;
+}
+
+.btn-delete-inline{
+    background:transparent;
+    border-color:transparent;
+    color:#8d3b3b;
+    min-width:auto;
+    padding:0 8px;
+}
+
+.btn-delete-inline:hover{
+    background:#f2dfdb;
+    border-color:#f2dfdb;
 }
 
 /* Zinutes po profiliu stilius*/
 .profile-message{
-    min-height:24px;
-    margin-top:18px;
+    min-height:0;
+    margin:0;
     text-align:center;
     font-size:15px;
     font-weight:600;
 }
 
-/* Sekmingos zinutes stilius*/
-.profile-message.success{
-    color:#2e7d32;
+.profile-message:not(:empty){
+    margin-top:14px;
+    min-height:22px;
 }
 
-/* Klaidos zinutes stilius*/
-.profile-message.error{
-    color:#b3261e;
+/*-------------------------------*/
+/* Savanorio istorijos skiltis   */
+/*-------------------------------*/
+
+.volunteer-history-section{
+    width:100%;
+    max-width:1180px;
+    margin:26px auto 0;
+    padding:28px 34px 0;
+    border-top:1px solid #ddd2c4;
+    box-sizing:border-box;
+}
+
+.volunteer-history-header{
+    margin-top:0;
+    margin-bottom:18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:22px;
+}
+
+.volunteer-history-header .section-title{
+    margin:0;
+    text-align:left;
+    color:#444444;
+    font-size:clamp(26px, 3vw, 36px);
+    font-weight:550;
+}
+
+.history-count{
+    padding:6px 12px;
+    border-radius:999px;
+    background:#e8e1d6;
+    color:#444444;
+    font-size:14px;
+    font-weight:800;
+    white-space:nowrap;
+}
+
+.history-meta{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.history-hours-count{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+}
+
+.history-hours-count strong{
+    color:#444444;
+    font-size:15px;
+    line-height:1;
+}
+
+.volunteer-history-list{
+    margin-top:0;
+    display:grid;
+    gap:10px;
+}
+
+.history-table-head{
+    display:grid;
+    grid-template-columns:1.05fr 1fr 0.7fr 0.7fr;
+    gap:18px;
+    padding:0 18px;
+    color:#6f6a63;
+    font-size:14px;
+    font-weight:800;
+}
+
+.volunteer-history-controls{
+    margin:0 0 18px;
+    display:grid;
+    grid-template-columns:minmax(220px, 1fr) minmax(190px, 260px);
+    gap:12px;
+}
+
+.history-search-input,
+.history-sort-select{
+    width:100%;
+    min-height:42px;
+    padding:9px 14px;
+    border:1px solid #ddd2c4;
+    border-radius:8px;
+    background:rgba(255, 255, 255, 0.68);
+    color:#444444;
+    font-family:"Source Sans 3", sans-serif;
+    font-size:15px;
+    box-sizing:border-box;
+}
+
+.history-search-input:focus,
+.history-sort-select:focus{
+    outline:2px solid rgba(68, 68, 68, 0.18);
+    border-color:#444444;
+}
+
+.history-item{
+    padding:14px 18px;
+    border:1px solid #ddd2c4;
+    border-radius:8px;
+    background:rgba(255, 255, 255, 0.42);
+    display:grid;
+    grid-template-columns:1.05fr 1fr 0.7fr 0.7fr;
+    gap:18px;
+    align-items:center;
+}
+
+.history-label{
+    display:block;
+    color:#6f6a63;
+    font-size:13px;
+    font-weight:700;
+}
+
+.history-item strong{
+    display:block;
+    margin-top:2px;
+    color:#444444;
+    font-size:15px;
+    font-weight:650;
+    overflow-wrap:anywhere;
+}
+
+.history-status{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:max-content;
+    margin-top:2px;
+    padding:4px 10px;
+    border-radius:999px;
+    background:#fff5c8;
+    color:#444444;
+    font-size:13px;
+    font-weight:800;
+}
+
+.history-status.scheduled,
+.history-status.active{
+    background:#ddf4e4;
+}
+
+.history-status.completed{
+    background:#e8e1d6;
+}
+
+.history-status.cancelled{
+    background:#f2dfdb;
+    color:#8d3b3b;
+}
+
+.history-empty{
+    padding:22px;
+    border:1px dashed #ddd2c4;
+    border-radius:14px;
+    color:#6f6a63;
+    text-align:center;
+    font-weight:700;
 }
 
 /*----------------------------*/
@@ -248,10 +451,109 @@ body{
 .profile-edit-section,
 .danger-zone{
     width:100%;
-    max-width:720px;
+    max-width:960px;
     margin:32px auto 0;
     padding-top:24px;
     border-top:1px solid #ddd2c4;
+}
+
+.password-modal{
+    position:fixed;
+    inset:0;
+    z-index:2000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:rgba(0, 0, 0, 0.45);
+    box-sizing:border-box;
+}
+
+.password-modal[hidden]{
+    display:none !important;
+}
+
+.password-modal-card{
+    position:relative;
+    width:600px;
+    max-width:calc(100% - 40px);
+    padding:50px;
+    border:1px solid black;
+    border-radius:0;
+    background:#d1c9bd;
+    text-align:center;
+    box-shadow:none;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+.modal-close-btn{
+    position:absolute;
+    top:15px;
+    right:18px;
+    width:auto;
+    height:auto;
+    border:none;
+    border-radius:0;
+    background:transparent;
+    color:#444444;
+    font-size:28px;
+    line-height:1;
+    padding:0;
+    cursor:pointer;
+}
+
+.password-modal-card .section-title{
+    color:#444444;
+    font-family:"Source Sans 3", sans-serif;
+    font-weight:bold;
+    font-size:18px;
+    text-align:center;
+    text-transform:uppercase;
+    margin-top:0;
+    margin-bottom:20px;
+}
+
+.password-modal-card .profile-form{
+    align-items:center;
+    gap:0;
+}
+
+.password-modal-card .edit-input{
+    width:70%;
+    padding:15px;
+    margin:12px 0;
+    border-radius:10px;
+    border:1px solid black;
+    background:#ffffff;
+    box-sizing:border-box;
+}
+
+.password-modal-card .checkbox-row{
+    width:70%;
+    margin:8px auto 0;
+    justify-content:flex-start;
+    color:#444444;
+    font-size:14px;
+}
+
+.password-modal-card .checkbox-row input{
+    width:auto;
+    margin:0;
+}
+
+.password-modal-card .form-actions{
+    margin-top:16px;
+}
+
+.password-modal-card .btn{
+    min-width:0;
+    height:auto;
+    padding:12px 20px;
+    background:#4a4a4a;
+    border:none;
+    border-radius:20px;
+    color:#F5EFE6;
 }
 
 /* Redagavimo puslapio titulinio teksto stilius*/
@@ -292,7 +594,7 @@ body{
 /* Teksto lauko aktyvi busena*/
 .edit-input:focus{
     outline:none;
-    border-color:#2f3d4a;
+    border-color:#444444;
 }
 
 /* Checkbox eilutes pozicija*/
@@ -323,8 +625,8 @@ body{
     }
 
     .profile-picture img{
-        width:140px;
-        height:140px;
+        width:118px;
+        height:118px;
     }
 
     .profile-title{
@@ -338,6 +640,7 @@ body{
 
     .profile-info-list,
     .profile-edit-section,
+    .volunteer-history-section,
     .danger-zone{
         max-width:100%;
     }
@@ -351,6 +654,23 @@ body{
     .form-actions{
         flex-direction:column;
         align-items:stretch;
+    }
+
+    .volunteer-history-header{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .volunteer-history-controls{
+        grid-template-columns:1fr;
+    }
+
+    .history-table-head{
+        display:none;
+    }
+
+    .history-item{
+        grid-template-columns:1fr;
     }
 
     .btn{

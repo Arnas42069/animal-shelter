@@ -207,7 +207,11 @@ CREATE TABLE IF NOT EXISTS visit (
     status TEXT NOT NULL DEFAULT 'pending'
         CHECK (status IN ('pending','scheduled','cancelled','completed','no_show')),
 
+    approved_at TIMESTAMPTZ,
+
     is_under_16 BOOLEAN NOT NULL DEFAULT FALSE,
+
+    wants_social_hours BOOLEAN NOT NULL DEFAULT FALSE,
 
     social_hrs NUMERIC(5,2) NOT NULL DEFAULT 0 CHECK (social_hrs >= 0),
 
@@ -225,6 +229,7 @@ CREATE TABLE IF NOT EXISTS visit (
 CREATE INDEX IF NOT EXISTS visit_shelter_idx ON visit(shelter_id);
 CREATE INDEX IF NOT EXISTS visit_user_idx ON visit(user_id);
 CREATE INDEX IF NOT EXISTS visit_start_idx ON visit(start_at);
+CREATE INDEX IF NOT EXISTS visit_approved_at_idx ON visit(approved_at);
 
 
 

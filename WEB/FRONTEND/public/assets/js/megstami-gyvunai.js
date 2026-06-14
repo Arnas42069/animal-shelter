@@ -22,6 +22,8 @@ const {
   translateSpecies,
   translateGender,
   translateStatus,
+  formatAnimalAge,
+  formatAnimalAgeDetailed,
   fillShelterFilter,
   readAnimalFilters,
   renderPagination,
@@ -183,24 +185,26 @@ function renderAnimals() {
   pageItems.forEach((animal) => {
     const shelterName =
       allShelters.find((shelter) => Number(shelter.id) === Number(animal.shelter_id))?.name || "-";
+    const age = formatAnimalAge(animal.birth_date);
 
     const card = document.createElement("div");
     card.className = "card-animal";
 
     card.innerHTML = `
       <h3 class="animal-title">
-        <span class="favorite-btn active" data-id="${animal.id}" title="Pašalinti iš mėgstamų">
-          ❤️
+        <span class="animal-title-main">
+          <span class="favorite-btn active" data-id="${animal.id}" title="Pašalinti iš mėgstamų">
+            ❤️
+          </span>
+          <span>${animal.name || "Be vardo"}</span>
+          ${age ? `<span class="animal-age">${age}</span>` : ""}
         </span>
-        ${animal.name || "Be vardo"}
       </h3>
 
       <img src="${getAnimalImage(animal)}" alt="Gyvūnas" />
 
-      <p><strong>Rūšis:</strong> ${translateSpecies(animal.species)}</p>
-      <p><strong>Veislė:</strong> ${animal.breed || "-"}</p>
       <p><strong>Prieglauda:</strong> ${shelterName}</p>
-      <p><strong>Statusas:</strong> ${translateStatus(animal.status)}</p>
+      <p><strong>Lytis:</strong> ${translateGender(animal.sex)}</p>
     `;
 
     card.addEventListener("click", () => {
@@ -226,20 +230,63 @@ function applyFiltersAndRender() {
 }
 
 function openAnimalModal(animal) {
+  localStorage.setItem("selectedFosterAnimal", JSON.stringify(animal));
+
   const shelterName =
     allShelters.find((shelter) => Number(shelter.id) === Number(animal.shelter_id))?.name || "-";
 
   getEl("animalModalImage").src = getAnimalImage(animal);
   getEl("animalModalName").textContent = animal.name || "Be vardo";
+  const modalAge = getEl("animalModalAge");
+  if (modalAge) {
+    const age = formatAnimalAge(animal.birth_date);
+    modalAge.textContent = age || "";
+    modalAge.hidden = !age;
+  }
   getEl("animalModalShelter").textContent = shelterName;
   getEl("animalModalSpecies").textContent = translateSpecies(animal.species);
   getEl("animalModalBreed").textContent = animal.breed || "-";
   getEl("animalModalGender").textContent = translateGender(animal.sex);
   getEl("animalModalStatus").textContent = translateStatus(animal.status);
   getEl("animalModalColor").textContent = animal.color || "-";
-  getEl("animalModalBirthDate").textContent = animal.birth_date || "-";
-  getEl("animalModalCode").textContent = animal.code || "-";
+  getEl("animalModalBirthDate").textContent =
+    formatAnimalAgeDetailed(animal.birth_date) || "-";
   getEl("animalModalDescription").textContent = animal.description || "-";
+
+  const modalFavoriteBtn = getEl("animalModalFavorite");
+
+  if (modalFavoriteBtn) {
+    modalFavoriteBtn.dataset.id = animal.id;
+    modalFavoriteBtn.className = "favorite-btn animal-modal-favorite active";
+    modalFavoriteBtn.textContent = "❤️";
+    modalFavoriteBtn.onclick = async (event) => {
+      event.stopPropagation();
+      await removeAnimalFavorite(animal.id);
+      closeAnimalModal();
+    };
+  }
+
+  const fosterBtn = getEl("fosterLinkBtn");
+
+  if (fosterBtn) {
+    const canUseFoster =
+      currentUser &&
+      currentUser.role === "volunteer";
+
+    fosterBtn.style.display = canUseFoster
+      ? "inline-flex"
+      : "none";
+
+    fosterBtn.onclick = (event) => {
+      event.preventDefault();
+
+      if (!canUseFoster) {
+        return;
+      }
+
+      window.location.href = "/pages/laikina-globa-forma.html";
+    };
+  }
 
   openModal("animalModalBackdrop");
 }

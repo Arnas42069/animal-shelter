@@ -22,6 +22,12 @@
     return document.getElementById(id);
   }
 
+  function notify(text, type = "success") {
+    if (window.AppCommon?.showNotification) {
+      window.AppCommon.showNotification(text, type);
+    }
+  }
+
   function escapeHtml(value) {
     return String(value ?? "")
       .replaceAll("&", "&amp;")
@@ -272,20 +278,23 @@
         const text = await response.text();
 
         if (message) {
-          message.textContent = text || "Nepavyko išsaugoti naujienos.";
+          message.textContent = "";
         }
 
+        notify(text || "Nepavyko išsaugoti naujienos.", "error");
         console.error("News save failed:", response.status, text);
         return;
       }
 
       closeModal();
       await loadNews();
+      notify(editingNewsId ? "Naujiena atnaujinta" : "Naujiena sukurta", "success");
     } catch (error) {
       if (message) {
-        message.textContent = "Įvyko klaida saugant naujieną.";
+        message.textContent = "";
       }
 
+      notify("Įvyko klaida saugant naujieną.", "error");
       console.error("News save error:", error);
     }
   }
@@ -304,14 +313,15 @@
       if (!response.ok) {
         const text = await response.text();
 
-        alert("Nepavyko ištrinti naujienos.");
+        notify("Nepavyko ištrinti naujienos.", "error");
         console.error("News delete failed:", response.status, text);
         return;
       }
 
       await loadNews();
+      notify("Naujiena ištrinta", "success");
     } catch (error) {
-      alert("Įvyko klaida trinant naujieną.");
+      notify("Įvyko klaida trinant naujieną.", "error");
       console.error("News delete error:", error);
     }
   }

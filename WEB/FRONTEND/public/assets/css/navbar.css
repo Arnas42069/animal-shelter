@@ -55,7 +55,7 @@
     width:30px;
     height:30px;
     display:block;
-    filter:brightness(0) saturate(100%);
+    filter:brightness(0) saturate(100%) invert(27%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(90%);
     transition:opacity 0.2s ease;
 }
 
@@ -110,11 +110,12 @@
 
 /* Guest buttons */
 .nav-auth-btn{
+    min-height:42px;
     padding:10px 18px;
     border:none;
     border-radius:22px;
     background:#444444;
-    color:#ffffff;
+    color:#F5EFE6;
     font-size:15px;
     font-weight:600;
     cursor:pointer;
@@ -123,7 +124,7 @@
 
 .nav-auth-btn:hover{
     background:#7A7A7A;
-    transform:translateY(-1px);
+    transform:translateY(-2px);
 }
 
 /* SVG icon buttons */
@@ -143,7 +144,7 @@
     height:32px;
     display:block;
     transition:opacity 0.2s ease, transform 0.2s ease;
-    filter:brightness(0) saturate(100%);
+    filter:brightness(0) saturate(100%) invert(27%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(90%);
 }
 
 .nav-svg-btn:hover .nav-svg-icon{

@@ -21,6 +21,8 @@
     translateSpecies,
     translateSex,
     translateStatus,
+    formatAnimalAge,
+    formatAnimalAgeDetailed,
     getAnimalImage,
     fillBreedFilter,
     openModal,
@@ -283,19 +285,29 @@
       return;
     }
 
-    grid.innerHTML = list.map((animal) => `
-      <div class="card-animal" data-code="${animal.code || ""}">
-        <h3>${animal.name || "Be vardo"}</h3>
+    grid.innerHTML = list.map((animal) => {
+      const age = formatAnimalAge(animal.birth_date);
 
-        <img src="${getAnimalImage(animal)}" alt="Gyvūnas" />
+      return `
+        <div class="card-animal" data-code="${animal.code || ""}">
+          <h3 class="animal-title">
+            <span class="animal-title-main">
+              <span class="favorite-btn ${animal.is_favorite ? "active" : ""}" data-id="${animal.id}" title="Mėgstamas">
+                ${animal.is_favorite ? "❤️" : "🤍"}
+              </span>
+              <span>${animal.name || "Be vardo"}</span>
+              ${age ? `<span class="animal-age">${age}</span>` : ""}
+            </span>
+          </h3>
 
-        <div class="card-animal-meta">
-          <div><strong>Rūšis:</strong> ${translateSpecies(animal.species)}</div>
-          <div><strong>Veislė:</strong> ${animal.breed || "-"}</div>
-          <div><strong>Statusas:</strong> ${translateStatus(animal.status)}</div>
+          <img src="${getAnimalImage(animal)}" alt="Gyvūnas" />
+
+          <div class="card-animal-meta">
+            <div><strong>Lytis:</strong> ${translateSex(animal.sex)}</div>
+          </div>
         </div>
-      </div>
-    `).join("");
+      `;
+    }).join("");
 
     grid.querySelectorAll(".card-animal").forEach((card) => {
       card.addEventListener("click", () => {
@@ -306,7 +318,99 @@
           openAnimalModal(animal, "view");
         }
       });
+
+      const favoriteBtn = card.querySelector(".favorite-btn");
+
+      favoriteBtn?.addEventListener("click", async (event) => {
+        event.stopPropagation();
+        const animalId = favoriteBtn.dataset.id;
+        const animal = animals.find((item) => Number(item.id) === Number(animalId));
+
+        if (animal) {
+          await toggleAnimalFavorite(animal.id, animal.is_favorite);
+        }
+      });
     });
+  }
+
+  function applyLocalFavoriteFlags(list) {
+    const localFavorites =
+      JSON.parse(localStorage.getItem("favoriteAnimals")) || [];
+
+    list.forEach((animal) => {
+      if (localFavorites.includes(Number(animal.id))) {
+        animal.is_favorite = true;
+      }
+    });
+  }
+
+  function updateAnimalFavoriteState(animalId, isFavorite) {
+    animals.forEach((animal) => {
+      if (Number(animal.id) === Number(animalId)) {
+        animal.is_favorite = isFavorite;
+      }
+    });
+
+    if (selectedAnimal && Number(selectedAnimal.id) === Number(animalId)) {
+      selectedAnimal.is_favorite = isFavorite;
+      updateAnimalModalFavorite(selectedAnimal);
+    }
+  }
+
+  function updateAnimalModalFavorite(animal) {
+    const modalFavoriteBtn = getEl("animalModalFavorite");
+
+    if (!modalFavoriteBtn || !animal) return;
+
+    modalFavoriteBtn.dataset.id = animal.id;
+    modalFavoriteBtn.classList.toggle("active", Boolean(animal.is_favorite));
+    modalFavoriteBtn.textContent = animal.is_favorite ? "❤️" : "🤍";
+  }
+
+  async function toggleAnimalFavorite(animalId, isFavorite) {
+    const token = getToken();
+    const nextValue = !isFavorite;
+
+    if (!token || authUser?.role !== "volunteer") {
+      let favorites =
+        JSON.parse(localStorage.getItem("favoriteAnimals")) || [];
+
+      if (isFavorite) {
+        favorites = favorites.filter((id) => Number(id) !== Number(animalId));
+      } else {
+        favorites.push(Number(animalId));
+      }
+
+      localStorage.setItem("favoriteAnimals", JSON.stringify(favorites));
+      updateAnimalFavoriteState(animalId, nextValue);
+      renderAnimals(animals);
+      return;
+    }
+
+    try {
+      const response = isFavorite
+        ? await fetch(`/api/animal/favorite/${animalId}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` }
+          })
+        : await fetch("/api/animal/favorite", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ animal_id: animalId })
+          });
+
+      if (!response.ok) {
+        throw new Error(`Nepavyko pakeisti mėgstamo gyvūno būsenos: ${response.status}`);
+      }
+
+      updateAnimalFavoriteState(animalId, nextValue);
+      renderAnimals(animals);
+    } catch (error) {
+      console.error("Klaida keičiant mėgstamo gyvūno būseną:", error);
+    }
   }
 
   async function uploadAnimalImage(animalId, file) {
@@ -378,6 +482,7 @@
       });
 
       animals = Array.isArray(result?.items) ? result.items : [];
+      applyLocalFavoriteFlags(animals);
       const total = Number(result?.total || 0);
       const totalPages = Math.ceil(total / 8);
 
@@ -460,22 +565,24 @@
   }
 
   function fillAnimalView(animal) {
-    getEl("animalModalTitle").textContent = animal.name || "Be vardo";
+    const age = formatAnimalAge(animal.birth_date);
+    getEl("animalModalTitle").textContent =
+      `${animal.name || "Be vardo"}${age ? ` ${age}` : ""}`;
 
-    getEl("animalModalSubtitle").textContent =
-      `${translateSpecies(animal.species)}${animal.breed ? ` • ${animal.breed}` : ""}`;
+    getEl("animalModalSubtitle").textContent = "";
 
     getEl("animalViewSpecies").textContent = translateSpecies(animal.species);
     getEl("animalViewBreed").textContent = animal.breed || "-";
     getEl("animalViewSex").textContent = translateSex(animal.sex);
     getEl("animalViewStatus").textContent = translateStatus(animal.status);
-    getEl("animalViewBirthDate").textContent = animal.birth_date || "-";
+    getEl("animalViewBirthDate").textContent =
+      formatAnimalAgeDetailed(animal.birth_date) || "-";
     getEl("animalViewColor").textContent = animal.color || "-";
-    getEl("animalViewCode").textContent = animal.code || "-";
     getEl("animalViewDescription").textContent =
       animal.description || "Aprašymo nėra.";
 
     getEl("animalModalImage").src = getAnimalImage(animal);
+    updateAnimalModalFavorite(animal);
   }
 
   function fillAnimalForm(animal = {}) {
@@ -507,6 +614,15 @@
       authUser.role === "shelter" &&
       canEditCurrentShelter === true;
 
+    const modal = document.querySelector("#animalModalBackdrop .animal-modal");
+    const actions = document.querySelector("#animalModalBackdrop .animal-modal-actions");
+    modal?.classList.toggle("mode-view", isView);
+    modal?.classList.toggle("mode-edit", isEdit);
+    modal?.classList.toggle("mode-create", isCreate);
+    if (actions) {
+      actions.hidden = isView && (!selectedAnimal || !canEdit);
+    }
+
     getEl("animalViewMode").hidden = !isView;
     getEl("animalForm").hidden = !(isEdit || isCreate);
 
@@ -514,6 +630,7 @@
     getEl("animalDeleteBtn").hidden = !selectedAnimal || !canEdit;
     getEl("animalSaveBtn").hidden = !(isEdit || isCreate) || !canEdit;
     getEl("animalCancelBtn").hidden = !(isEdit || isCreate);
+    getEl("animalModalFavorite").hidden = !isView || !selectedAnimal;
 
     if (isCreate) {
       getEl("animalModalTitle").textContent = "Naujas gyvūnas";
@@ -704,6 +821,15 @@
     saveBtn?.addEventListener("click", saveAnimal);
     deleteBtn?.addEventListener("click", deleteAnimal);
 
+    getEl("animalModalFavorite")?.addEventListener("click", async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (!selectedAnimal) return;
+
+      await toggleAnimalFavorite(selectedAnimal.id, selectedAnimal.is_favorite);
+    });
+
     cancelBtn?.addEventListener("click", () => {
       if (selectedAnimal) {
         fillAnimalView(selectedAnimal);
@@ -812,20 +938,25 @@
         return;
       }
 
-      const [availableResult, adoptedResult] = await Promise.all([
+      const [availableResult, adoptedResult, volunteersResult] = await Promise.all([
         apiRequest(`/api/animal?shelter_id=${currentShelter.id}&status=available&page=1&page_size=1`, {
           method: "GET"
         }),
         apiRequest(`/api/animal?shelter_id=${currentShelter.id}&status=adopted&page=1&page_size=1`, {
+          method: "GET"
+        }),
+        apiRequest(`/api/shelter/${currentShelter.id}/monthly-volunteers`, {
           method: "GET"
         })
       ]);
 
       const availableCount = Number(availableResult?.total || 0);
       const adoptedCount = Number(adoptedResult?.total || 0);
+      const monthlyVolunteersCount = Number(volunteersResult?.monthly_volunteers_count || 0);
 
       const availableEl = getEl("availableAnimalsCount");
       const adoptedEl = getEl("adoptedAnimalsCount");
+      const monthlyVolunteersEl = getEl("monthlyVolunteersCount");
 
       if (availableEl) {
         availableEl.textContent = String(availableCount);
@@ -833,6 +964,10 @@
 
       if (adoptedEl) {
         adoptedEl.textContent = String(adoptedCount);
+      }
+
+      if (monthlyVolunteersEl) {
+        monthlyVolunteersEl.textContent = String(monthlyVolunteersCount);
       }
     } catch (error) {
       console.error("Nepavyko užkrauti prieglaudos statistikos:", error);

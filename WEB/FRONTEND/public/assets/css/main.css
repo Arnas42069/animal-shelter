@@ -5,8 +5,9 @@
     --color-page-bg: #afaba4;
     --color-surface: #F5EFE6;
     --color-surface-light: #ffffff;
-    --color-text: #1f1f1f;
+    --color-text: #444444;
     --color-muted: #6f6a63;
+    --button-dark-text: #F5EFE6;
 
     --accent-dark: #3f3f46;
     --accent-dark-2: #2f2f35;
@@ -47,8 +48,10 @@ section {
 section h2,
 .section-title {
     margin: 0 0 32px;
-    font-size: 32px;
-    color: var(--color-text);
+    color: #444444;
+    font-size: clamp(26px, 3vw, 36px);
+    font-weight: 550;
+    line-height: 1.1;
 }
 
 .container-gaps {
@@ -70,7 +73,7 @@ section h2,
     border: 2px solid var(--accent-dark);
     border-radius: 999px;
     background: var(--accent-dark);
-    color: #ffffff;
+    color: var(--button-dark-text);
     font-family: "Source Sans 3", sans-serif;
     font-weight: 600;
     font-size: 16px;
@@ -207,13 +210,13 @@ section h2,
 /* uzvedus pelyte stilius*/
 .pagination a:hover {
   background: #4a4a4a;
-  color: white;
+  color: var(--button-dark-text);
 }
 
 /* esamo katalogo puslapio pajuodinimas*/
 .pagination .active {
   background: #4a4a4a;
-  color: white;
+  color: var(--button-dark-text);
   border: 1px solid #4a4a4a;
 }
 
@@ -301,9 +304,9 @@ section h2,
 
 .section-heading h2 {
     margin: 0 0 14px;
-    color: var(--color-text);
-    font-size: clamp(26px, 3vw, 34px);
-    font-weight: 600;
+    color: #444444;
+    font-size: clamp(26px, 3vw, 36px);
+    font-weight: 550;
     line-height: 1.1;
 }
 
@@ -487,7 +490,7 @@ section h2,
     width: 100%;
     min-width: 0;
     max-width: none;
-    min-height: 400px;
+    min-height: 330px;
     padding: 16px;
     border: 1px solid transparent;
     border-radius: var(--radius-lg);
@@ -507,9 +510,50 @@ section h2,
 .card-animal h3 {
     margin-top: 0;
     margin-bottom: 14px;
-    text-align: center;
+    text-align: left;
     font-size: 18px;
-    color: #111;
+    color: #444444;
+}
+
+.animal-title-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+.animal-title-main > span:not(.favorite-btn):not(.animal-age) {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.favorite-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.animal-age {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #444444;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: 1;
 }
 
 /* Gyvuno nuotrauka */
@@ -540,9 +584,9 @@ section h2,
 
 /* Popup turinys */
 .animal-modal {
-    background: #f5f1e8;
+    background: #f5efe6;
     width: 100%;
-    max-width: 900px;
+    max-width: 1180px;
     max-height: 90vh;
     overflow-y: auto;
     border-radius: 18px;
@@ -560,36 +604,102 @@ section h2,
     border: none;
     border-radius: 50%;
     background: #4a4a4a;
-    color: white;
+    color:#F5EFE6;
     font-size: 24px;
     cursor: pointer;
+    transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.animal-modal-close:hover {
+    transform: translateY(-2px);
+    background: #585856;
+}
+
+.animal-modal-layout {
+    display: block;
+}
+
+.animal-modal-layout::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.animal-modal-info {
+    min-width: 0;
+    padding-top: 8px;
+}
+
+.animal-modal-title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0 0 22px;
+    color: #444444;
+    font-size: clamp(28px, 3vw, 38px);
+    font-weight: 700;
+    line-height: 1.08;
+}
+
+.animal-modal-favorite {
+    font-size: 22px;
+}
+
+.animal-modal-image-panel {
+    float: right;
+    width: calc(66.666% - 14px);
+    min-height: min(620px, 72vh);
+    border-radius: 12px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin: 0 0 24px 28px;
 }
 
 /* Popup nuotrauka */
 .animal-modal-image {
     width: 100%;
-    max-height: 320px;
-    object-fit: cover;
+    height: min(620px, 72vh);
+    object-fit: contain;
     border-radius: 12px;
-    margin-bottom: 22px;
+    margin-bottom: 0;
+    display: block;
 }
 
 /* Popup tekstu isdestymas */
 .animal-modal-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px 40px;
-    margin-bottom: 20px;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-bottom: 0;
 }
 
 .animal-modal-grid p {
     margin: 0;
-    font-size: 17px;
+    font-size: 18px;
+    line-height: 1.35;
 }
 
 .animal-modal-description {
-    margin-top: 10px;
+    margin-top: 18px;
     line-height: 1.5;
+}
+
+.animal-modal-description h3 {
+    margin: 0 0 12px;
+    color: #444444;
+}
+
+.animal-modal-description p {
+    margin: 0;
+    font-size: 17px;
+}
+
+.animal-modal-info .btn {
+    margin-top: 20px;
 }
 
 /* Gyvuno papildoma informacija */
@@ -598,6 +708,19 @@ section h2,
     text-align: left;
     font-size: 15px;
     line-height: 1.35;
+}
+
+@media (max-width: 900px) {
+    .animal-modal-image {
+        height: min(420px, 55vh);
+    }
+
+    .animal-modal-image-panel {
+        float: none;
+        width: 100%;
+        min-height: min(420px, 55vh);
+        margin: 0 0 24px;
+    }
 }
 
 /* Mygtukai puslapiavime */
@@ -616,7 +739,7 @@ section h2,
 /* Uzvedus pele ant puslapiavimo mygtuko */
 .pagination button:hover {
     background: var(--accent-dark);
-    color: white;
+    color: var(--button-dark-text);
     border-color: var(--accent-dark);
     transform: translateY(-1px);
 }
@@ -624,7 +747,7 @@ section h2,
 /* Aktyvus puslapis */
 .pagination button.active {
     background: var(--accent-dark);
-    color: white;
+    color: var(--button-dark-text);
     border: 1px solid var(--accent-dark);
     box-shadow: 0 4px 10px rgba(63, 63, 70, 0.18);
 }
@@ -646,8 +769,10 @@ section h2,
 
 .animals-title-wrap h2 {
     margin: 0;
-    font-size: 28px;
-    color: #111;
+    color: #444444;
+    font-size: clamp(26px, 3vw, 36px);
+    font-weight: 550;
+    line-height: 1.1;
 }
 
 .animals-title-icon {
@@ -685,7 +810,10 @@ section h2,
 }
 
 .loved-startEnd h2{
-    font-size: 20px;
+    color:#444444;
+    font-size:clamp(26px, 3vw, 36px);
+    font-weight:550;
+    line-height:1.1;
 }
 
 .loved-startEnd .btn{
@@ -709,7 +837,10 @@ section h2,
 }
 
 .news-start h2{
-    font-size: 18px;
+    color:#444444;
+    font-size:clamp(26px, 3vw, 36px);
+    font-weight:550;
+    line-height:1.1;
 }
 /*top3*/
 .news-container {
@@ -937,16 +1068,22 @@ section h2,
 
   width: auto;        /* neleidžia išsitampyti */
   flex: 0 0 auto;     /* svarbiausias fix */
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.news-actions .edit-btn:hover,
+.news-actions .delete-btn:hover {
+  transform: translateY(-2px);
 }
 
 .news-actions .edit-btn {
   background: #c78625;
-  color: white;
+  color:#F5EFE6;
 }
 
 .news-actions .delete-btn {
   background: #555452;
-  color: white;
+  color:#F5EFE6;
 }
 
 
@@ -980,7 +1117,7 @@ section h2,
   align-items: center;
   padding: 15px 20px;
   border-radius: 10px;
-  background-color: white;
+  background-color:#F5EFE6;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   border-bottom: 1px solid #ccc;
 }
@@ -1062,12 +1199,14 @@ section h2,
   border: none;
   border-radius: 6px;
   background-color: #28a745;
-  color: white;
+  color:#F5EFE6;
   cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
 }
 
 .approve-btn:hover {
   background-color: #218838;
+  transform: translateY(-2px);
 }
 
 .cancel-btn {
@@ -1075,12 +1214,14 @@ section h2,
   border: none;
   border-radius: 6px;
   background-color: #881818;
-  color: white;
+  color:#F5EFE6;
   cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
 }
 
 .cancel-btn:hover {
   background-color: #561414;
+  transform: translateY(-2px);
 }
 
 /*admin*/
@@ -1116,20 +1257,27 @@ section h2,
 /* Buttons */
 .toggle-active-btn {
   background: red;
-  color: white;
+  color:#F5EFE6;
   border: none;
   padding: 8px 12px;
   border-radius: 20px;
   cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
 }
 
 .save-role-btn {
   background: rgb(46, 45, 45);
-  color: white;
+  color:#F5EFE6;
   border: none;
   padding: 8px 12px;
   border-radius: 20px;
   cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.toggle-active-btn:hover,
+.save-role-btn:hover {
+  transform: translateY(-2px);
 }
 
 .admin-toast {
@@ -1137,7 +1285,7 @@ section h2,
   bottom: 20px;
   right: 20px;
   background: #222;
-  color: white;
+  color:#F5EFE6;
   padding: 12px 18px;
   border-radius: 8px;
   opacity: 0;
@@ -1199,11 +1347,16 @@ section h2,
 
 .submit-news-shelter-news {
   background: #232423;
-  color: white;
+  color:#F5EFE6;
   border: none;
   padding: 12px;
   border-radius: 8px;
   cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.submit-news-shelter-news:hover {
+  transform: translateY(-2px);
 }
 
 .foster-hero,
@@ -1223,7 +1376,7 @@ section h2,
     background-position: center;
     background-repeat: no-repeat;
 
-    color: white;
+    color:#F5EFE6;
     position: relative;
     overflow: hidden;
 
@@ -1446,4 +1599,3 @@ section h2,
     width: auto;
     margin-top: 15px;
 }
-

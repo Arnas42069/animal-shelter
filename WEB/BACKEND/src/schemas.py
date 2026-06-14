@@ -95,6 +95,13 @@ class ShelterResponse(BaseModel):
         from_attributes = True
 
 
+class ShelterMonthlyVolunteerStatsResponse(BaseModel):
+    shelter_id: int
+    monthly_volunteers_count: int
+    month_start: datetime
+    next_month_start: datetime
+
+
 class ShelterUpdateRequest(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
@@ -300,6 +307,7 @@ class VisitCreateRequest(BaseModel):
     is_under_16: bool = False
     is_group: bool = False
     group_size: Optional[int] = Field(default=None, ge=2)
+    wants_social_hours: bool = False
     social_hrs: float = Field(default=0, ge=0)
     note: Optional[str] = None
 
@@ -324,6 +332,7 @@ class VisitResponse(BaseModel):
     is_under_16: bool
     is_group: bool
     group_size: Optional[int] = None
+    wants_social_hours: bool = False
     social_hrs: float
     note: Optional[str] = None
 
@@ -362,6 +371,7 @@ class VisitMeResponse(BaseModel):
     is_under_16: bool
     is_group: bool
     group_size: Optional[int] = None
+    wants_social_hours: bool = False
     social_hrs: float
     note: Optional[str] = None
     shelter: VisitShelterInfo
@@ -380,6 +390,7 @@ class ShelterVisitResponse(BaseModel):
     is_under_16: bool
     is_group: bool
     group_size: Optional[int] = None
+    wants_social_hours: bool = False
     social_hrs: float
     note: Optional[str] = None
     volunteer: VisitVolunteerInfo
@@ -390,6 +401,10 @@ class ShelterVisitResponse(BaseModel):
 
 class VisitStatusUpdateRequest(BaseModel):
     status: str = Field(pattern="^(pending|scheduled|cancelled|completed|no_show)$")
+
+
+class VisitSocialHoursAddRequest(BaseModel):
+    hours: float = Field(gt=0, le=24)
 
 
 class VisitUpdateRequest(BaseModel):

@@ -16,8 +16,7 @@
 
     <div class="container-gaps">
       <header class="loved-startEnd">
-        <h1 class="h1">❤️ Pamėgti gyvūnai</h1>
-        <h2 class="h2">Čia rodomi Jūsų pamėgti gyvūnai</h2>
+        <h2 class="h2">Pamėgti gyvūnai</h2>
       </header>
 
       <main>
@@ -82,29 +81,49 @@
       <div class="animal-modal">
         <button class="animal-modal-close" id="animalModalCloseBtn" type="button">×</button>
 
-        <img
-          id="animalModalImage"
-          class="animal-modal-image"
-          src="/assets/img/cat1.png"
-          alt="Gyvūnas"
-        />
+        <div class="animal-modal-layout">
+          <div class="animal-modal-image-panel">
+            <img
+              id="animalModalImage"
+              class="animal-modal-image"
+              src="/assets/img/cat1.png"
+              alt="Gyvūnas"
+            />
+          </div>
 
-        <h2 id="animalModalName">Gyvūnas</h2>
+          <div class="animal-modal-info">
+            <h2 class="animal-modal-title">
+              <span id="animalModalName">Gyvūnas</span>
+              <span id="animalModalAge" class="animal-age" hidden></span>
+              <button
+                class="favorite-btn animal-modal-favorite active"
+                id="animalModalFavorite"
+                type="button"
+                title="Pašalinti iš mėgstamų"
+              >
+                ❤️
+              </button>
+            </h2>
 
-        <div class="animal-modal-grid">
-          <p><strong>Prieglauda:</strong> <span id="animalModalShelter">-</span></p>
-          <p><strong>Rūšis:</strong> <span id="animalModalSpecies">-</span></p>
-          <p><strong>Veislė:</strong> <span id="animalModalBreed">-</span></p>
-          <p><strong>Lytis:</strong> <span id="animalModalGender">-</span></p>
-          <p><strong>Statusas:</strong> <span id="animalModalStatus">-</span></p>
-          <p><strong>Spalva:</strong> <span id="animalModalColor">-</span></p>
-          <p><strong>Gimimo data:</strong> <span id="animalModalBirthDate">-</span></p>
-          <p><strong>Kodas:</strong> <span id="animalModalCode">-</span></p>
-        </div>
+            <div class="animal-modal-grid">
+              <p><strong>Prieglauda:</strong> <span id="animalModalShelter">-</span></p>
+              <p><strong>Rūšis:</strong> <span id="animalModalSpecies">-</span></p>
+              <p><strong>Veislė:</strong> <span id="animalModalBreed">-</span></p>
+              <p><strong>Lytis:</strong> <span id="animalModalGender">-</span></p>
+              <p><strong>Statusas:</strong> <span id="animalModalStatus">-</span></p>
+              <p><strong>Spalva:</strong> <span id="animalModalColor">-</span></p>
+              <p><strong>Amžius:</strong> <span id="animalModalBirthDate">-</span></p>
+            </div>
 
-        <div class="animal-modal-description">
-          <h3>Aprašymas</h3>
-          <p id="animalModalDescription">-</p>
+            <div class="animal-modal-description">
+              <h3>Aprašymas</h3>
+              <p id="animalModalDescription">-</p>
+            </div>
+
+            <a href="/pages/laikina-globa-forma.html" class="btn" id="fosterLinkBtn">
+              Priglausti trumpalaikei globai
+            </a>
+          </div>
         </div>
       </div>
     </div>

@@ -8,6 +8,15 @@
         return document.getElementById(id);
     }
 
+    function notify(text, type = "success") {
+        if (window.AppCommon?.showNotification) {
+            window.AppCommon.showNotification(text, type);
+            return;
+        }
+
+        console[type === "error" ? "error" : "log"](text);
+    }
+
     async function apiRequest(url, options = {}) {
     const token = authGetToken();
 
@@ -47,11 +56,11 @@
             console.error(error);
 
             if (error.status === 401 || error.status === 403) {
-                alert("Neturi admin teisių arba neprisijungęs");
+                notify("Neturi admin teisių arba neprisijungęs", "error");
                 return;
             }
 
-            alert("Nepavyko gauti duomenų");
+            notify("Nepavyko gauti duomenų", "error");
         }
     }
 
@@ -119,11 +128,11 @@
                         body: JSON.stringify({ role: role })
                     });
 
-                    alert("Rolė pakeista");
+                    notify("Rolė pakeista", "success");
                     loadUsers();
 
                 } catch (err) {
-                    alert("Klaida keičiant rolę");
+                    notify("Klaida keičiant rolę", "error");
                 }
             }
 
@@ -140,11 +149,11 @@
                         })
                     });
 
-                    alert("Statusas pakeistas");
+                    notify("Statusas pakeistas", "success");
                     loadUsers();
 
                 } catch (err) {
-                    alert("Klaida keičiant statusą");
+                    notify("Klaida keičiant statusą", "error");
                 }
             }
         });

@@ -29,6 +29,14 @@
 
   function setMessage(el, text, type = "", baseClass = "message") {
     if (!el) return;
+
+    if (text && ["success", "error", "warning"].includes(type)) {
+      showNotification(text, type);
+      el.textContent = "";
+      el.className = baseClass;
+      return;
+    }
+
     el.textContent = text || "";
     el.className = `${baseClass} ${type}`.trim();
   }
@@ -124,6 +132,71 @@
     };
 
     return map[status] || status || "-";
+  }
+
+  function formatAnimalAge(birthDate) {
+    if (!birthDate) return "";
+
+    const birth = new Date(birthDate);
+
+    if (Number.isNaN(birth.getTime())) {
+      return "";
+    }
+
+    const today = new Date();
+    let months =
+      (today.getFullYear() - birth.getFullYear()) * 12 +
+      (today.getMonth() - birth.getMonth());
+
+    if (today.getDate() < birth.getDate()) {
+      months -= 1;
+    }
+
+    if (months < 0) return "";
+    if (months < 1) return "Jaunesnis nei 1 mėn.";
+
+    const years = Math.floor(months / 12);
+
+    if (years >= 1) {
+      return `${years} m.`;
+    }
+
+    return `${months} mėn.`;
+  }
+
+  function formatAnimalAgeDetailed(birthDate) {
+    if (!birthDate) return "";
+
+    const birth = new Date(birthDate);
+
+    if (Number.isNaN(birth.getTime())) {
+      return "";
+    }
+
+    const today = new Date();
+    let months =
+      (today.getFullYear() - birth.getFullYear()) * 12 +
+      (today.getMonth() - birth.getMonth());
+
+    if (today.getDate() < birth.getDate()) {
+      months -= 1;
+    }
+
+    if (months < 0) return "";
+    if (months < 1) return "Jaunesnis nei 1 mėn.";
+
+    const years = Math.floor(months / 12);
+    const remainingMonths = months % 12;
+
+    if (years >= 1 && remainingMonths > 0) {
+      return `${years} m. ${remainingMonths} mėn.`;
+    }
+
+    if (years >= 1) {
+      return `${years} m.`;
+    }
+
+    return `${months} mėn.`;
   }
 
   function buildAddress(data = {}) {
@@ -486,6 +559,8 @@
     });
   }
   function showNotification(message, type = "success") {
+  if (!message) return;
+
   const containerId = "appNotifications";
 
   let container = document.getElementById(containerId);
@@ -521,12 +596,12 @@
   Object.assign(el.style, {
     minWidth: "150px",
     padding: "12px 22px",
-    borderRadius: "999px",
+    borderRadius: "8px",
 
     background: colors[type] || "#444444",
     border: "2px solid #fff",
 
-    color: "#fff",
+    color: "#F5EFE6",
     fontFamily: '"Source Sans 3", sans-serif',
     fontWeight: "700",
     fontSize: "18px",
@@ -556,6 +631,26 @@
   }, 3000);
 }
 
+  function showPendingNotification() {
+    const raw = sessionStorage.getItem("app_pending_notification");
+    if (!raw) return;
+
+    sessionStorage.removeItem("app_pending_notification");
+
+    try {
+      const notification = JSON.parse(raw);
+      showNotification(notification.message, notification.type || "success");
+    } catch (error) {
+      console.error("Invalid pending notification", error);
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", showPendingNotification);
+  } else {
+    showPendingNotification();
+  }
+
   window.AppCommon = {
     shelterLogos,
     fallbackAnimalImage,
@@ -576,6 +671,8 @@
     translateGender,
     translateSex,
     translateStatus,
+    formatAnimalAge,
+    formatAnimalAgeDetailed,
 
     buildAddress,
     getRequestedId,

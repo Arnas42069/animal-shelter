@@ -6,6 +6,12 @@
 let supportShelters = [];
 let filteredSupportShelters = [];
 
+function showSupportNotification(text, type = "error") {
+  if (window.AppCommon?.showNotification) {
+    window.AppCommon.showNotification(text, type);
+  }
+}
+
 // Default logotipai
 const supportShelterLogos = [
   "/assets/img/logo1.png",
@@ -143,9 +149,9 @@ async function loadSupportShelters() {
   } catch (error) {
     console.error(error);
 
-    if (msg) {
-      msg.textContent = "Nepavyko užkrauti prieglaudų sąrašo.";
-    }
+    if (msg) msg.textContent = "";
+
+    showSupportNotification("Nepavyko užkrauti prieglaudų sąrašo.", "error");
   }
 }
 

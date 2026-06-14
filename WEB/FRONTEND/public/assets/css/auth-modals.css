@@ -46,10 +46,16 @@
 .auth-btn{
     padding:12px 20px;
     background:#4a4a4a;
-    color:white;
+    color:#F5EFE6;
     border:none;
     border-radius:20px;
     cursor:pointer;
+    transition:background 0.18s ease, transform 0.18s ease;
+}
+
+.auth-btn:hover{
+    background:#3f3f46;
+    transform:translateY(-2px);
 }
 
 .auth-submit-btn{

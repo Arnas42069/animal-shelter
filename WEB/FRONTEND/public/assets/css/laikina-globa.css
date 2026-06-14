@@ -40,13 +40,13 @@
     transform: translateY(-50%);
     z-index: 2;
     max-width: 620px;
-    color: #ffffff;
+    color:#F5EFE6;
     text-align: center;
 }
 
 .foster-hero-content h1 {
     margin: 0 0 18px;
-    color: #ffffff;
+    color:#F5EFE6;
     font-size: clamp(42px, 5vw, 66px);
     font-weight: 600;
     line-height: 1.05;
@@ -56,7 +56,7 @@
 .foster-hero-content p {
     max-width: 580px;
     margin: 0 auto 28px;
-    color: #ffffff;
+    color:#F5EFE6;
     font-size: 18px;
     line-height: 1.65;
     text-shadow: 0 3px 12px rgba(0, 0, 0, 0.28);
@@ -82,10 +82,10 @@
 .foster-form-section h2,
 .login-required-section h2 {
     margin: 0 0 22px;
-    color: var(--color-text);
-    font-size: clamp(26px, 3vw, 34px);
-    font-weight: 500;
-    line-height: 1.15;
+    color: #444444;
+    font-size: clamp(26px, 3vw, 36px);
+    font-weight: 550;
+    line-height: 1.1;
 }
 
 /* Selected animal */
